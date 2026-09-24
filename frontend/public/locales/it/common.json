@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "Le Blanc & Moi",
+    "tagline": "Tutti gli eventi nei dintorni di Le Blanc"
+  },
+  "actions": {
+    "view": "Visualizza",
+    "close": "Chiudi",
+    "loading": "Caricamento...",
+    "retry": "Riprova"
+  },
+  "footer": {
+    "rights": "Tutti i diritti riservati",
+    "sources": "Fonti di dati"
+  }
+}

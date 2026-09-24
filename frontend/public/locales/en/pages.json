@@ -1,0 +1,23 @@
+{
+  "home": {
+    "title": "Welcome to Le Blanc & Moi",
+    "subtitle": "Discover events around Le Blanc"
+  },
+  "map": {
+    "title": "Event Map",
+    "placeholder": "The interactive map is coming soon."
+  },
+  "list": {
+    "title": "Event List",
+    "placeholder": "The event list is coming soon."
+  },
+  "event": {
+    "title": "Event Details",
+    "placeholder": "You are viewing event: {{id}}",
+    "notFound": "This event does not exist."
+  },
+  "about": {
+    "title": "About",
+    "description": "Community application listing events within a 20 km radius around Le Blanc."
+  }
+}

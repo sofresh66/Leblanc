@@ -1,0 +1,7 @@
+{
+  "generic": "Ein Fehler ist aufgetreten",
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht."
+  }
+}

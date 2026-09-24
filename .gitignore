@@ -45,3 +45,6 @@ Icon?
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+# Playwright screenshots (generated)
+/frontend/screenshots/

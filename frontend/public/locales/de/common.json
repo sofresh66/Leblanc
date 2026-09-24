@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "Le Blanc & Moi",
+    "tagline": "Alle Veranstaltungen rund um Le Blanc"
+  },
+  "actions": {
+    "view": "Ansehen",
+    "close": "Schließen",
+    "loading": "Laden...",
+    "retry": "Erneut versuchen"
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten",
+    "sources": "Datenquellen"
+  }
+}

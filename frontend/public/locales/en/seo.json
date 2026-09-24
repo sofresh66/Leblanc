@@ -1,0 +1,26 @@
+{
+  "home": {
+    "title": "Le Blanc & Moi — Events around Le Blanc",
+    "description": "Discover all events within a 20 km radius around Le Blanc (36300)."
+  },
+  "map": {
+    "title": "Event Map — Le Blanc & Moi",
+    "description": "Explore the interactive event map around Le Blanc."
+  },
+  "list": {
+    "title": "Event List — Le Blanc & Moi",
+    "description": "Browse the full list of events around Le Blanc."
+  },
+  "event": {
+    "title": "Event Details — Le Blanc & Moi",
+    "description": "View event information and schedules around Le Blanc."
+  },
+  "about": {
+    "title": "About — Le Blanc & Moi",
+    "description": "Learn more about the Le Blanc & Moi application."
+  },
+  "notFound": {
+    "title": "Page Not Found — Le Blanc & Moi",
+    "description": "The requested page does not exist."
+  }
+}

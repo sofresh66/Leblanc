@@ -1,0 +1,26 @@
+{
+  "home": {
+    "title": "Le Blanc & Moi — Événements autour du Blanc",
+    "description": "Découvrez tous les événements dans un rayon de 20 km autour du Blanc (36300)."
+  },
+  "map": {
+    "title": "Carte des événements — Le Blanc & Moi",
+    "description": "Explorez la carte interactive des événements autour du Blanc."
+  },
+  "list": {
+    "title": "Liste des événements — Le Blanc & Moi",
+    "description": "Consultez la liste complète des événements autour du Blanc."
+  },
+  "event": {
+    "title": "Détails de l'événement — Le Blanc & Moi",
+    "description": "Consultez les informations et horaires de cet événement au Blanc."
+  },
+  "about": {
+    "title": "À propos — Le Blanc & Moi",
+    "description": "En savoir plus sur l'application Le Blanc & Moi et son fonctionnement."
+  },
+  "notFound": {
+    "title": "Page introuvable — Le Blanc & Moi",
+    "description": "La page demandée n'existe pas."
+  }
+}

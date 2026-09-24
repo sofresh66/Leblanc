@@ -1,0 +1,7 @@
+{
+  "generic": "Une erreur est survenue",
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page que vous cherchez n'existe pas."
+  }
+}

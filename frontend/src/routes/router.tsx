@@ -1,0 +1,89 @@
+import { createBrowserRouter, Navigate, useSearchParams } from 'react-router-dom';
+import i18n, { i18nReady } from '../i18n/config';
+import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../i18n/languages';
+import { ROUTE_SEGMENTS, detectPreferredLanguage } from './routeMapping';
+import { LocalizedRoute } from './LocalizedRoute';
+import { HomePage } from '../pages/HomePage';
+import { MapPage } from '../pages/MapPage';
+import { ListPage } from '../pages/ListPage';
+import { EventPage } from '../pages/EventPage';
+import { AboutPage } from '../pages/AboutPage';
+import { NotFoundPage } from '../pages/NotFoundPage';
+
+/**
+ * Composant de redirection racine (/) vers la langue préférée :
+ * Priorité :
+ * 1. Querystring ?lang=xx
+ * 2. localStorage ('leblanc_i18n_lang')
+ * 3. navigator.languages
+ * 4. navigator.language
+ * 5. Fallback 'fr'
+ */
+function RootRedirect() {
+  const [searchParams] = useSearchParams();
+  const targetLang = detectPreferredLanguage(searchParams);
+  return <Navigate to={`/${targetLang}`} replace />;
+}
+
+/**
+ * Les 30 routes localisées (6 langues × 5 sections : home, map, list, events, about)
+ * sont générées automatiquement et programmatiquement depuis la table `routeMapping.ts`
+ * (source unique de vérité), garantissant l'exhaustivité et la cohérence des URLs.
+ */
+const localizedLanguageRoutes = SUPPORTED_LANGUAGES.map((lang: SupportedLanguage) => {
+  const segments = ROUTE_SEGMENTS[lang];
+
+  return {
+    path: lang,
+    loader: async () => {
+      await i18nReady;
+      if (i18n.language !== lang) {
+        await i18n.changeLanguage(lang);
+      }
+      return null;
+    },
+    element: <LocalizedRoute />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: segments.map,
+        element: <MapPage />,
+      },
+      {
+        path: segments.list,
+        element: <ListPage />,
+      },
+      {
+        path: `${segments.events}/:id`,
+        element: <EventPage />,
+      },
+      {
+        path: segments.about,
+        element: <AboutPage />,
+      },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
+    ],
+  };
+});
+
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootRedirect />,
+  },
+  ...localizedLanguageRoutes,
+  {
+    path: '*',
+    element: (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <NotFoundPage />
+      </div>
+    ),
+  },
+]);

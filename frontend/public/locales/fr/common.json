@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "Le Blanc & Moi",
+    "tagline": "Tous les événements autour du Blanc"
+  },
+  "actions": {
+    "view": "Voir",
+    "close": "Fermer",
+    "loading": "Chargement...",
+    "retry": "Réessayer"
+  },
+  "footer": {
+    "rights": "Tous droits réservés",
+    "sources": "Sources de données"
+  }
+}

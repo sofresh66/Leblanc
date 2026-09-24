@@ -1,0 +1,23 @@
+{
+  "home": {
+    "title": "Welkom bij Le Blanc & Moi",
+    "subtitle": "Ontdek evenementen rondom Le Blanc"
+  },
+  "map": {
+    "title": "Evenementenkaart",
+    "placeholder": "De interactieve kaart komt binnenkort."
+  },
+  "list": {
+    "title": "Evenementenlijst",
+    "placeholder": "De evenementenlijst komt binnenkort."
+  },
+  "event": {
+    "title": "Evenementdetails",
+    "placeholder": "U bekijkt evenement: {{id}}",
+    "notFound": "Dit evenement bestaat niet."
+  },
+  "about": {
+    "title": "Over ons",
+    "description": "Burger-app met een overzicht van evenementen binnen een straal van 20 km rond Le Blanc."
+  }
+}

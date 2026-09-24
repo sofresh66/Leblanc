@@ -1,0 +1,23 @@
+{
+  "home": {
+    "title": "Bienvenue au Blanc & Moi",
+    "subtitle": "Découvrez les événements autour du Blanc"
+  },
+  "map": {
+    "title": "Carte des événements",
+    "placeholder": "La carte interactive arrive bientôt."
+  },
+  "list": {
+    "title": "Liste des événements",
+    "placeholder": "La liste des événements arrive bientôt."
+  },
+  "event": {
+    "title": "Détails de l'événement",
+    "placeholder": "Vous consultez l'événement : {{id}}",
+    "notFound": "Cet événement n'existe pas."
+  },
+  "about": {
+    "title": "À propos",
+    "description": "Application citoyenne recensant les événements dans un rayon de 20 km autour du Blanc."
+  }
+}
