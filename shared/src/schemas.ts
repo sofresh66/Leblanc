@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CATEGORIES, DEFAULT_CURRENCY, DEFAULT_TIMEZONE } from './constants';
+import { CATEGORIES, DEFAULT_CURRENCY, DEFAULT_TIMEZONE } from './constants.js';
 
 export const SupportedContentLanguageSchema = z.enum(['fr', 'en', 'es', 'de', 'it', 'nl']);
 

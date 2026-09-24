@@ -16,6 +16,7 @@ frontend/dist/
 .env.*
 !.env.example
 .dev.vars*
+!worker/.dev.vars.example
 
 # Cloudflare Wrangler
 .wrangler/

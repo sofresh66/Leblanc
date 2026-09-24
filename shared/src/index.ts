@@ -1,5 +1,5 @@
 export const PROJECT_NAME = 'Le Blanc & Moi' as const;
 
-export * from './constants';
-export * from './schemas';
-export * from './types';
+export * from './constants.js';
+export * from './schemas.js';
+export * from './types.js';

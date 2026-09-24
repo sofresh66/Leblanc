@@ -5,13 +5,13 @@ import {
   EventSchema,
   RawEventSchema,
   SupportedContentLanguageSchema,
-} from './schemas';
+} from './schemas.js';
 
 export type EventCategory = z.infer<typeof EventCategorySchema>;
 export type SupportedContentLanguage = z.infer<typeof SupportedContentLanguageSchema>;
 export type RawEvent = z.infer<typeof RawEventSchema>;
 export type Event = z.infer<typeof EventSchema>;
-export type { EventListParams, EventListParamsInput } from './schemas';
+export type { EventListParams, EventListParamsInput } from './schemas.js';
 export type EventListResponse = z.infer<typeof EventListResponseSchema>;
 
 /**
