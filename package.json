@@ -1,0 +1,37 @@
+{
+  "name": "leblanc-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "workspaces": [
+    "frontend",
+    "worker",
+    "shared",
+    "scripts"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@leblanc/frontend",
+    "dev:deps": "npm run build --workspace=@leblanc/shared",
+    "build": "npm run build --workspace=@leblanc/shared && npm run build --workspace=@leblanc/frontend",
+    "typecheck": "npm run pretypecheck --workspace=@leblanc/worker && tsc --build --pretty && tsc --noEmit -p frontend",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.37.0",
+    "@playwright/test": "1.56.1",
+    "@types/node": "24.13.6",
+    "cross-env": "7.0.3",
+    "eslint": "9.37.0",
+    "prettier": "3.3.3",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.0",
+    "vitest": "2.1.9",
+    "wrangler": "4.138.0"
+  }
+}

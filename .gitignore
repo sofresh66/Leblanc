@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+shared/dist/
+worker/dist/
+scripts/dist/
+frontend/dist/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+.dev.vars*
+
+# Cloudflare Wrangler
+.wrangler/
+worker/worker-configuration.d.ts
+
+# Test coverage & reports
+coverage/
+playwright-report/
+test-results/
+
+# OS generated files (Windows / macOS)
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# IDE & editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace

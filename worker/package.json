@@ -1,0 +1,16 @@
+{
+  "name": "@leblanc/worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "types": "wrangler types",
+    "pretypecheck": "wrangler types"
+  },
+  "dependencies": {
+    "@leblanc/shared": "1.0.0",
+    "@neondatabase/serverless": "1.1.0",
+    "zod": "4.5.1"
+  }
+}

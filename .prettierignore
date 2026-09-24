@@ -1,0 +1,11 @@
+node_modules
+dist
+shared/dist
+worker/dist
+scripts/dist
+frontend/dist
+coverage
+.wrangler
+*.md
+*.tsbuildinfo
+package-lock.json
