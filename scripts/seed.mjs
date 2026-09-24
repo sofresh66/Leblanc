@@ -28,6 +28,15 @@ function computeFingerprint(eventId, startDate, endDate) {
   return `mock:${hash}`;
 }
 
+// Les types des paramètres SQL sont vérifiés par PostgreSQL lors du seed réel.
+async function queryWithContext(client, label, sql, params) {
+  try {
+    return await client.query(sql, params);
+  } catch (err) {
+    throw new Error(`${label}: ${err instanceof Error ? err.message : String(err)}`, { cause: err });
+  }
+}
+
 async function runSeed() {
   const databaseUrl = process.env.DATABASE_URL_DIRECT;
 
@@ -76,7 +85,7 @@ async function runSeed() {
       const fingerprint = computeFingerprint(parsed.id, parsed.startDate, parsed.endDate);
 
       // 1. Insertion ou mise à jour dans events
-      await client.query(
+      await queryWithContext(client, 'Erreur lors de l’insertion des événements',
         `
         INSERT INTO events (
           id, category, title_i18n, description_i18n, source_language,
@@ -132,7 +141,7 @@ async function runSeed() {
       );
 
       // 2. Insertion ou mise à jour de l'occurrence temporelle
-      await client.query(
+      await queryWithContext(client, 'Erreur lors de l’insertion des occurrences',
         `
         INSERT INTO event_occurrences (
           id, event_id, starts_at, ends_at, timezone, status, source_fingerprint
@@ -157,7 +166,7 @@ async function runSeed() {
       // Réconciliation des anciennes occurrences mock de cet événement (Correction 1)
       // Ne supprime que les occurrences préfixées par 'mock:' qui ne correspondent plus
       const expectedFingerprints = [fingerprint];
-      await client.query(
+      await queryWithContext(client, 'Erreur lors de la réconciliation des occurrences',
         `
         DELETE FROM event_occurrences
         WHERE event_id = $1
@@ -168,12 +177,12 @@ async function runSeed() {
       );
 
       // 3. Insertion ou mise à jour dans source_records
-      await client.query(
+      await queryWithContext(client, 'Erreur lors de l’insertion des source_records',
         `
         INSERT INTO source_records (
           id, source, external_id, event_id, source_url, source_updated_at, raw_excerpt, last_seen_at
         ) VALUES (
-          gen_random_uuid(), 'mock', $1, $1, $2, now(), $3, now()
+          gen_random_uuid(), 'mock', $1, $2, $3, now(), $4, now()
         )
         ON CONFLICT (source, external_id) DO UPDATE SET
           source_url = EXCLUDED.source_url,
@@ -182,6 +191,7 @@ async function runSeed() {
           last_seen_at = now();
         `,
         [
+          parsed.id,
           parsed.id,
           parsed.publicUrl,
           JSON.stringify(parsed),
