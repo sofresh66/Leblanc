@@ -1,0 +1,26 @@
+{
+  "title": "Evenementen filteren",
+  "dates": {
+    "label": "Periode",
+    "from": "Vanaf",
+    "to": "Tot"
+  },
+  "categories": {
+    "label": "Categorieën",
+    "all": "Alle categorieën"
+  },
+  "price": {
+    "label": "Tarief",
+    "all": "Alles",
+    "freeOnly": "Alleen gratis",
+    "paidOnly": "Alleen betaald"
+  },
+  "distance": {
+    "label": "Zoekstraal",
+    "value": "Tot {{distance}} km"
+  },
+  "actions": {
+    "reset": "Resetten",
+    "apply": "Toepassen"
+  }
+}

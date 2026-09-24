@@ -1,0 +1,26 @@
+{
+  "title": "Filtrer les événements",
+  "dates": {
+    "label": "Période",
+    "from": "À partir du",
+    "to": "Jusqu’au"
+  },
+  "categories": {
+    "label": "Catégories",
+    "all": "Toutes les catégories"
+  },
+  "price": {
+    "label": "Tarif",
+    "all": "Tous",
+    "freeOnly": "Gratuit uniquement",
+    "paidOnly": "Payant uniquement"
+  },
+  "distance": {
+    "label": "Rayon de recherche",
+    "value": "Jusqu’à {{distance}} km"
+  },
+  "actions": {
+    "reset": "Réinitialiser",
+    "apply": "Appliquer"
+  }
+}

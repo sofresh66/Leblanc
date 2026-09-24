@@ -1,0 +1,26 @@
+{
+  "title": "Veranstaltungen filtern",
+  "dates": {
+    "label": "Zeitraum",
+    "from": "Von",
+    "to": "Bis"
+  },
+  "categories": {
+    "label": "Kategorien",
+    "all": "Alle Kategorien"
+  },
+  "price": {
+    "label": "Eintritt",
+    "all": "Alle",
+    "freeOnly": "Nur kostenlos",
+    "paidOnly": "Nur kostenpflichtig"
+  },
+  "distance": {
+    "label": "Suchradius",
+    "value": "Bis zu {{distance}} km"
+  },
+  "actions": {
+    "reset": "Zurücksetzen",
+    "apply": "Anwenden"
+  }
+}

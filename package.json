@@ -19,7 +19,7 @@
     "typecheck": "npm run pretypecheck --workspace=@leblanc/worker && tsc --build --pretty && tsc --noEmit -p frontend",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "vitest run",
+    "test": "npm run build --workspace=@leblanc/shared && vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {

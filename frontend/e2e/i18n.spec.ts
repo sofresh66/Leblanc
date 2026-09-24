@@ -45,44 +45,62 @@ test.describe('Multilingual Routing and i18n', () => {
       // FR (5)
       { url: '/fr', expectedText: 'Bienvenue au Blanc & Moi' },
       { url: '/fr/carte', expectedText: 'Carte des événements' },
-      { url: '/fr/liste', expectedText: 'Liste des événements' },
-      { url: '/fr/evenements/42', expectedText: '42' },
+      { url: '/fr/liste', expectedText: 'Agenda complet des événements' },
+      {
+        url: '/fr/evenements/e1000000-0000-4000-8000-000000000002',
+        expectedText: 'Concert Classique : Nocturnes au Château Naillac',
+      },
       { url: '/fr/a-propos', expectedText: 'À propos' },
 
       // EN (5)
       { url: '/en', expectedText: 'Welcome to Le Blanc & Moi' },
       { url: '/en/map', expectedText: 'Event Map' },
-      { url: '/en/list', expectedText: 'Event List' },
-      { url: '/en/events/42', expectedText: '42' },
+      { url: '/en/list', expectedText: 'Complete Event Calendar' },
+      {
+        url: '/en/events/e1000000-0000-4000-8000-000000000002',
+        expectedText: 'Classical Concert: Nocturnes at Château Naillac',
+      },
       { url: '/en/about', expectedText: 'About' },
 
       // ES (5)
       { url: '/es', expectedText: 'Bienvenido a Le Blanc & Moi' },
       { url: '/es/mapa', expectedText: 'Mapa de eventos' },
-      { url: '/es/lista', expectedText: 'Lista de eventos' },
-      { url: '/es/eventos/42', expectedText: '42' },
+      { url: '/es/lista', expectedText: 'Calendario completo de eventos' },
+      {
+        url: '/es/eventos/e1000000-0000-4000-8000-000000000002',
+        expectedText: 'Concierto Clásico: Nocturnos en el Castillo Naillac',
+      },
       { url: '/es/acerca-de', expectedText: 'Acerca de' },
 
       // DE (5)
       { url: '/de', expectedText: 'Willkommen bei Le Blanc & Moi' },
       { url: '/de/karte', expectedText: 'Veranstaltungskarte' },
-      { url: '/de/liste', expectedText: 'Veranstaltungsliste' },
-      { url: '/de/veranstaltungen/42', expectedText: '42' },
-      { url: '/de/ueber-uns', expectedText: 'Über uns' },
+      { url: '/de/liste', expectedText: 'Vollständiger Veranstaltungskalender' },
+      {
+        url: '/de/veranstaltungen/e1000000-0000-4000-8000-000000000002',
+        expectedText: 'Klassisches Konzert: Nachtmusik im Schloss Naillac',
+      },
+      { url: '/de/ueber-uns', expectedText: 'Über' },
 
       // IT (5)
       { url: '/it', expectedText: 'Benvenuti su Le Blanc & Moi' },
       { url: '/it/mappa', expectedText: 'Mappa degli eventi' },
-      { url: '/it/lista', expectedText: 'Elenco degli eventi' },
-      { url: '/it/eventi/42', expectedText: '42' },
+      { url: '/it/lista', expectedText: 'Calendario completo degli eventi' },
+      {
+        url: '/it/eventi/e1000000-0000-4000-8000-000000000002',
+        expectedText: 'Concerto Classico: Notturni al Castello Naillac',
+      },
       { url: '/it/chi-siamo', expectedText: 'Chi siamo' },
 
       // NL (5)
       { url: '/nl', expectedText: 'Welkom bij Le Blanc & Moi' },
       { url: '/nl/kaart', expectedText: 'Evenementenkaart' },
-      { url: '/nl/lijst', expectedText: 'Evenementenlijst' },
-      { url: '/nl/evenementen/42', expectedText: '42' },
-      { url: '/nl/over-ons', expectedText: 'Over ons' },
+      { url: '/nl/lijst', expectedText: 'Volledige evenementenkalender' },
+      {
+        url: '/nl/evenementen/e1000000-0000-4000-8000-000000000002',
+        expectedText: 'Klassiek Concert: Nocturnes in Kasteel Naillac',
+      },
+      { url: '/nl/over-ons', expectedText: 'Over' },
     ];
 
     expect(routesToTest.length).toBe(30);
@@ -132,13 +150,18 @@ test.describe('Multilingual Routing and i18n', () => {
     page,
   }) => {
     await page.goto('/fr/evenements/abc123');
-    await expect(page.locator('main')).toContainText('abc123');
+    await expect(page).toHaveURL('/fr/evenements/abc123');
+    await expect(page.locator('main')).toContainText(
+      'Cet événement n’existe pas ou a expiré.'
+    );
 
     const switcher = page.getByTestId('language-switcher');
     await switcher.selectOption('en');
 
     await expect(page).toHaveURL('/en/events/abc123');
-    await expect(page.locator('main')).toContainText('You are viewing event: abc123');
+    await expect(page.locator('main')).toContainText(
+      'This event does not exist or has expired.'
+    );
   });
 
   test('8. Capture d’écran avec focus sur le LanguageSwitcher', async ({ page }) => {

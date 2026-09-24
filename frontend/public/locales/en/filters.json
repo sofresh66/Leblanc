@@ -1,0 +1,26 @@
+{
+  "title": "Filter Events",
+  "dates": {
+    "label": "Date Range",
+    "from": "From",
+    "to": "Until"
+  },
+  "categories": {
+    "label": "Categories",
+    "all": "All Categories"
+  },
+  "price": {
+    "label": "Price",
+    "all": "All",
+    "freeOnly": "Free only",
+    "paidOnly": "Paid only"
+  },
+  "distance": {
+    "label": "Search Radius",
+    "value": "Up to {{distance}} km"
+  },
+  "actions": {
+    "reset": "Reset",
+    "apply": "Apply"
+  }
+}

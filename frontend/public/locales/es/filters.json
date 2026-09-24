@@ -1,0 +1,26 @@
+{
+  "title": "Filtrar eventos",
+  "dates": {
+    "label": "Fechas",
+    "from": "Desde",
+    "to": "Hasta"
+  },
+  "categories": {
+    "label": "Categorías",
+    "all": "Todas las categorías"
+  },
+  "price": {
+    "label": "Precio",
+    "all": "Todos",
+    "freeOnly": "Solo gratis",
+    "paidOnly": "Solo de pago"
+  },
+  "distance": {
+    "label": "Radio de búsqueda",
+    "value": "Hasta {{distance}} km"
+  },
+  "actions": {
+    "reset": "Restablecer",
+    "apply": "Aplicar"
+  }
+}

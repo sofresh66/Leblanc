@@ -1,0 +1,33 @@
+{
+  "categories": {
+    "culture": "Cultuur",
+    "sport": "Sport",
+    "fete": "Feesten & Festivals",
+    "association": "Verenigingen",
+    "autre": "Overig"
+  },
+  "price": {
+    "free": "Gratis",
+    "from": "Vanaf {{price}}",
+    "paid": "Betaald"
+  },
+  "distance": {
+    "km": "{{distance}} km"
+  },
+  "details": {
+    "directions": "Routebeschrijving",
+    "addToCalendar": "Toevoegen aan agenda",
+    "share": "Delen",
+    "linkCopied": "Link gekopieerd naar klembord!",
+    "viewWebsite": "Officiële website",
+    "source": "Bron: {{source}}",
+    "fallbackNotice": "Dit evenement is beschreven in het Frans."
+  },
+  "list": {
+    "loadMore": "Meer evenementen laden",
+    "noMoreEvents": "Alle evenementen geladen",
+    "emptyTitle": "Geen evenementen gevonden",
+    "emptyDescription": "Er zijn geen evenementen die voldoen aan uw zoekcriteria. Vergroot uw zoekgebied.",
+    "resetFilters": "Filters resetten"
+  }
+}

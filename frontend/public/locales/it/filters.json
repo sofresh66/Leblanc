@@ -1,0 +1,26 @@
+{
+  "title": "Filtra eventi",
+  "dates": {
+    "label": "Periodo",
+    "from": "Dal",
+    "to": "Al"
+  },
+  "categories": {
+    "label": "Categorie",
+    "all": "Tutte le categorie"
+  },
+  "price": {
+    "label": "Prezzo",
+    "all": "Tutti",
+    "freeOnly": "Solo gratuiti",
+    "paidOnly": "Solo a pagamento"
+  },
+  "distance": {
+    "label": "Raggio di ricerca",
+    "value": "Fino a {{distance}} km"
+  },
+  "actions": {
+    "reset": "Reimposta",
+    "apply": "Applica"
+  }
+}

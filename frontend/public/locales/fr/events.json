@@ -1,0 +1,33 @@
+{
+  "categories": {
+    "culture": "Culture",
+    "sport": "Sport",
+    "fete": "Fête & Festival",
+    "association": "Vie associative",
+    "autre": "Autre"
+  },
+  "price": {
+    "free": "Gratuit",
+    "from": "Dès {{price}}",
+    "paid": "Payant"
+  },
+  "distance": {
+    "km": "{{distance}} km"
+  },
+  "details": {
+    "directions": "Y aller",
+    "addToCalendar": "Ajouter à mon agenda",
+    "share": "Partager",
+    "linkCopied": "Lien copié dans le presse-papier !",
+    "viewWebsite": "Site web officiel",
+    "source": "Source : {{source}}",
+    "fallbackNotice": "Cet événement est présenté en français."
+  },
+  "list": {
+    "loadMore": "Charger plus d’événements",
+    "noMoreEvents": "Tous les événements sont affichés",
+    "emptyTitle": "Aucun événement trouvé",
+    "emptyDescription": "Aucun événement ne correspond à vos critères de recherche. Essayez d’élargir vos filtres.",
+    "resetFilters": "Réinitialiser les filtres"
+  }
+}

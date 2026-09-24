@@ -1,0 +1,677 @@
+[
+  {
+    "id": "e1000000-0000-4000-8000-000000000001",
+    "title_i18n": {
+      "fr": "Grand Marché d’Automne sous les Halles",
+      "en": "Autumn Market under the Covered Halls",
+      "es": "Gran Mercado de Otoño en los Mercados Cubiertos",
+      "de": "Herbstmarkt in den Markthallen",
+      "it": "Grande Mercato Autunnale sotto le Logge",
+      "nl": "Grote Herfstmarkt in de Markthallen"
+    },
+    "description_i18n": {
+      "fr": "Retrouvez les producteurs locaux et artisans du terroir brennou sous les halles historiques du Blanc.",
+      "en": "Meet local food producers and craftsmen from the Brenne region under the historic covered halls of Le Blanc.",
+      "es": "Encuentre a los productores locales y artesanos de la región de Brenne en los mercados históricos de Le Blanc.",
+      "de": "Treffen Sie lokale Erzeuger und Handwerker aus der Region Brenne in den historischen Hallen von Le Blanc.",
+      "it": "Incontra i produttori locali e gli artigiani della regione della Brenne sotto le storiche logge di Le Blanc.",
+      "nl": "Ontmoet lokale producenten en ambachtslieden uit de Brenne in de historische hallen van Le Blanc."
+    },
+    "category": "fete",
+    "startDate": "2026-10-03T08:30:00+02:00",
+    "endDate": "2026-10-03T13:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Place du Marché et Halles",
+    "address": "Place du Marché",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6335,
+    "longitude": 1.0628,
+    "imageUrl": "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=800&q=80",
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": "https://www.ville-leblanc.fr",
+    "source": "Mairie du Blanc"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000002",
+    "title_i18n": {
+      "fr": "Concert Classique : Nocturnes au Château Naillac",
+      "en": "Classical Concert: Nocturnes at Château Naillac",
+      "es": "Concierto Clásico: Nocturnos en el Castillo Naillac",
+      "de": "Klassisches Konzert: Nachtmusik im Schloss Naillac",
+      "it": "Concerto Classico: Notturni al Castello Naillac",
+      "nl": "Klassiek Concert: Nocturnes in Kasteel Naillac"
+    },
+    "description_i18n": {
+      "fr": "Récital de piano et violoncelle dans la cour haute du château Naillac, dominant la Creuse.",
+      "en": "Piano and cello recital in the high courtyard of Château Naillac overlooking the Creuse river.",
+      "es": "Recital de piano y violonchelo en el patio alto del Castillo Naillac con vistas al río Creuse.",
+      "de": "Klavier- und Celloabend im Innenhof des Schlosses Naillac mit Blick auf die Creuse.",
+      "it": "Recital di pianoforte e violoncello nel cortile del Castello Naillac affacciato sulla Creuse.",
+      "nl": "Piano- en cellorecital op de binnenplaats van Kasteel Naillac met uitzicht op de Creuse."
+    },
+    "category": "culture",
+    "startDate": "2026-10-10T20:30:00+02:00",
+    "endDate": "2026-10-10T22:30:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Château Naillac - Écomusée",
+    "address": "Place du Château",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6309,
+    "longitude": 1.0601,
+    "imageUrl": "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=800&q=80",
+    "isFree": false,
+    "priceMin": 12.5,
+    "currency": "EUR",
+    "publicUrl": "https://www.ecomusee-brenne.fr",
+    "source": "Écomusée de la Brenne"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000003",
+    "title_i18n": {
+      "fr": "Randonnée Nature : Les Étangs de la Brenne",
+      "en": "Nature Hike: The Ponds of the Brenne",
+      "es": "Ruta de la Naturaleza: Las Lagunas de Brenne",
+      "de": "Naturwanderung: Die Teiche der Brenne",
+      "it": "Escursione nella Natura: Gli Stagni della Brenne",
+      "nl": "Natuurwandeling: De Meren van de Brenne"
+    },
+    "description_i18n": {
+      "fr": "Parcours guidé de 12 km à la découverte de la faune aquatique et des oiseaux migrateurs.",
+      "en": "A guided 12 km walk discovering aquatic wildlife and migratory birds in the Regional Park.",
+      "es": "Recorrido guiado de 12 km para descubrir la fauna acuática y las aves migratorias.",
+      "de": "Geführte 12-km-Wanderung zur Beobachtung der Wasserfauna und Zugvögel.",
+      "it": "Percorso guidato di 12 km alla scoperta della fauna acquatica e degli uccelli migratori.",
+      "nl": "Begeleide wandeling van 12 km om de waterdieren en trekvogels te ontdekken."
+    },
+    "category": "sport",
+    "startDate": "2026-10-18T09:00:00+02:00",
+    "endDate": "2026-10-18T13:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Maison du Parc de la Brenne",
+    "address": "Le Bouchet",
+    "postalCode": "36300",
+    "city": "Rosnay",
+    "latitude": 46.7118,
+    "longitude": 1.1738,
+    "imageUrl": "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80",
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": "https://www.parc-naturel-brenne.fr",
+    "source": "Parc naturel régional de la Brenne"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000004",
+    "title_i18n": {
+      "fr": "Exposition Ornithologique à la Réserve de Chérine",
+      "en": "Birdwatching Exhibition at the Chérine Nature Reserve",
+      "de": "Ornithologische Ausstellung im Naturschutzgebiet Chérine"
+    },
+    "description_i18n": {
+      "fr": "Photographies et conférences autour des hérons pourprés et des cistudes d’Europe.",
+      "en": "Wildlife photography and lectures focusing on purple herons and European pond turtles.",
+      "de": "Fotografien und Vorträge über Purpurreiher und Europäische Sumpfschildkröten."
+    },
+    "category": "culture",
+    "startDate": "2026-10-04T14:00:00+02:00",
+    "endDate": "2026-10-04T18:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Maison de la Nature",
+    "address": "La Guignière",
+    "postalCode": "36290",
+    "city": "Saint-Michel-en-Brenne",
+    "latitude": 46.7932,
+    "longitude": 1.1895,
+    "imageUrl": "https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=800&q=80",
+    "isFree": false,
+    "priceMin": 5,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Réserve Naturelle de Chérine"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000005",
+    "title_i18n": {
+      "fr": "Descente de la Creuse en Canoë-Kayak",
+      "en": "Canoeing down the Creuse River",
+      "de": "Kanu- und Kajakfahrt auf der Creuse"
+    },
+    "description_i18n": {
+      "fr": "Parcours nautique familial de 8 km entre Fontgombault et Le Blanc.",
+      "en": "An 8 km family canoe route between Fontgombault and Le Blanc.",
+      "de": "Eine 8 km lange Familien-Kanuroute zwischen Fontgombault und Le Blanc."
+    },
+    "category": "sport",
+    "startDate": "2026-10-11T10:00:00+02:00",
+    "endDate": "2026-10-11T16:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Base de Plein Air du Blanc",
+    "address": "Chemin des Fontaines",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6341,
+    "longitude": 1.0542,
+    "imageUrl": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+    "isFree": false,
+    "priceMin": 18,
+    "currency": "EUR",
+    "publicUrl": "https://www.canoebrenne.fr",
+    "source": "Club Canoë-Kayak Blancois"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000006",
+    "title_i18n": {
+      "fr": "Brocante d’Automne et Vide-Greniers des Bords de Creuse",
+      "en": "Autumn Flea Market along the Creuse Embankment",
+      "de": "Herbstflohmarkt an den Ufern der Creuse"
+    },
+    "description_i18n": {
+      "fr": "Plus de 80 exposants particuliers et professionnels le long des berges de la Creuse.",
+      "en": "Over 80 antique collectors and local vendors along the Creuse riverbank.",
+      "de": "Über 80 Aussteller und Händler entlang der Creuse."
+    },
+    "category": "fete",
+    "startDate": "2026-10-25T07:00:00+02:00",
+    "endDate": "2026-10-25T18:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Quai Aubépin",
+    "address": "Quai Aubépin",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6321,
+    "longitude": 1.0664,
+    "imageUrl": "https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=800&q=80",
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Comité des Fêtes"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000007",
+    "title_i18n": {
+      "fr": "Atelier Découverte : Vannerie Sauvage et Osier",
+      "en": "Workshop: Wild Basketry and Wicker Weaving",
+      "de": "Workshop: Wildflechten und Weidenhandwerk"
+    },
+    "description_i18n": {
+      "fr": "Apprenez à tresser des paniers en osier et végétaux cueillis dans la vallée de la Creuse.",
+      "en": "Learn to weave baskets with willow and plants gathered along the Creuse valley.",
+      "de": "Lernen Sie das Flechten von Körben aus Weiden und regionalen Pflanzen."
+    },
+    "category": "association",
+    "startDate": "2026-11-07T14:30:00+01:00",
+    "endDate": "2026-11-07T17:30:00+01:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Salle Municipale d’Ingrandes",
+    "address": "Place de l’Église",
+    "postalCode": "36300",
+    "city": "Ingrandes",
+    "latitude": 46.5982,
+    "longitude": 0.9634,
+    "imageUrl": null,
+    "isFree": false,
+    "priceMin": 15,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Association Terroirs et Savoir-Faire"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000008",
+    "title_i18n": {
+      "fr": "Foulées Blançoises : Course pédestre 10 km et semi-marathon",
+      "en": "Le Blanc 10K and Half-Marathon Foot Race",
+      "de": "Le Blanc Volkslauf: 10 km und Halbmarathon"
+    },
+    "description_i18n": {
+      "fr": "Course sur route et chemin le long de l’ancienne voie ferrée et des berges de la Creuse.",
+      "en": "Road and trail running along the former railway line and the riverbanks.",
+      "de": "Straßen- und Landschaftslauf entlang der ehemaligen Bahnstrecke und der Creuse."
+    },
+    "category": "sport",
+    "startDate": "2026-11-15T09:30:00+01:00",
+    "endDate": "2026-11-15T12:30:00+01:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Stade Municipal des Ménigouttes",
+    "address": "Rue des Ménigouttes",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6265,
+    "longitude": 1.0743,
+    "imageUrl": "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?auto=format&fit=crop&w=800&q=80",
+    "isFree": false,
+    "priceMin": 10,
+    "currency": "EUR",
+    "publicUrl": "https://www.fouleesblancoises.fr",
+    "source": "Club Athlétisme Blancois"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000009",
+    "title_i18n": {
+      "fr": "Visite guidée nocturne du Viaduc du Blanc"
+    },
+    "description_i18n": {
+      "fr": "Découvrez l’histoire ferroviaire du viaduc monumental et profitez d’un point de vue unique sur la ville illuminée."
+    },
+    "category": "culture",
+    "startDate": "2026-10-02T20:00:00+02:00",
+    "endDate": "2026-10-02T21:30:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Accès Viaduc - Rive Gauche",
+    "address": "Avenue Gambetta",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6298,
+    "longitude": 1.0592,
+    "imageUrl": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Office de Tourisme de la Brenne"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000010",
+    "title_i18n": {
+      "fr": "Tournoi de Tennis de Table Régional du Blanc"
+    },
+    "description_i18n": {
+      "fr": "Compétition régionale ouverte aux jeunes et seniors au complexe omnisports."
+    },
+    "category": "sport",
+    "startDate": "2026-10-04T09:00:00+02:00",
+    "endDate": "2026-10-04T18:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Gymnase Jean Moulin",
+    "address": "Rue Jean Moulin",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6361,
+    "longitude": 1.0685,
+    "imageUrl": null,
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "AS Blanc Tennis de Table"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000011",
+    "title_i18n": {
+      "fr": "Soirée Jeux de Société et Jeux Géants en Bois"
+    },
+    "description_i18n": {
+      "fr": "Soirée conviviale et intergénérationnelle ouverte à tous les passionnés de jeux."
+    },
+    "category": "association",
+    "startDate": "2026-10-09T19:00:00+02:00",
+    "endDate": "2026-10-09T23:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Maison des Associations",
+    "address": "Rue de la République",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6329,
+    "longitude": 1.0615,
+    "imageUrl": null,
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Association LudoBrenne"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000012",
+    "title_i18n": {
+      "fr": "Fête de la Pomme et Pressage de Jus Frais"
+    },
+    "description_i18n": {
+      "fr": "Démonstration de pressage de pommes au pressoir traditionnel, vente de jus et marché gourmand."
+    },
+    "category": "fete",
+    "startDate": "2026-10-17T10:00:00+02:00",
+    "endDate": "2026-10-17T17:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Place du Village",
+    "address": "Bourg",
+    "postalCode": "36300",
+    "city": "Saint-Aigny",
+    "latitude": 46.6481,
+    "longitude": 1.0264,
+    "imageUrl": "https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?auto=format&fit=crop&w=800&q=80",
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Comité de Saint-Aigny"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000013",
+    "title_i18n": {
+      "fr": "Séance Cinéma en Plein Air : Les Enfants du Marais"
+    },
+    "description_i18n": {
+      "fr": "Projection gratuite sur écran géant en plein air dans le parc municipal."
+    },
+    "category": "culture",
+    "startDate": "2026-10-16T20:30:00+02:00",
+    "endDate": "2026-10-16T22:45:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Parc des Religieuses",
+    "address": "Rue Pierre Colin de Souvigny",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6318,
+    "longitude": 1.0645,
+    "imageUrl": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=800&q=80",
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Cinéma Le Studio"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000014",
+    "title_i18n": {
+      "fr": "Initiation à la Pêche à la Mouche sur la Creuse"
+    },
+    "description_i18n": {
+      "fr": "Atelier de découverte encadré par des moniteurs fédéraux diplômés."
+    },
+    "category": "sport",
+    "startDate": "2026-10-24T14:00:00+02:00",
+    "endDate": "2026-10-24T17:30:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Maison de la Pêche",
+    "address": "Chemin des Prés Blancs",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6372,
+    "longitude": 1.0605,
+    "imageUrl": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80",
+    "isFree": false,
+    "priceMin": 8,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Fédération de Pêche de l’Indre"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000015",
+    "title_i18n": {
+      "fr": "Exposition Peintures et Sculptures d’Artistes du Val de Creuse"
+    },
+    "description_i18n": {
+      "fr": "Exposition annuelle mettant à l’honneur les artistes contemporains inspirés par la Brenne."
+    },
+    "category": "culture",
+    "startDate": "2026-10-20T10:00:00+02:00",
+    "endDate": "2026-10-31T18:00:00+01:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Galerie d’Art Municipale",
+    "address": "Rue Grande",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6322,
+    "longitude": 1.0631,
+    "imageUrl": "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Ville du Blanc"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000016",
+    "title_i18n": {
+      "fr": "Repas Dansant Choucroute du Comité des Fêtes"
+    },
+    "description_i18n": {
+      "fr": "Grand repas convivial animé par un orchestre musette régional."
+    },
+    "category": "fete",
+    "startDate": "2026-11-08T12:30:00+01:00",
+    "endDate": "2026-11-08T19:00:00+01:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Salle des Fêtes de Bélâbre",
+    "address": "Place du Champ de Foire",
+    "postalCode": "36370",
+    "city": "Bélâbre",
+    "latitude": 46.5512,
+    "longitude": 1.1578,
+    "imageUrl": null,
+    "isFree": false,
+    "priceMin": 22,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Comité des Fêtes de Bélâbre"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000017",
+    "title_i18n": {
+      "fr": "Sortie Botanique : Champignons et Baies Sauvages de Brenne"
+    },
+    "description_i18n": {
+      "fr": "Balade guidée en forêt avec un mycologue pour identifier les espèces comestibles."
+    },
+    "category": "autre",
+    "startDate": "2026-10-18T14:30:00+02:00",
+    "endDate": "2026-10-18T17:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Forêt de Lancosme",
+    "address": "Carrefour des Hêtres",
+    "postalCode": "36290",
+    "city": "Mézières-en-Brenne",
+    "latitude": 46.7721,
+    "longitude": 1.2584,
+    "imageUrl": "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=800&q=80",
+    "isFree": false,
+    "priceMin": 6,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Société Mycologique de l’Indre"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000018",
+    "title_i18n": {
+      "fr": "Rencontre Auteurs et Dédicaces à la Médiathèque"
+    },
+    "description_i18n": {
+      "fr": "Échanges avec trois romanciers du Berry et de Touraine."
+    },
+    "category": "culture",
+    "startDate": "2026-11-14T15:00:00+01:00",
+    "endDate": "2026-11-14T18:00:00+01:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Médiathèque Intercommunale",
+    "address": "Rue Jean Moulin",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6347,
+    "longitude": 1.0655,
+    "imageUrl": null,
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Médiathèque du Blanc"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000019",
+    "title_i18n": {
+      "fr": "Nettoyage Citoyen des Berges de la Creuse"
+    },
+    "description_i18n": {
+      "fr": "Opération citoyenne éco-responsable de ramassage de déchets et préservation des écosystèmes."
+    },
+    "category": "association",
+    "startDate": "2026-10-10T09:30:00+02:00",
+    "endDate": "2026-10-10T12:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Passerelle du Blanc",
+    "address": "Rue du Viaduc",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6315,
+    "longitude": 1.0612,
+    "imageUrl": null,
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Collectif Brenne Propre"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000020",
+    "title_i18n": {
+      "fr": "Stage d’Équitation et Découverte Poney pour Enfants"
+    },
+    "description_i18n": {
+      "fr": "Initiation à l’équitation, soins aux poneys et petite promenade dans le parc."
+    },
+    "category": "sport",
+    "startDate": "2026-10-21T14:00:00+02:00",
+    "endDate": "2026-10-21T17:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Centre Équestre du Blanc",
+    "address": "Route de Saint-Aigny",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6415,
+    "longitude": 1.0485,
+    "imageUrl": "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=800&q=80",
+    "isFree": false,
+    "priceMin": 25,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Poney Club Blancois"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000021",
+    "title_i18n": {
+      "fr": "Marché aux Puces et Antiquités sous les Tilleuls"
+    },
+    "description_i18n": {
+      "fr": "Rassemblement de brocanteurs et passionnés d’objets anciens au cœur du village de Fontgombault."
+    },
+    "category": "autre",
+    "startDate": "2026-11-01T08:00:00+01:00",
+    "endDate": "2026-11-01T17:00:00+01:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Esplanade de l’Abbaye",
+    "address": "Le Bourg",
+    "postalCode": "36220",
+    "city": "Fontgombault",
+    "latitude": 46.6712,
+    "longitude": 0.9854,
+    "imageUrl": null,
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Amis de Fontgombault"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000022",
+    "title_i18n": {
+      "fr": "Concert Chants Traditionnels et Polyphonies d’Europe"
+    },
+    "description_i18n": {
+      "fr": "Le chœur de chambre de l’Indre interprète un répertoire de musiques traditionnelles et sacrées."
+    },
+    "category": "culture",
+    "startDate": "2026-11-21T20:30:00+01:00",
+    "endDate": "2026-11-21T22:15:00+01:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Église Saint-Génitour",
+    "address": "Place Saint-Génitour",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6338,
+    "longitude": 1.0618,
+    "imageUrl": "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&w=800&q=80",
+    "isFree": false,
+    "priceMin": 10,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Chœur de l’Indre"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000023",
+    "title_i18n": {
+      "fr": "Soirée Contes et Légendes au Coin du Feu"
+    },
+    "description_i18n": {
+      "fr": "Veillée conte traditionnelle brennouse avec dégustation de cidre chaud et galettes berrichonnes."
+    },
+    "category": "fete",
+    "startDate": "2026-11-28T19:30:00+01:00",
+    "endDate": null,
+    "timezone": "Europe/Paris",
+    "venueName": "Salle Polyvalente de Ruffec",
+    "address": "Place de la Mairie",
+    "postalCode": "36300",
+    "city": "Ruffec",
+    "latitude": 46.6294,
+    "longitude": 1.1718,
+    "imageUrl": null,
+    "isFree": false,
+    "priceMin": 5,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Foyer Rural de Ruffec"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000024",
+    "title_i18n": {
+      "fr": "Bourse aux Plantes et Grainothèque Locale"
+    },
+    "description_i18n": {
+      "fr": "Échange gratuit de graines, boutures et conseils de jardinage au naturel en Brenne."
+    },
+    "category": "association",
+    "startDate": "2026-10-17T09:00:00+02:00",
+    "endDate": "2026-10-17T12:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Jardin Partagé du Blanc",
+    "address": "Chemin des Écoliers",
+    "postalCode": "36300",
+    "city": "Le Blanc",
+    "latitude": 46.6355,
+    "longitude": 1.0672,
+    "imageUrl": null,
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": null,
+    "source": "Jardiniers de la Brenne"
+  },
+  {
+    "id": "e1000000-0000-4000-8000-000000000025",
+    "title_i18n": {
+      "fr": "Dégustation et Foire aux Fromages de Chèvre Pouligny-Saint-Pierre"
+    },
+    "description_i18n": {
+      "fr": "Rencontre avec les producteurs AOP de pyramides de Pouligny-Saint-Pierre, dégustations et ateliers."
+    },
+    "category": "fete",
+    "startDate": "2026-10-24T10:00:00+02:00",
+    "endDate": "2026-10-24T18:00:00+02:00",
+    "timezone": "Europe/Paris",
+    "venueName": "Place de la Pyramide",
+    "address": "Centre Bourg",
+    "postalCode": "36300",
+    "city": "Pouligny-Saint-Pierre",
+    "latitude": 46.6812,
+    "longitude": 1.0365,
+    "imageUrl": "https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=800&q=80",
+    "isFree": true,
+    "priceMin": null,
+    "currency": "EUR",
+    "publicUrl": "https://www.fromage-pouligny-saint-pierre.fr",
+    "source": "Syndicat de Défense du Pouligny-Saint-Pierre"
+  }
+]

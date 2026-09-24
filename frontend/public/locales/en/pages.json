@@ -1,23 +1,33 @@
 {
   "home": {
     "title": "Welcome to Le Blanc & Moi",
-    "subtitle": "Discover events around Le Blanc"
+    "subtitle": "All events within a 20 km radius around Le Blanc (36300)",
+    "topTitle": "Highlights",
+    "topSubtitle": "The best events in the Brenne region",
+    "weekendTitle": "This Weekend",
+    "weekendSubtitle": "What to do this Saturday and Sunday",
+    "categoriesTitle": "Browse by Theme",
+    "recentTitle": "Latest Additions",
+    "viewAll": "View all events",
+    "viewMap": "Explore the map"
   },
   "map": {
     "title": "Event Map",
-    "placeholder": "The interactive map is coming soon."
+    "subtitle": "Easily locate activities and festivals around Le Blanc (20 km radius)",
+    "placeholder": "Interactive map displaying upcoming events."
   },
   "list": {
-    "title": "Event List",
-    "placeholder": "The event list is coming soon."
+    "title": "Complete Event Calendar",
+    "subtitle": "Find outings tailored to your dates and preferences",
+    "placeholder": "The complete list of events around Le Blanc."
   },
   "event": {
     "title": "Event Details",
-    "placeholder": "You are viewing event: {{id}}",
-    "notFound": "This event does not exist."
+    "placeholder": "Viewing event: {{id}}",
+    "notFound": "This event does not exist or has expired."
   },
   "about": {
-    "title": "About",
-    "description": "Community application listing events within a 20 km radius around Le Blanc."
+    "title": "About Le Blanc & Moi",
+    "description": "Independent civic and tourist application listing cultural, festive and sporting events within a 20 km radius of Le Blanc (Indre, France)."
   }
 }

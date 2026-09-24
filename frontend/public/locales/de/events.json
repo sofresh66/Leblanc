@@ -1,0 +1,33 @@
+{
+  "categories": {
+    "culture": "Kultur",
+    "sport": "Sport",
+    "fete": "Feste & Festivals",
+    "association": "Vereine & Gemeinschaft",
+    "autre": "Sonstiges"
+  },
+  "price": {
+    "free": "Kostenlos",
+    "from": "Ab {{price}}",
+    "paid": "Kostenpflichtig"
+  },
+  "distance": {
+    "km": "{{distance}} km"
+  },
+  "details": {
+    "directions": "Route berechnen",
+    "addToCalendar": "Zum Kalender hinzufügen",
+    "share": "Teilen",
+    "linkCopied": "Link in Zwischenablage kopiert!",
+    "viewWebsite": "Offizielle Website",
+    "source": "Quelle: {{source}}",
+    "fallbackNotice": "Diese Veranstaltungsdetails sind auf Französisch verfügbar."
+  },
+  "list": {
+    "loadMore": "Weitere Veranstaltungen laden",
+    "noMoreEvents": "Alle Veranstaltungen angezeigt",
+    "emptyTitle": "Keine Veranstaltungen gefunden",
+    "emptyDescription": "Keine Veranstaltungen entsprechen Ihren Filterkriterien. Erweitern Sie Ihre Suche.",
+    "resetFilters": "Filter zurücksetzen"
+  }
+}

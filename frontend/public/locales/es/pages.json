@@ -1,23 +1,33 @@
 {
   "home": {
     "title": "Bienvenido a Le Blanc & Moi",
-    "subtitle": "Descubra los eventos alrededor de Le Blanc"
+    "subtitle": "Todos los eventos en un radio de 20 km alrededor de Le Blanc (36300)",
+    "topTitle": "Destacados",
+    "topSubtitle": "Los mejores planes en la región de Brenne",
+    "weekendTitle": "Este fin de semana",
+    "weekendSubtitle": "Qué hacer este sábado y domingo",
+    "categoriesTitle": "Explorar por temáticas",
+    "recentTitle": "Últimas novedades",
+    "viewAll": "Ver lista completa",
+    "viewMap": "Explorar mapa"
   },
   "map": {
     "title": "Mapa de eventos",
-    "placeholder": "El mapa interactivo llegará pronto."
+    "subtitle": "Encuentre fácilmente actividades y festivales alrededor de Le Blanc",
+    "placeholder": "Mapa interactivo con los eventos actuales."
   },
   "list": {
-    "title": "Lista de eventos",
-    "placeholder": "La lista de eventos llegará pronto."
+    "title": "Calendario completo de eventos",
+    "subtitle": "Encuentre salidas según sus fechas e intereses",
+    "placeholder": "Lista completa de eventos alrededor de Le Blanc."
   },
   "event": {
     "title": "Detalles del evento",
-    "placeholder": "Está consultando el evento: {{id}}",
-    "notFound": "Este evento no existe."
+    "placeholder": "Consultando el evento: {{id}}",
+    "notFound": "Este evento no existe o ha expirado."
   },
   "about": {
-    "title": "Acerca de",
-    "description": "Aplicación comunitaria que enumera eventos en un radio de 20 km alrededor de Le Blanc."
+    "title": "Acerca de Le Blanc & Moi",
+    "description": "Aplicación ciudadana y turística independiente que recopila eventos en un radio de 20 km alrededor de Le Blanc."
   }
 }

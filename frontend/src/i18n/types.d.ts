@@ -43,11 +43,83 @@ export interface SeoResource {
 }
 
 export interface PagesResource {
-  home: { title: string; subtitle: string };
-  map: { title: string; placeholder: string };
-  list: { title: string; placeholder: string };
+  home: {
+    title: string;
+    subtitle: string;
+    topTitle: string;
+    topSubtitle: string;
+    weekendTitle: string;
+    weekendSubtitle: string;
+    categoriesTitle: string;
+    recentTitle: string;
+    viewAll: string;
+    viewMap: string;
+  };
+  map: { title: string; subtitle?: string; placeholder: string };
+  list: { title: string; subtitle?: string; placeholder: string };
   event: { title: string; placeholder: string; notFound: string };
   about: { title: string; description: string };
+}
+
+export interface EventsResource {
+  categories: {
+    culture: string;
+    sport: string;
+    fete: string;
+    association: string;
+    autre: string;
+  };
+  price: {
+    free: string;
+    from: string;
+    paid: string;
+  };
+  distance: {
+    km: string;
+  };
+  details: {
+    directions: string;
+    addToCalendar: string;
+    share: string;
+    linkCopied: string;
+    viewWebsite: string;
+    source: string;
+    fallbackNotice: string;
+  };
+  list: {
+    loadMore: string;
+    noMoreEvents: string;
+    emptyTitle: string;
+    emptyDescription: string;
+    resetFilters: string;
+  };
+}
+
+export interface FiltersResource {
+  title: string;
+  dates: {
+    label: string;
+    from: string;
+    to: string;
+  };
+  categories: {
+    label: string;
+    all: string;
+  };
+  price: {
+    label: string;
+    all: string;
+    freeOnly: string;
+    paidOnly: string;
+  };
+  distance: {
+    label: string;
+    value: string;
+  };
+  actions: {
+    reset: string;
+    apply: string;
+  };
 }
 
 declare module 'react-i18next' {
@@ -59,6 +131,8 @@ declare module 'react-i18next' {
       errors: ErrorsResource;
       seo: SeoResource;
       pages: PagesResource;
+      events: EventsResource;
+      filters: FiltersResource;
     };
   }
 }

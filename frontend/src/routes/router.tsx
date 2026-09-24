@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, useSearchParams } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useLocation, useSearchParams } from 'react-router-dom';
 import i18n, { i18nReady } from '../i18n/config';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../i18n/languages';
 import { ROUTE_SEGMENTS, detectPreferredLanguage } from './routeMapping';
@@ -18,11 +18,14 @@ import { NotFoundPage } from '../pages/NotFoundPage';
  * 3. navigator.languages
  * 4. navigator.language
  * 5. Fallback 'fr'
+ *
+ * Conserve la query string et le hash éventuels (ex: /?category=sport -> /fr?category=sport).
  */
 function RootRedirect() {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const targetLang = detectPreferredLanguage(searchParams);
-  return <Navigate to={`/${targetLang}`} replace />;
+  return <Navigate to={`/${targetLang}${location.search}${location.hash}`} replace />;
 }
 
 /**

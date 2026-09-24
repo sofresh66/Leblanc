@@ -1,23 +1,33 @@
 {
   "home": {
     "title": "Bienvenue au Blanc & Moi",
-    "subtitle": "Découvrez les événements autour du Blanc"
+    "subtitle": "Tous les événements dans un rayon de 20 km autour du Blanc (36300)",
+    "topTitle": "Top du moment",
+    "topSubtitle": "Les rendez-vous incontournables de la Brenne",
+    "weekendTitle": "Ce week-end",
+    "weekendSubtitle": "Les événements à ne pas manquer samedi et dimanche",
+    "categoriesTitle": "Explorer par thématique",
+    "recentTitle": "Derniers ajouts",
+    "viewAll": "Voir toute la liste",
+    "viewMap": "Explorer la carte"
   },
   "map": {
     "title": "Carte des événements",
-    "placeholder": "La carte interactive arrive bientôt."
+    "subtitle": "Localisez facilement les animations et festivités autour du Blanc (rayon 20 km)",
+    "placeholder": "La carte interactive affiche les événements du moment."
   },
   "list": {
-    "title": "Liste des événements",
-    "placeholder": "La liste des événements arrive bientôt."
+    "title": "Agenda complet des événements",
+    "subtitle": "Trouvez une sortie selon vos dates, thématiques et envies",
+    "placeholder": "La liste complète des événements autour du Blanc."
   },
   "event": {
-    "title": "Détails de l'événement",
-    "placeholder": "Vous consultez l'événement : {{id}}",
-    "notFound": "Cet événement n'existe pas."
+    "title": "Détails de l’événement",
+    "placeholder": "Vous consultez l’événement : {{id}}",
+    "notFound": "Cet événement n’existe pas ou a expiré."
   },
   "about": {
-    "title": "À propos",
-    "description": "Application citoyenne recensant les événements dans un rayon de 20 km autour du Blanc."
+    "title": "À propos de Le Blanc & Moi",
+    "description": "Application citoyenne et touristique indépendante recensant les événements culturels, festifs et sportifs dans un rayon de 20 km autour du Blanc (Indre, 36300)."
   }
 }
