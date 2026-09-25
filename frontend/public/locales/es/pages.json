@@ -14,7 +14,8 @@
   "map": {
     "title": "Mapa de eventos",
     "subtitle": "Encuentre fácilmente actividades y festivales alrededor de Le Blanc",
-    "placeholder": "Mapa interactivo con los eventos actuales."
+    "placeholder": "Mapa interactivo con los eventos actuales.",
+    "limitBanner": "{{count}} eventos mostrados (límite del mapa). Utilice los filtros para afinar la búsqueda."
   },
   "list": {
     "title": "Calendario completo de eventos",

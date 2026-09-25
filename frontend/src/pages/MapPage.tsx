@@ -1,12 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import type { Event, EventCategory, EventListParamsInput } from '@leblanc/shared';
+import {
+  SEARCH_RADIUS_METERS,
+  type Event,
+  type EventCategory,
+  type EventListParamsInput,
+} from '@leblanc/shared';
+import { ErrorState } from '../components/common/ErrorState';
 import { EventFilters } from '../components/events/EventFilters';
 import { EventMap } from '../components/map/EventMap';
-import { useEvents } from '../hooks/useEvents';
+import { resolveMaxDistanceMeters, useEvents } from '../hooks/useEvents';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
+
+/** Nombre maximal d'événements demandé à l'API pour l'affichage cartographique. */
+const MAP_LIMIT = 50;
 
 export const MapPage: React.FC = () => {
   const { t, i18n } = useTranslation(['pages', 'events', 'common']);
@@ -19,11 +28,11 @@ export const MapPage: React.FC = () => {
     const to = searchParams.get('to') || undefined;
     const category = searchParams.get('category');
     const isFreeParam = searchParams.get('isFree');
-    const distParam = searchParams.get('maxDistanceKm');
+    const maxDistanceMeters = resolveMaxDistanceMeters(searchParams);
 
     return {
       lang: currentLang,
-      limit: 50,
+      limit: MAP_LIMIT,
       ...(from ? { from } : {}),
       ...(to ? { to } : {}),
       ...(category && category !== 'all' ? { categories: [category as EventCategory] } : {}),
@@ -32,12 +41,16 @@ export const MapPage: React.FC = () => {
         : isFreeParam === 'false'
           ? { isFree: false }
           : {}),
-      ...(distParam && Number(distParam) < 20 ? { maxDistance: Number(distParam) * 1000 } : {}),
+      ...(maxDistanceMeters !== undefined && maxDistanceMeters < SEARCH_RADIUS_METERS
+        ? { maxDistance: maxDistanceMeters }
+        : {}),
     };
   }, [searchParams, currentLang]);
 
-  const { data, isLoading } = useEvents(filters);
+  const { data, isLoading, isError, error, refetch } = useEvents(filters);
   const events: Event[] = data?.items ?? [];
+  // La carte ne gère pas le curseur : au-delà de la limite, on invite à affiner les filtres.
+  const isAtMapLimit = events.length >= MAP_LIMIT;
 
   return (
     <div className="space-y-6 pb-12">
@@ -91,8 +104,19 @@ export const MapPage: React.FC = () => {
           </div>
         </aside>
 
-        <div className="lg:col-span-3">
-          {isLoading && events.length === 0 ? (
+        <div className="lg:col-span-3 space-y-3">
+          {isAtMapLimit && !isError && (
+            <p
+              role="status"
+              className="text-xs sm:text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5"
+            >
+              {t('map.limitBanner', { ns: 'pages', count: events.length })}
+            </p>
+          )}
+
+          {isError ? (
+            <ErrorState error={error} onRetry={() => void refetch()} />
+          ) : isLoading && events.length === 0 ? (
             <div className="h-[500px] lg:h-[650px] w-full bg-gray-200 rounded-2xl animate-pulse flex items-center justify-center text-gray-500 text-sm">
               {t('actions.loading', { ns: 'common' })}
             </div>

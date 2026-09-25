@@ -1,5 +1,8 @@
 {
   "generic": "Une erreur est survenue",
+  "network": "Vérifiez votre connexion internet puis réessayez.",
+  "timeout": "Le service met trop de temps à répondre. Réessayez dans quelques instants.",
+  "serviceWakingUp": "Le service se réveille, réessayez dans quelques secondes.",
   "notFound": {
     "title": "Page introuvable",
     "description": "La page que vous cherchez n'existe pas."

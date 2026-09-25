@@ -27,6 +27,9 @@ export interface NavResource {
 
 export interface ErrorsResource {
   generic: string;
+  network: string;
+  timeout: string;
+  serviceWakingUp: string;
   notFound: {
     title: string;
     description: string;
@@ -55,7 +58,7 @@ export interface PagesResource {
     viewAll: string;
     viewMap: string;
   };
-  map: { title: string; subtitle?: string; placeholder: string };
+  map: { title: string; subtitle?: string; placeholder: string; limitBanner: string };
   list: { title: string; subtitle?: string; placeholder: string };
   event: { title: string; placeholder: string; notFound: string };
   about: { title: string; description: string };
@@ -84,6 +87,10 @@ export interface EventsResource {
     linkCopied: string;
     viewWebsite: string;
     source: string;
+    location: string;
+    occurrencesTitle: string;
+    occurrencePast: string;
+    occurrenceFuture: string;
     fallbackNotice: string;
   };
   list: {

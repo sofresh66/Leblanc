@@ -21,6 +21,10 @@
     "linkCopied": "Link copied to clipboard!",
     "viewWebsite": "Official Website",
     "source": "Source: {{source}}",
+    "location": "Location",
+    "occurrencesTitle": "All dates",
+    "occurrencePast": "Past",
+    "occurrenceFuture": "Upcoming",
     "fallbackNotice": "This event details are presented in French."
   },
   "list": {

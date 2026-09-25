@@ -66,4 +66,40 @@ describe('ics utility', () => {
     expect(ics).toContain('DTSTART:20261018T183000Z');
     expect(ics).toContain('DTEND:20261018T203000Z');
   });
+
+  it('omet le champ LOCATION quand tous les champs d’adresse sont null', () => {
+    const eventWithoutLocation: Event = {
+      ...mockEvent,
+      venueName: null,
+      address: null,
+      postalCode: null,
+      city: null,
+    };
+
+    const ics = generateIcsContent(eventWithoutLocation);
+    expect(ics).not.toContain('LOCATION:');
+  });
+
+  it('réduit le champ LOCATION au lieu quand l’adresse et le code postal sont null', () => {
+    const eventWithVenueOnly: Event = {
+      ...mockEvent,
+      address: null,
+      postalCode: null,
+      city: null,
+    };
+
+    const ics = generateIcsContent(eventWithVenueOnly);
+    expect(ics).toContain('LOCATION:Guinguette des Rives\r\n');
+    expect(ics).not.toContain('LOCATION:Guinguette des Rives,');
+  });
+
+  it('ignore le lieu null en conservant l’adresse et la ville', () => {
+    const eventWithoutVenue: Event = {
+      ...mockEvent,
+      venueName: null,
+    };
+
+    const ics = generateIcsContent(eventWithoutVenue);
+    expect(ics).toContain('LOCATION:Quai de la Creuse, 36300 Le Blanc');
+  });
 });

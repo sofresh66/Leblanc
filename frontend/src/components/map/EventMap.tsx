@@ -7,6 +7,7 @@ import type { Event } from '@leblanc/shared';
 import { LE_BLANC_CENTER, SEARCH_RADIUS_METERS } from '@leblanc/shared';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../../i18n/languages';
 import { buildLocalizedPath } from '../../routes/routeMapping';
+import { formatVenueCity } from '../../utils/eventLocation';
 
 // NOTE : Pour un trafic important (>10k vues/jour), basculer vers un 
 // fournisseur de tuiles dédié (Stadia Maps, MapTiler) ou auto-héberger 
@@ -104,6 +105,8 @@ export const EventMap: React.FC<EventMapProps> = ({
         {/* Marqueurs d'événements */}
         {events.map((event) => {
           const detailUrl = buildLocalizedPath('events', currentLang, event.id);
+          // Lieu et ville sont nullables : la ligne est masquée si les deux sont absents.
+          const venueCity = formatVenueCity(event);
 
           return (
             <Marker
@@ -135,9 +138,7 @@ export const EventMap: React.FC<EventMapProps> = ({
                     {event.title}
                   </h4>
 
-                  <p className="text-xs text-gray-600 truncate">
-                    {event.venueName ? `${event.venueName}, ${event.city}` : event.city}
-                  </p>
+                  {venueCity && <p className="text-xs text-gray-600 truncate">{venueCity}</p>}
 
                   <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
                     <span className="text-xs font-semibold text-gray-900">

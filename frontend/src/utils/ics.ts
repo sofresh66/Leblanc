@@ -1,4 +1,5 @@
 import type { Event } from '@leblanc/shared';
+import { formatFullAddress } from './eventLocation';
 
 function formatDateToIcsUtc(isoString: string): string {
   const d = new Date(isoString);
@@ -20,7 +21,9 @@ export function generateIcsContent(event: Event): string {
     ? formatDateToIcsUtc(event.endDate)
     : formatDateToIcsUtc(new Date(new Date(event.startDate).getTime() + 2 * 3600 * 1000).toISOString());
 
-  const location = `${event.venueName}, ${event.address}, ${event.postalCode} ${event.city}`;
+  // L'adresse peut être partiellement nulle : le champ LOCATION est alors réduit
+  // (lieu seul) ou omis entièrement plutôt que rempli de valeurs inventées.
+  const location = formatFullAddress(event);
   const cleanSummary = event.title.replace(/\n/g, ' ').trim();
   const cleanDescription = event.description.replace(/\n/g, '\\n').trim();
 
@@ -37,7 +40,7 @@ export function generateIcsContent(event: Event): string {
     `DTEND:${dtEnd}`,
     `SUMMARY:${cleanSummary}`,
     `DESCRIPTION:${cleanDescription}`,
-    `LOCATION:${location}`,
+    ...(location ? [`LOCATION:${location}`] : []),
     ...(event.publicUrl ? [`URL:${event.publicUrl}`] : []),
     'END:VEVENT',
     'END:VCALENDAR',

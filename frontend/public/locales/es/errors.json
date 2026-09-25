@@ -1,5 +1,8 @@
 {
   "generic": "Ocurrió un error",
+  "network": "Compruebe su conexión a internet e inténtelo de nuevo.",
+  "timeout": "El servicio tarda demasiado en responder. Inténtelo de nuevo en unos instantes.",
+  "serviceWakingUp": "El servicio se está reactivando, inténtelo de nuevo en unos segundos.",
   "notFound": {
     "title": "Página no encontrada",
     "description": "La página que busca no existe."

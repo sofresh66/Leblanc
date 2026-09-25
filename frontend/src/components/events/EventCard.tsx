@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { Event } from '@leblanc/shared';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../../i18n/languages';
 import { buildLocalizedPath } from '../../routes/routeMapping';
+import { formatVenueCity } from '../../utils/eventLocation';
 
 export interface EventCardProps {
   event: Event;
@@ -62,6 +63,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
     priceText = t('price.paid', { ns: 'events' });
   }
 
+  // Lieu et ville peuvent être nuls : aucun texte n'est affiché si les deux manquent.
+  const venueCity = formatVenueCity(event);
+
   // Category color accents
   const categoryBadgeColors: Record<string, string> = {
     culture: 'bg-creuse-100 text-creuse-800 border-creuse-200',
@@ -103,9 +107,11 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <span className="text-xs font-medium text-brenne-800 tracking-wide uppercase">
-              {event.city}
-            </span>
+            {event.city && (
+              <span className="text-xs font-medium text-brenne-800 tracking-wide uppercase">
+                {event.city}
+              </span>
+            )}
           </div>
         )}
 
@@ -164,13 +170,18 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
 
         {/* Footer info: Venue & City & Action */}
         <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 mt-auto">
-          <span className="flex items-center gap-1 truncate font-medium text-gray-700">
-            <svg className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span className="truncate">{event.venueName ? `${event.venueName}, ${event.city}` : event.city}</span>
-          </span>
+          {venueCity ? (
+            <span className="flex items-center gap-1 truncate font-medium text-gray-700">
+              <svg className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className="truncate">{venueCity}</span>
+            </span>
+          ) : (
+            // Aucune adresse disponible : on conserve l'alignement du lien d'action.
+            <span aria-hidden="true" />
+          )}
 
           <Link
             to={detailUrl}

@@ -1,5 +1,8 @@
 {
   "generic": "Ein Fehler ist aufgetreten",
+  "network": "Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+  "timeout": "Der Dienst antwortet zu langsam. Versuchen Sie es gleich noch einmal.",
+  "serviceWakingUp": "Der Dienst wacht gerade auf, versuchen Sie es in wenigen Sekunden erneut.",
   "notFound": {
     "title": "Seite nicht gefunden",
     "description": "Die gesuchte Seite existiert nicht."

@@ -14,7 +14,8 @@
   "map": {
     "title": "Carte des événements",
     "subtitle": "Localisez facilement les animations et festivités autour du Blanc (rayon 20 km)",
-    "placeholder": "La carte interactive affiche les événements du moment."
+    "placeholder": "La carte interactive affiche les événements du moment.",
+    "limitBanner": "{{count}} événements affichés (limite de la carte). Utilisez les filtres pour affiner."
   },
   "list": {
     "title": "Agenda complet des événements",

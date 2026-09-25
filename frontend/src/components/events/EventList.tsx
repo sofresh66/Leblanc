@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { Event, EventListParamsInput } from '@leblanc/shared';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../../i18n/languages';
 import { useInfiniteEvents } from '../../hooks/useEvents';
+import { ErrorState } from '../common/ErrorState';
 import { EventCard } from './EventCard';
 
 export interface EventListProps {
@@ -25,7 +26,7 @@ export const EventList: React.FC<EventListProps> = ({
   onResetFilters,
   hidePagination = false,
 }) => {
-  const { t, i18n } = useTranslation(['events', 'common', 'errors']);
+  const { t, i18n } = useTranslation(['events', 'common']);
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
 
   const effectiveFilters: Omit<EventListParamsInput, 'cursor'> = propFilters ?? { lang: currentLang };
@@ -73,41 +74,7 @@ export const EventList: React.FC<EventListProps> = ({
 
   // État d'erreur
   if (isError) {
-    return (
-      <div
-        role="alert"
-        className="p-8 text-center bg-red-50 border border-red-200 rounded-2xl max-w-xl mx-auto my-8"
-      >
-        <svg
-          className="w-12 h-12 text-red-500 mx-auto mb-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
-        </svg>
-        <h3 className="text-lg font-bold text-red-900 mb-2">
-          {t('generic', { ns: 'errors' })}
-        </h3>
-        {error && <p className="text-sm text-red-700 mb-4">{error.message}</p>}
-        <button
-          type="button"
-          onClick={() => query.refetch()}
-          className="btn-primary inline-flex items-center gap-2"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          {t('actions.retry', { ns: 'common' })}
-        </button>
-      </div>
-    );
+    return <ErrorState error={error} onRetry={() => void query.refetch()} />;
   }
 
   // État vide

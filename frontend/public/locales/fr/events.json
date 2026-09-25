@@ -21,6 +21,10 @@
     "linkCopied": "Lien copié dans le presse-papier !",
     "viewWebsite": "Site web officiel",
     "source": "Source : {{source}}",
+    "location": "Lieu",
+    "occurrencesTitle": "Toutes les dates",
+    "occurrencePast": "Passée",
+    "occurrenceFuture": "À venir",
     "fallbackNotice": "Cet événement est présenté en français."
   },
   "list": {

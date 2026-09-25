@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { CATEGORIES, type Event } from '@leblanc/shared';
 import { useEvents } from '../hooks/useEvents';
 import { EventCard } from '../components/events/EventCard';
+import { ErrorState } from '../components/common/ErrorState';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
 
@@ -11,7 +12,7 @@ export const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation(['pages', 'events', 'common', 'nav']);
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
 
-  const { data, isLoading } = useEvents({
+  const { data, isLoading, isError, error, refetch } = useEvents({
     lang: currentLang,
     limit: 15,
   });
@@ -122,7 +123,9 @@ export const HomePage: React.FC = () => {
           </Link>
         </div>
 
-        {isLoading ? (
+        {isError ? (
+          <ErrorState error={error} onRetry={() => void refetch()} />
+        ) : isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="h-80 bg-gray-200 rounded-xl" />

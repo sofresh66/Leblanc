@@ -4,7 +4,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { CATEGORIES, type EventCategory, type EventListParamsInput } from '@leblanc/shared';
+import {
+  CATEGORIES,
+  SEARCH_RADIUS_METERS,
+  type EventCategory,
+  type EventListParamsInput,
+} from '@leblanc/shared';
+import { resolveMaxDistanceMeters } from '../../hooks/useEvents';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../../i18n/languages';
 
 const FilterFormSchema = z.object({
@@ -45,8 +51,13 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
     const isFreeParam = searchParams.get('isFree');
     const priceType: 'all' | 'free' | 'paid' =
       isFreeParam === 'true' ? 'free' : isFreeParam === 'false' ? 'paid' : 'all';
-    const distParam = searchParams.get('maxDistanceKm');
-    const maxDistanceKm = distParam ? Math.min(20, Math.max(1, Number(distParam))) : 20;
+    // L'URL porte la distance en mètres (`maxDistance`) ; l'ancien paramètre en kilomètres
+    // (`maxDistanceKm`) reste accepté, et le curseur affiche des kilomètres (1 à 20 km).
+    const maxDistanceMeters = resolveMaxDistanceMeters(searchParams);
+    const maxDistanceKm =
+      maxDistanceMeters !== undefined
+        ? Math.min(20, Math.max(1, Math.round(maxDistanceMeters / 1000)))
+        : 20;
 
     return {
       from,
@@ -94,13 +105,17 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
       newParams.delete('isFree');
     }
 
-    if (data.maxDistanceKm < 20) {
-      newParams.set('maxDistanceKm', String(data.maxDistanceKm));
+    const maxDistanceMeters = data.maxDistanceKm * 1000;
+    if (maxDistanceMeters < SEARCH_RADIUS_METERS) {
+      newParams.set('maxDistance', String(maxDistanceMeters));
     } else {
-      newParams.delete('maxDistanceKm');
+      newParams.delete('maxDistance');
     }
+    // L'ancien paramètre en kilomètres n'est plus écrit (rétrocompatibilité en lecture seule).
+    newParams.delete('maxDistanceKm');
 
-    setSearchParams(newParams);
+    // `replace: true` évite d'empiler une entrée d'historique à chaque application de filtres.
+    setSearchParams(newParams, { replace: true });
 
     if (onFiltersChange) {
       const output: Omit<EventListParamsInput, 'cursor'> = {
@@ -113,7 +128,9 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
           : data.priceType === 'paid'
             ? { isFree: false }
             : {}),
-        ...(data.maxDistanceKm < 20 ? { maxDistance: data.maxDistanceKm * 1000 } : {}),
+        ...(data.maxDistanceKm * 1000 < SEARCH_RADIUS_METERS
+          ? { maxDistance: data.maxDistanceKm * 1000 }
+          : {}),
       };
       onFiltersChange(output);
     }

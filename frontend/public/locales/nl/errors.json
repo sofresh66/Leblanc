@@ -1,5 +1,8 @@
 {
   "generic": "Er is een fout opgetreden",
+  "network": "Controleer uw internetverbinding en probeer het opnieuw.",
+  "timeout": "De service reageert te langzaam. Probeer het zo meteen opnieuw.",
+  "serviceWakingUp": "De service is aan het opstarten, probeer het over enkele seconden opnieuw.",
   "notFound": {
     "title": "Pagina niet gevonden",
     "description": "De pagina die u zoekt bestaat niet."

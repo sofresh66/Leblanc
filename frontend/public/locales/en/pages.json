@@ -14,7 +14,8 @@
   "map": {
     "title": "Event Map",
     "subtitle": "Easily locate activities and festivals around Le Blanc (20 km radius)",
-    "placeholder": "Interactive map displaying upcoming events."
+    "placeholder": "Interactive map displaying upcoming events.",
+    "limitBanner": "{{count}} events displayed (map limit). Use the filters to narrow the results."
   },
   "list": {
     "title": "Complete Event Calendar",

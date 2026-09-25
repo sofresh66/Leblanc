@@ -1,9 +1,14 @@
 import React, { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import type { EventCategory, EventListParamsInput } from '@leblanc/shared';
+import {
+  SEARCH_RADIUS_METERS,
+  type EventCategory,
+  type EventListParamsInput,
+} from '@leblanc/shared';
 import { EventFilters } from '../components/events/EventFilters';
 import { EventList } from '../components/events/EventList';
+import { resolveMaxDistanceMeters } from '../hooks/useEvents';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 
 export const ListPage: React.FC = () => {
@@ -16,7 +21,7 @@ export const ListPage: React.FC = () => {
     const to = searchParams.get('to') || undefined;
     const category = searchParams.get('category');
     const isFreeParam = searchParams.get('isFree');
-    const distParam = searchParams.get('maxDistanceKm');
+    const maxDistanceMeters = resolveMaxDistanceMeters(searchParams);
 
     return {
       lang: currentLang,
@@ -28,12 +33,15 @@ export const ListPage: React.FC = () => {
         : isFreeParam === 'false'
           ? { isFree: false }
           : {}),
-      ...(distParam && Number(distParam) < 20 ? { maxDistance: Number(distParam) * 1000 } : {}),
+      ...(maxDistanceMeters !== undefined && maxDistanceMeters < SEARCH_RADIUS_METERS
+        ? { maxDistance: maxDistanceMeters }
+        : {}),
     };
   }, [searchParams, currentLang]);
 
   const handleResetFilters = () => {
-    setSearchParams(new URLSearchParams());
+    // `replace: true` évite d'empiler une entrée d'historique à chaque changement de filtre.
+    setSearchParams(new URLSearchParams(), { replace: true });
   };
 
   return (

@@ -14,7 +14,8 @@
   "map": {
     "title": "Veranstaltungskarte",
     "subtitle": "Finden Sie Aktivitäten und Feste im 20-km-Umkreis",
-    "placeholder": "Interaktive Karte der aktuellen Veranstaltungen."
+    "placeholder": "Interaktive Karte der aktuellen Veranstaltungen.",
+    "limitBanner": "{{count}} Veranstaltungen angezeigt (Kartenlimit). Nutzen Sie die Filter, um die Auswahl einzugrenzen."
   },
   "list": {
     "title": "Vollständiger Veranstaltungskalender",

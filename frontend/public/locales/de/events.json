@@ -21,6 +21,10 @@
     "linkCopied": "Link in Zwischenablage kopiert!",
     "viewWebsite": "Offizielle Website",
     "source": "Quelle: {{source}}",
+    "location": "Ort",
+    "occurrencesTitle": "Alle Termine",
+    "occurrencePast": "Vergangen",
+    "occurrenceFuture": "Bevorstehend",
     "fallbackNotice": "Diese Veranstaltungsdetails sind auf Französisch verfügbar."
   },
   "list": {

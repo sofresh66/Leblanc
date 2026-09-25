@@ -21,6 +21,10 @@
     "linkCopied": "Link copiato negli appunti!",
     "viewWebsite": "Sito ufficiale",
     "source": "Fonte: {{source}}",
+    "location": "Luogo",
+    "occurrencesTitle": "Tutte le date",
+    "occurrencePast": "Passata",
+    "occurrenceFuture": "In programma",
     "fallbackNotice": "I dettagli dell’evento sono presentati in francese."
   },
   "list": {

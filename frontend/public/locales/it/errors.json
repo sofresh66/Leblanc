@@ -1,5 +1,8 @@
 {
   "generic": "Si è verificato un errore",
+  "network": "Controlla la tua connessione a internet e riprova.",
+  "timeout": "Il servizio impiega troppo tempo a rispondere. Riprova tra qualche istante.",
+  "serviceWakingUp": "Il servizio si sta riattivando, riprova tra qualche secondo.",
   "notFound": {
     "title": "Pagina non trovata",
     "description": "La pagina che stai cercando non esiste."

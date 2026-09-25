@@ -14,7 +14,8 @@
   "map": {
     "title": "Evenementenkaart",
     "subtitle": "Vind gemakkelijk activiteiten en feesten rond Le Blanc",
-    "placeholder": "Interactieve kaart met actuele evenementen."
+    "placeholder": "Interactieve kaart met actuele evenementen.",
+    "limitBanner": "{{count}} evenementen weergegeven (kaartlimiet). Gebruik de filters om de resultaten te verfijnen."
   },
   "list": {
     "title": "Volledige evenementenkalender",

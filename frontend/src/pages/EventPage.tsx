@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ErrorState } from '../components/common/ErrorState';
 import { useEvent } from '../hooks/useEvent';
+import { useLocalizedDate } from '../hooks/useLocalizedDate';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
+import { formatVenueCity } from '../utils/eventLocation';
 import { downloadIcsFile } from '../utils/ics';
 
 export const EventPage: React.FC = () => {
@@ -11,9 +14,10 @@ export const EventPage: React.FC = () => {
   const { t, i18n } = useTranslation(['events', 'pages', 'common', 'errors']);
   const [copied, setCopied] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const { formatDate } = useLocalizedDate();
 
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
-  const { data: event, isLoading, isError } = useEvent(id, currentLang);
+  const { data: event, isLoading, isError, error, refetch } = useEvent(id, currentLang);
 
   const handleShare = async () => {
     if (!event) return;
@@ -63,8 +67,13 @@ export const EventPage: React.FC = () => {
     );
   }
 
-  // Événement introuvable ou erreur
-  if (isError || !event) {
+  // Erreur d'appel API (réseau, cold start Neon, 5xx) : état d'erreur avec bouton Réessayer
+  if (isError) {
+    return <ErrorState error={error} onRetry={() => void refetch()} />;
+  }
+
+  // Événement introuvable (identifiant inconnu ou 404 retourné par l'API)
+  if (!event) {
     return (
       <div className="text-center py-20 px-4 max-w-lg mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm my-8">
         <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -148,6 +157,8 @@ export const EventPage: React.FC = () => {
   const badgeClass = categoryBadgeColors[event.category] || categoryBadgeColors.autre;
 
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${event.latitude},${event.longitude}`;
+  // Lieu et ville sont nullables : la ligne est masquée si les deux sont absents.
+  const venueCity = formatVenueCity(event);
 
   return (
     <article className="max-w-4xl mx-auto space-y-8">
@@ -205,13 +216,15 @@ export const EventPage: React.FC = () => {
               <span>{formattedDate}</span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-brenne-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>{event.venueName ? `${event.venueName}, ${event.city}` : event.city}</span>
-            </div>
+            {venueCity && (
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-brenne-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>{venueCity}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -311,13 +324,17 @@ export const EventPage: React.FC = () => {
           {/* Bloc Lieu & Distance */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-3">
             <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              {t('distance.label', { ns: 'filters' })}
+              {t('details.location', { ns: 'events' })}
             </span>
-            <div className="text-sm text-gray-800 space-y-1">
-              <p className="font-bold text-gray-900">{event.venueName}</p>
-              <p>{event.address}</p>
-              <p>{event.postalCode} {event.city}</p>
-            </div>
+            {(event.venueName || event.address || event.postalCode || event.city) && (
+              <div className="text-sm text-gray-800 space-y-1">
+                {event.venueName && <p className="font-bold text-gray-900">{event.venueName}</p>}
+                {event.address && <p>{event.address}</p>}
+                {(event.postalCode || event.city) && (
+                  <p>{[event.postalCode, event.city].filter(Boolean).join(' ')}</p>
+                )}
+              </div>
+            )}
             {distanceKm !== null && (
               <div className="pt-2 border-t border-gray-100 flex items-center gap-1.5 text-xs text-brenne-700 font-semibold">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -328,6 +345,42 @@ export const EventPage: React.FC = () => {
               </div>
             )}
           </div>
+          <section aria-label={t('details.occurrencesTitle', { ns: 'events' })} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-3">
+            <h2 className="text-lg font-bold text-gray-900">{t('details.occurrencesTitle', { ns: 'events' })}</h2>
+            <ol className="space-y-2">
+              {event.occurrences.map((occurrence) => {
+                const isPast = new Date(occurrence.startDate).getTime() < Date.now();
+                const dateOptions: Intl.DateTimeFormatOptions = {
+                  dateStyle: 'full',
+                  timeZone: occurrence.timezone,
+                };
+                const timeOptions: Intl.DateTimeFormatOptions = {
+                  dateStyle: undefined,
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: occurrence.timezone,
+                };
+                const startDay = formatDate(occurrence.startDate, dateOptions);
+                const startTime = formatDate(occurrence.startDate, timeOptions);
+                const endDay = occurrence.endDate ? formatDate(occurrence.endDate, dateOptions) : null;
+                const endTime = occurrence.endDate ? formatDate(occurrence.endDate, timeOptions) : null;
+
+                return (
+                  <li key={occurrence.id} data-testid="event-occurrence" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
+                    <div className="text-sm text-gray-800">
+                      <time dateTime={occurrence.startDate} className="font-semibold capitalize">{startDay}</time>
+                      <span className="block text-gray-600">
+                        {startTime}{endTime ? ` – ${endDay !== startDay ? `${endDay} ` : ''}${endTime}` : ''}
+                      </span>
+                    </div>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-emerald-100 text-emerald-800'}`}>
+                      {t(isPast ? 'details.occurrencePast' : 'details.occurrenceFuture', { ns: 'events' })}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
         </div>
       </div>
     </article>
