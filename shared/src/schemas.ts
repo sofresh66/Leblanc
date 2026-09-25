@@ -39,7 +39,15 @@ export const RawEventSchema = z.object({
   city: z.string().nullable(),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
-  imageUrl: z.string().url().nullable(),
+  // URL absolue (http/https) OU chemin relatif commençant par / (assets servis
+  // depuis frontend/public, ex : /images/culture.jpg), OU null si pas d'image.
+  imageUrl: z
+    .string()
+    .refine((val) => val.startsWith('/') || /^https?:\/\//i.test(val), {
+      message:
+        'imageUrl doit être une URL complète (http/https) ou un chemin relatif commençant par /',
+    })
+    .nullable(),
   isFree: z.boolean(),
   priceMin: z.number().nonnegative().nullable(),
   currency: z.string().default(DEFAULT_CURRENCY),
