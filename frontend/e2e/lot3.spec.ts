@@ -1,10 +1,15 @@
 import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import type { Event } from '@leblanc/shared';
+import { discoverEvents } from './fixtures';
 
 const SCREENSHOTS_DIR = path.resolve('screenshots');
 
-test.beforeAll(() => {
+let realEvent: Event;
+
+test.beforeAll(async ({ request }) => {
+  realEvent = (await discoverEvents(request))[0]!;
   if (!fs.existsSync(SCREENSHOTS_DIR)) {
     fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
   }
@@ -45,7 +50,7 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
     const cardTitle = await firstCardLink.textContent();
 
     await firstCardLink.click();
-    await expect(page).toHaveURL(/\/fr\/evenements\/e1000000-/);
+    await expect(page).toHaveURL(new RegExp(`/fr/evenements/${realEvent.id}$`));
     if (cardTitle) {
       await expect(page.locator('h1')).toContainText(cardTitle.trim());
     }
@@ -90,7 +95,7 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
     await page.getByRole('button', { name: 'Appliquer' }).click();
 
     await expect(page).toHaveURL(/isFree=true/);
-    await expect(page).toHaveURL(/maxDistanceKm=10/);
+    await expect(page).toHaveURL(/maxDistance=10000/);
 
     const firstCard = page.locator('[data-testid^="event-card-"]').first();
     await expect(firstCard).toBeVisible();
@@ -110,11 +115,10 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
   });
 
   test('6. Page événement : affichage des détails et capture d’écran', async ({ page }) => {
-    await page.goto('/fr/evenements/e1000000-0000-4000-8000-000000000002');
+    await page.goto(`/fr/evenements/${realEvent.id}`);
 
-    await expect(page.locator('h1')).toContainText('Concert Classique : Nocturnes au Château Naillac');
-    await expect(page.locator('text=Récital de piano et violoncelle')).toBeVisible();
-    await expect(page.locator('text=Château Naillac').first()).toBeVisible();
+    await expect(page.locator('h1')).toContainText(realEvent.title);
+    await expect(page.getByTestId('event-occurrence').first()).toBeVisible();
 
     // Boutons d'actions principaux
     await expect(page.getByRole('link', { name: /Y aller/i })).toBeVisible();
@@ -128,7 +132,7 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
   });
 
   test('7. Page événement : bouton "Ajouter à mon agenda" génère bien le .ics', async ({ page }) => {
-    await page.goto('/fr/evenements/e1000000-0000-4000-8000-000000000002');
+    await page.goto(`/fr/evenements/${realEvent.id}`);
 
     const downloadPromise = page.waitForEvent('download');
     await page.getByRole('button', { name: /Ajouter à mon agenda/i }).click();

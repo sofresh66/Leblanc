@@ -1,10 +1,16 @@
 import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import { randomUUID } from 'node:crypto';
+import type { Event } from '@leblanc/shared';
+import { discoverEvents } from './fixtures';
 
 const SCREENSHOTS_DIR = path.resolve('screenshots');
 
-test.beforeAll(() => {
+let realEvent: Event;
+
+test.beforeAll(async ({ request }) => {
+  realEvent = (await discoverEvents(request))[0]!;
   if (!fs.existsSync(SCREENSHOTS_DIR)) {
     fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
   }
@@ -47,8 +53,8 @@ test.describe('Multilingual Routing and i18n', () => {
       { url: '/fr/carte', expectedText: 'Carte des événements' },
       { url: '/fr/liste', expectedText: 'Agenda complet des événements' },
       {
-        url: '/fr/evenements/e1000000-0000-4000-8000-000000000002',
-        expectedText: 'Concert Classique : Nocturnes au Château Naillac',
+        url: `/fr/evenements/${realEvent.id}`,
+        expectedText: realEvent.title_i18n.fr,
       },
       { url: '/fr/a-propos', expectedText: 'À propos' },
 
@@ -57,8 +63,8 @@ test.describe('Multilingual Routing and i18n', () => {
       { url: '/en/map', expectedText: 'Event Map' },
       { url: '/en/list', expectedText: 'Complete Event Calendar' },
       {
-        url: '/en/events/e1000000-0000-4000-8000-000000000002',
-        expectedText: 'Classical Concert: Nocturnes at Château Naillac',
+        url: `/en/events/${realEvent.id}`,
+        expectedText: realEvent.title_i18n.en ?? realEvent.title_i18n.fr,
       },
       { url: '/en/about', expectedText: 'About' },
 
@@ -67,8 +73,8 @@ test.describe('Multilingual Routing and i18n', () => {
       { url: '/es/mapa', expectedText: 'Mapa de eventos' },
       { url: '/es/lista', expectedText: 'Calendario completo de eventos' },
       {
-        url: '/es/eventos/e1000000-0000-4000-8000-000000000002',
-        expectedText: 'Concierto Clásico: Nocturnos en el Castillo Naillac',
+        url: `/es/eventos/${realEvent.id}`,
+        expectedText: realEvent.title_i18n.es ?? realEvent.title_i18n.fr,
       },
       { url: '/es/acerca-de', expectedText: 'Acerca de' },
 
@@ -77,8 +83,8 @@ test.describe('Multilingual Routing and i18n', () => {
       { url: '/de/karte', expectedText: 'Veranstaltungskarte' },
       { url: '/de/liste', expectedText: 'Vollständiger Veranstaltungskalender' },
       {
-        url: '/de/veranstaltungen/e1000000-0000-4000-8000-000000000002',
-        expectedText: 'Klassisches Konzert: Nachtmusik im Schloss Naillac',
+        url: `/de/veranstaltungen/${realEvent.id}`,
+        expectedText: realEvent.title_i18n.de ?? realEvent.title_i18n.fr,
       },
       { url: '/de/ueber-uns', expectedText: 'Über' },
 
@@ -87,8 +93,8 @@ test.describe('Multilingual Routing and i18n', () => {
       { url: '/it/mappa', expectedText: 'Mappa degli eventi' },
       { url: '/it/lista', expectedText: 'Calendario completo degli eventi' },
       {
-        url: '/it/eventi/e1000000-0000-4000-8000-000000000002',
-        expectedText: 'Concerto Classico: Notturni al Castello Naillac',
+        url: `/it/eventi/${realEvent.id}`,
+        expectedText: realEvent.title_i18n.it ?? realEvent.title_i18n.fr,
       },
       { url: '/it/chi-siamo', expectedText: 'Chi siamo' },
 
@@ -97,8 +103,8 @@ test.describe('Multilingual Routing and i18n', () => {
       { url: '/nl/kaart', expectedText: 'Evenementenkaart' },
       { url: '/nl/lijst', expectedText: 'Volledige evenementenkalender' },
       {
-        url: '/nl/evenementen/e1000000-0000-4000-8000-000000000002',
-        expectedText: 'Klassiek Concert: Nocturnes in Kasteel Naillac',
+        url: `/nl/evenementen/${realEvent.id}`,
+        expectedText: realEvent.title_i18n.nl ?? realEvent.title_i18n.fr,
       },
       { url: '/nl/over-ons', expectedText: 'Over' },
     ];
@@ -149,8 +155,9 @@ test.describe('Multilingual Routing and i18n', () => {
   test('7. Conservation des paramètres d’URL (ID événement) lors du changement de langue', async ({
     page,
   }) => {
-    await page.goto('/fr/evenements/abc123');
-    await expect(page).toHaveURL('/fr/evenements/abc123');
+    const missingId = randomUUID();
+    await page.goto(`/fr/evenements/${missingId}`);
+    await expect(page).toHaveURL(`/fr/evenements/${missingId}`);
     await expect(page.locator('main')).toContainText(
       'Cet événement n’existe pas ou a expiré.'
     );
@@ -158,7 +165,7 @@ test.describe('Multilingual Routing and i18n', () => {
     const switcher = page.getByTestId('language-switcher');
     await switcher.selectOption('en');
 
-    await expect(page).toHaveURL('/en/events/abc123');
+    await expect(page).toHaveURL(`/en/events/${missingId}`);
     await expect(page.locator('main')).toContainText(
       'This event does not exist or has expired.'
     );
