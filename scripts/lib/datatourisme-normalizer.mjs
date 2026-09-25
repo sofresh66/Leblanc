@@ -84,24 +84,45 @@ function categoryFor(types) {
 }
 
 function pricing(offers) {
-  const specs = (Array.isArray(offers) ? offers : []).flatMap((offer) =>
+  const free = (warning = null) => ({ isFree: true, priceMin: null, currency: 'EUR', warning });
+  if (offers == null || (Array.isArray(offers) && offers.length === 0)) return free();
+  if (!Array.isArray(offers)) return free('malformed_offers');
+
+  const specs = offers.flatMap((offer) =>
     Array.isArray(offer?.priceSpecification) ? offer.priceSpecification : [],
   );
-  const prices = specs
-    .flatMap((spec) => [spec?.price, ...(Array.isArray(spec?.minPrice) ? spec.minPrice : [])])
-    .filter((price) => typeof price === 'number' && Number.isFinite(price) && price >= 0);
-  const positive = prices.filter((price) => price > 0);
-  const hasFree = specs.some((spec) =>
-    spec?.hasEligiblePolicy?.some((policy) => policy?.key === 'Free'),
+  if (specs.length === 0) return free('malformed_price_specification');
+
+  const hasFreePolicy = specs.some(
+    (spec) =>
+      Array.isArray(spec?.hasEligiblePolicy) &&
+      spec.hasEligiblePolicy.some((policy) => policy?.key === 'Free'),
   );
-  const isFree =
-    positive.length === 0 &&
-    (hasFree || (prices.length > 0 && prices.every((price) => price === 0)));
-  return {
-    isFree,
-    priceMin: positive.length ? Math.min(...positive) : isFree ? 0 : null,
-    currency: 'EUR',
-  };
+  const prices = specs.flatMap((spec) => {
+    const values = [spec?.price, ...(Array.isArray(spec?.minPrice) ? spec.minPrice : [])];
+    const restricted =
+      Array.isArray(spec?.hasEligiblePolicy) &&
+      spec.hasEligiblePolicy.length > 0 &&
+      spec.hasEligiblePolicy.every(
+        (policy) => policy?.key !== 'BaseRateFullRate' && policy?.key !== 'FullRate',
+      );
+    return values
+      .filter((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0)
+      .map((value) => ({ value, restricted }));
+  });
+  const generalPositive = prices
+    .filter((price) => price.value > 0 && !price.restricted)
+    .map((price) => price.value);
+  if (generalPositive.length > 0) {
+    return {
+      isFree: false,
+      priceMin: Math.min(...prices.filter((price) => price.value > 0).map((price) => price.value)),
+      currency: 'EUR',
+      warning: null,
+    };
+  }
+  if (!hasFreePolicy && prices.length === 0) return free('malformed_price_specification');
+  return free();
 }
 
 function rawExcerpt(raw) {
@@ -179,7 +200,19 @@ export function normalizeDatatourismeEvent(raw) {
       .flatMap((contact) => (Array.isArray(contact?.homepage) ? contact.homepage : []))
       .map(httpUrl)
       .find(Boolean) ?? httpUrl(raw.uri);
-  const price = pricing(raw.offers);
+  const { warning, ...price } = pricing(raw.offers);
+  if (warning) {
+    console.warn(
+      JSON.stringify({
+        step: 'pricing_warning',
+        timestamp: new Date().toISOString(),
+        count: 1,
+        errors: 0,
+        code: warning,
+        externalId,
+      }),
+    );
+  }
   const normalizedTitle = titleI18n.fr
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')

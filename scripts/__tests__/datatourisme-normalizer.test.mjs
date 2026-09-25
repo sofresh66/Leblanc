@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { normalizeDatatourismeEvent } from '../lib/datatourisme-normalizer.mjs';
 
 const fixture = () => ({
@@ -33,6 +33,7 @@ describe('normaliseur DATAtourisme', () => {
     expect(result.event.titleI18n.en).toBe('Colour workshop');
     expect(result.occurrences[0].startsAt).toBe('2026-10-04T08:00:00.000Z');
     expect(result.occurrences[0].endsAt).toBe('2026-10-04T10:00:00.000Z');
+    expect(result.event.isFree).toBe(false);
     expect(result.event.priceMin).toBe(15);
     expect(result.event.imageUrl).toBe('https://example.com/image.jpg');
   });
@@ -52,7 +53,23 @@ describe('normaliseur DATAtourisme', () => {
     delete raw.offers;
     const result = normalizeDatatourismeEvent(raw);
     expect(result.event.imageUrl).toBeNull();
-    expect(result.event.isFree).toBe(false);
+    expect(result.event.isFree).toBe(true);
+    expect(result.event.priceMin).toBeNull();
+  });
+
+  it('traite offers null comme gratuit sans prix affiché', () => {
+    const raw = fixture();
+    raw.offers = null;
+    const result = normalizeDatatourismeEvent(raw);
+    expect(result.event.isFree).toBe(true);
+    expect(result.event.priceMin).toBeNull();
+  });
+
+  it('traite offers vide comme gratuit sans prix affiché', () => {
+    const raw = fixture();
+    raw.offers = [];
+    const result = normalizeDatatourismeEvent(raw);
+    expect(result.event.isFree).toBe(true);
     expect(result.event.priceMin).toBeNull();
   });
 
@@ -69,7 +86,53 @@ describe('normaliseur DATAtourisme', () => {
     raw.offers = [{ priceSpecification: [{ hasEligiblePolicy: [{ key: 'Free' }] }] }];
     const result = normalizeDatatourismeEvent(raw);
     expect(result.event.isFree).toBe(true);
-    expect(result.event.priceMin).toBe(0);
+    expect(result.event.priceMin).toBeNull();
+  });
+
+  it('normalise un prix explicite de zéro vers null', () => {
+    const raw = fixture();
+    raw.offers = [{ priceSpecification: [{ price: 0 }] }];
+    const result = normalizeDatatourismeEvent(raw);
+    expect(result.event.isFree).toBe(true);
+    expect(result.event.priceMin).toBeNull();
+  });
+
+  it('signale une spécification absente et applique le défaut gratuit', () => {
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const raw = fixture();
+      raw.offers = [{ priceSpecification: [] }];
+      const result = normalizeDatatourismeEvent(raw);
+      expect(result.event.isFree).toBe(true);
+      expect(result.event.priceMin).toBeNull();
+      expect(JSON.parse(warning.mock.calls[0][0]).code).toBe('malformed_price_specification');
+    } finally {
+      warning.mockRestore();
+    }
+  });
+
+  it('signale un prix mal formé', () => {
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const raw = fixture();
+      raw.offers = [{ priceSpecification: [{ price: 'quinze' }] }];
+      const result = normalizeDatatourismeEvent(raw);
+      expect(result.event.isFree).toBe(true);
+      expect(result.event.priceMin).toBeNull();
+      expect(warning).toHaveBeenCalledOnce();
+    } finally {
+      warning.mockRestore();
+    }
+  });
+
+  it('ne déduit pas un tarif général payant d’un seul tarif réduit', () => {
+    const raw = fixture();
+    raw.offers = [
+      { priceSpecification: [{ price: 15, hasEligiblePolicy: [{ key: 'ChildRate' }] }] },
+    ];
+    const result = normalizeDatatourismeEvent(raw);
+    expect(result.event.isFree).toBe(true);
+    expect(result.event.priceMin).toBeNull();
   });
 
   it('rejette un titre français absent', () => {
