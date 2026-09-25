@@ -89,3 +89,17 @@ npm run db:ingest:datatourisme -- --limit=20
 Les 25 mocks restent visibles pendant la validation. **Après validation visuelle seulement**, les masquer sans suppression avec `npm run db:mocks -- --hide`. Pour les rétablir : `npm run db:mocks -- --unhide`. Ces commandes ne touchent qu'aux événements liés exclusivement à la source `mock`.
 
 Le lancement est manuel pour le Lot 6. La planification (cron) sera décidée au Lot 9, lors du déploiement.
+
+## Ingestion OpenAgenda (Lot 7 — essai limité)
+
+Configurer `DATABASE_URL_DIRECT` et `OPENAGENDA_API_KEY` dans le `.env` racine, puis lancer :
+
+```bash
+npm run db:ingest:openagenda
+```
+
+Le script lit uniquement les agendas activés dans `source_agendas`. Pour cet essai, ce sont le ministère de la Culture (UID `86244142`) et les Journées européennes du patrimoine 2026 en Centre-Val de Loire (UID `54621`). Trois autres agendas thématiques sont enregistrés mais désactivés. Il n'y a pas de découverte automatique. L'API v2 est appelée avec la clé dans l'en-tête `key`, avec une pause de 250 ms entre les appels, des reprises sur 429/5xx et un plafond de 100 requêtes par exécution. L'import récupère les événements dont un horaire commence depuis le 1er janvier 2026, puis applique le rayon exact de 20 km dans PostGIS. `--limit=N` permet un essai encore plus petit par agenda.
+
+**Bilan du 25 septembre 2026 :** 35 fiches et 80 occurrences OpenAgenda importées, mais aucune occurrence future ni dans les 90 prochains jours. Les 35 fiches sont dans le rayon de 20 km. Les deux agendas recouvrent 22 événements de même UID ; ils sont importés une seule fois. Aucun doublon probable avec DATAtourisme n'a été détecté par la règle stricte titre normalisé, distance ≤ 200 m et début à ±2 h. Les 189 fiches DATAtourisme sont restées intactes. Les événements OpenAgenda sont actuellement publiés ; si cette source n'est pas retenue pour l'affichage, désactiver d'abord les deux agendas puis masquer les fiches via `status='hidden'` plutôt que de les supprimer. Une nouvelle ingestion sur un agenda actif republie ses fiches.
+
+Le rendement actuel d'OpenAgenda est faible pour Le Blanc : les agendas confirmés sont thématiques et saisonniers, sans offre à venir au moment de l'essai. Conserver le connecteur pour une réévaluation ultérieure est possible, mais une activation permanente n'apporte actuellement rien aux visiteurs. Les tarifs en texte libre sont incertains : conformément à la règle de ce lot, l'absence de prix explicite donne `is_free=true` et `price_min=null`.

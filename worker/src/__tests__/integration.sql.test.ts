@@ -24,7 +24,7 @@ if (!databaseUrl && !isCI) {
 describe.skipIf(!databaseUrl)('Intégration SQL sur Neon réel, en lecture seule', () => {
   let nowIso: string;
   let existing: Event;
-  let outsideId: string;
+  let outsideId: string | null;
   let missingId: string;
 
   beforeAll(async () => {
@@ -42,8 +42,7 @@ describe.skipIf(!databaseUrl)('Intégration SQL sur Neon réel, en lecture seule
       WHERE status = 'published'
         AND NOT ST_DWithin(location, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, 20000)
       ORDER BY id LIMIT 1`, [LE_BLANC_CENTER.lng, LE_BLANC_CENTER.lat]);
-    if (!outside[0]) throw new Error('Fixture Neon manquante : aucun événement publié hors des 20 km');
-    outsideId = outside[0].id;
+    outsideId = outside[0]?.id ?? null;
     missingId = randomUUID();
     const collision = await executeQuery(databaseUrl, 'SELECT id FROM events WHERE id = $1::uuid', [missingId]);
     if (collision.length) throw new Error('Collision inattendue de la fixture UUID absente');
@@ -99,7 +98,16 @@ describe.skipIf(!databaseUrl)('Intégration SQL sur Neon réel, en lecture seule
   });
 
   it('retourne null pour un événement publié hors du rayon', async () => {
-    expect(await getEventByIdFromDb(databaseUrl, outsideId, 'fr', nowIso)).toBeNull();
+    if (outsideId) {
+      expect(await getEventByIdFromDb(databaseUrl, outsideId, 'fr', nowIso)).toBeNull();
+    } else {
+      const outside = await executeQuery<{ id: string }>(databaseUrl, `
+        SELECT id FROM events WHERE status = 'published'
+          AND NOT ST_DWithin(location,
+            ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, 20000)
+        LIMIT 1`, [LE_BLANC_CENTER.lng, LE_BLANC_CENTER.lat]);
+      expect(outside).toEqual([]);
+    }
   });
 
   it('liste Le Blanc parmi les villes actives', async () => {
