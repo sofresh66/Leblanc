@@ -1,13 +1,15 @@
-import { z } from 'zod';
 import {
   CATEGORIES,
   calculateHaversineDistance,
+  CursorPayloadSchema,
   EventListParamsSchema,
   LE_BLANC_CENTER,
   resolveEventContent,
   SEARCH_RADIUS_METERS,
+  type CursorPayload,
   type Event,
   type EventCategory,
+  type EventDetail,
   type EventListParamsInput,
   type EventListResponse,
   type RawEvent,
@@ -16,17 +18,12 @@ import rawEventsData from './__mocks__/events.json';
 
 export interface EventsRepository {
   listEvents(params: EventListParamsInput): Promise<EventListResponse>;
-  getEventById(id: string, lang: string): Promise<Event | null>;
+  getEventById(id: string, lang: string): Promise<EventDetail | null>;
   listCategories(): Promise<EventCategory[]>;
   listCities(): Promise<string[]>;
 }
 
-export const CursorPayloadSchema = z.object({
-  d: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid ISO date string' }),
-  i: z.string().min(1, { message: 'Event ID must not be empty' }),
-});
-
-export type CursorPayload = z.infer<typeof CursorPayloadSchema>;
+export { CursorPayloadSchema, type CursorPayload };
 
 function encodeCursor(startDate: string, id: string): string {
   const payload = JSON.stringify({ d: startDate, i: id });
@@ -201,7 +198,7 @@ export class MockEventsRepository implements EventsRepository {
     };
   }
 
-  async getEventById(id: string, lang: string): Promise<Event | null> {
+  async getEventById(id: string, lang: string): Promise<EventDetail | null> {
     await new Promise((resolve) => setTimeout(resolve, 150));
 
     const raw = this.rawEvents.find((e) => e.id === id);
@@ -222,6 +219,15 @@ export class MockEventsRepository implements EventsRepository {
       contentLanguage,
       isFallback,
       distance,
+      // Le mock ne stocke qu'une programmation par événement : elle reprend ses propres dates.
+      occurrences: [
+        {
+          id: raw.id,
+          startDate: raw.startDate,
+          endDate: raw.endDate,
+          timezone: raw.timezone,
+        },
+      ],
     };
   }
 
@@ -237,8 +243,6 @@ export class MockEventsRepository implements EventsRepository {
     return Promise.resolve([...cities].sort());
   }
 }
-
-export const eventsRepository: EventsRepository = new MockEventsRepository();
 
 /**
  * Normalise les paramètres pour garantir des clés TanStack Query stables.

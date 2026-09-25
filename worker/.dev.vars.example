@@ -1,2 +1,3 @@
 # Variables locales Cloudflare Worker (Wrangler)
 DATABASE_URL=postgresql://user:password@ep-sample-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require
+ALLOWED_ORIGINS=http://localhost:5173,https://leblanc-et-moi.pages.dev

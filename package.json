@@ -21,6 +21,8 @@
     "format": "prettier --write .",
     "test": "npm run build --workspace=@leblanc/shared && vitest run",
     "test:watch": "vitest",
+    "test:integration": "npm run build --workspace=@leblanc/shared && vitest run --config vitest.integration.config.ts",
+    "test:e2e": "npm run build --workspace=@leblanc/shared && npm run test:e2e --workspace=@leblanc/frontend",
     "db:migrate": "node scripts/migrate.mjs",
     "db:seed": "node scripts/seed.mjs",
     "db:test": "node scripts/test-db.mjs"

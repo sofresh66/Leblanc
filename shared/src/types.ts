@@ -1,18 +1,33 @@
 import type { z } from 'zod';
 import {
+  ApiErrorSchema,
+  CursorPayloadSchema,
   EventCategorySchema,
+  EventDetailSchema,
+  EventI18nDescriptionSchema,
+  EventI18nTitleSchema,
   EventListResponseSchema,
+  EventOccurrenceSchema,
   EventSchema,
   RawEventSchema,
   SupportedContentLanguageSchema,
+  SupportedLanguageSchema,
 } from './schemas.js';
 
 export type EventCategory = z.infer<typeof EventCategorySchema>;
 export type SupportedContentLanguage = z.infer<typeof SupportedContentLanguageSchema>;
+export type SupportedLanguage = SupportedContentLanguage;
+export type EventI18nTitle = z.infer<typeof EventI18nTitleSchema>;
+export type EventI18nDescription = z.infer<typeof EventI18nDescriptionSchema>;
 export type RawEvent = z.infer<typeof RawEventSchema>;
 export type Event = z.infer<typeof EventSchema>;
 export type { EventListParams, EventListParamsInput } from './schemas.js';
 export type EventListResponse = z.infer<typeof EventListResponseSchema>;
+export type EventOccurrence = z.infer<typeof EventOccurrenceSchema>;
+export type EventDetail = z.infer<typeof EventDetailSchema>;
+export type ApiError = z.infer<typeof ApiErrorSchema>;
+export type CursorPayload = z.infer<typeof CursorPayloadSchema>;
+export { SupportedLanguageSchema };
 
 /**
  * Calcule la distance orthodromique entre deux points GPS en mètres (formule de Haversine).
