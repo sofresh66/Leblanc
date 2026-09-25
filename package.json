@@ -28,6 +28,7 @@
     "db:ingest:datatourisme": "node scripts/ingest-datatourisme.mjs",
     "db:ingest:openagenda": "node scripts/ingest-openagenda.mjs",
     "db:mocks": "node scripts/hide-mocks.mjs",
+    "db:openagenda": "node scripts/hide-openagenda.mjs",
     "db:test": "node scripts/test-db.mjs"
   },
   "devDependencies": {
