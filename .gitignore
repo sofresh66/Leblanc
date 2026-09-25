@@ -49,3 +49,6 @@ Icon?
 
 # Playwright screenshots (generated)
 /frontend/screenshots/
+
+# Artefacts de travail des agents (captures, rapports)
+/artifacts/

@@ -11,6 +11,7 @@
   },
   "footer": {
     "rights": "Tutti i diritti riservati",
-    "sources": "Fonti di dati"
+    "sources": "Fonti di dati",
+    "heroPhotoCredit": "Foto: {{author}}, {{license}}"
   }
 }
