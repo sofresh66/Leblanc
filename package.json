@@ -25,6 +25,8 @@
     "test:e2e": "npm run build --workspace=@leblanc/shared && npm run test:e2e --workspace=@leblanc/frontend",
     "db:migrate": "node scripts/migrate.mjs",
     "db:seed": "node scripts/seed.mjs",
+    "db:ingest:datatourisme": "node scripts/ingest-datatourisme.mjs",
+    "db:mocks": "node scripts/hide-mocks.mjs",
     "db:test": "node scripts/test-db.mjs"
   },
   "devDependencies": {

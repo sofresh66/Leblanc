@@ -75,3 +75,17 @@ npm install
   ```bash
   npm run test
   ```
+
+## Ingestion DATAtourisme (Lot 6)
+
+Configurer `DATABASE_URL_DIRECT` et `DATATOURISME_API_KEY` dans le `.env` racine, puis lancer depuis la racine :
+
+```bash
+npm run db:ingest:datatourisme -- --limit=20
+```
+
+`--limit=20` borne les objets traités à 20 pour la phase de validation. Une relance avec le même argument met à jour les mêmes événements, sans doublon. Sans `--limit`, le script parcourt les pages du rayon de 20 km ; cette phase complète attend une validation séparée. Le client demande les six langues dans un seul appel, espace les pages de 300 ms et respecte le quota DATAtourisme. Les dates sans `startTime` prennent `00:00:00` à Paris ; une `endDate` sans `endTime` prend `23:59:59`. Une occurrence sans heures est comptée dans le journal comme journée entière. Les lignes refusées sont comptabilisées dans `ingestion_runs`.
+
+Les 25 mocks restent visibles pendant la validation. **Après validation visuelle seulement**, les masquer sans suppression avec `npm run db:mocks -- --hide`. Pour les rétablir : `npm run db:mocks -- --unhide`. Ces commandes ne touchent qu'aux événements liés exclusivement à la source `mock`.
+
+Le lancement est manuel pour le Lot 6. La planification (cron) sera décidée au Lot 9, lors du déploiement.
