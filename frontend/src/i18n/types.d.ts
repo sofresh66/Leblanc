@@ -18,6 +18,7 @@ export interface CommonResource {
 }
 
 export interface NavResource {
+  credits: string;
   home: string;
   map: string;
   list: string;
@@ -37,6 +38,7 @@ export interface ErrorsResource {
 }
 
 export interface SeoResource {
+  credits: { title: string; description: string };
   home: { title: string; description: string };
   map: { title: string; description: string };
   list: { title: string; description: string };
@@ -46,6 +48,12 @@ export interface SeoResource {
 }
 
 export interface PagesResource {
+  credits: {
+    title: string; description: string;
+    hero: { title: string; file: string; work: string; author: string; source: string; license: string; description: string; changes: string; original: string; publication: string };
+    categories: { title: string; file: string; subject: string; source: string; description: string; license: string; subjects: { culture: string; sport: string; fete: string; association: string; autre: string } };
+    footer: { title: string; note: string; eventImages: string; ccLicense: string };
+  };
   home: {
     title: string;
     subtitle: string;

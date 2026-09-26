@@ -6,7 +6,7 @@ import {
   type SupportedLanguage,
 } from '../i18n/languages';
 
-export type RouteSection = 'home' | 'map' | 'list' | 'events' | 'about';
+export type RouteSection = 'home' | 'map' | 'list' | 'events' | 'about' | 'credits';
 
 export const ROUTE_SECTIONS: readonly RouteSection[] = [
   'home',
@@ -14,15 +14,16 @@ export const ROUTE_SECTIONS: readonly RouteSection[] = [
   'list',
   'events',
   'about',
+  'credits',
 ] as const;
 
 export const ROUTE_SEGMENTS: Record<SupportedLanguage, Record<RouteSection, string>> = {
-  fr: { home: '', map: 'carte', list: 'liste', events: 'evenements', about: 'a-propos' },
-  en: { home: '', map: 'map', list: 'list', events: 'events', about: 'about' },
-  es: { home: '', map: 'mapa', list: 'lista', events: 'eventos', about: 'acerca-de' },
-  de: { home: '', map: 'karte', list: 'liste', events: 'veranstaltungen', about: 'ueber-uns' },
-  it: { home: '', map: 'mappa', list: 'lista', events: 'eventi', about: 'chi-siamo' },
-  nl: { home: '', map: 'kaart', list: 'lijst', events: 'evenementen', about: 'over-ons' },
+  fr: { home: '', map: 'carte', list: 'liste', events: 'evenements', about: 'a-propos', credits: 'credits' },
+  en: { home: '', map: 'map', list: 'list', events: 'events', about: 'about', credits: 'credits' },
+  es: { home: '', map: 'mapa', list: 'lista', events: 'eventos', about: 'acerca-de', credits: 'creditos' },
+  de: { home: '', map: 'karte', list: 'liste', events: 'veranstaltungen', about: 'ueber-uns', credits: 'bildnachweise' },
+  it: { home: '', map: 'mappa', list: 'lista', events: 'eventi', about: 'chi-siamo', credits: 'crediti' },
+  nl: { home: '', map: 'kaart', list: 'lijst', events: 'evenementen', about: 'over-ons', credits: 'credits' },
 };
 
 export interface ResolvedRoute {
@@ -68,6 +69,10 @@ export function resolveRoute(pathname: string): ResolvedRoute {
   }
   if (sectionSegment === langSegments.about) {
     return { lang, section: 'about' };
+  }
+
+  if (sectionSegment === langSegments.credits && segments.length === 2) {
+    return { lang, section: 'credits' };
   }
 
   return { lang, section: 'notFound' };

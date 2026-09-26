@@ -23,5 +23,9 @@
   "notFound": {
     "title": "Page Not Found — Le Blanc & Moi",
     "description": "The requested page does not exist."
+  },
+  "credits": {
+    "title": "Photo credits | Le Blanc & Moi",
+    "description": "Photography on Le Blanc & Moi: authors, sources, licences and modifications."
   }
 }

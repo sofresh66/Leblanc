@@ -5,6 +5,7 @@ export const pageImports = {
   map: () => import('../pages/MapPage'),
   events: () => import('../pages/EventPage'),
   about: () => import('../pages/AboutPage').then((module) => ({ default: module.AboutPage })),
+  credits: () => import('../pages/CreditsPage').then((module) => ({ default: module.CreditsPage })),
   notFound: () =>
     import('../pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })),
 };

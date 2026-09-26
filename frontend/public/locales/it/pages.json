@@ -54,5 +54,42 @@
   "notFound": {
     "code": "404",
     "backHome": "Torna alla pagina iniziale"
+  },
+  "credits": {
+    "title": "Crediti fotografici",
+    "description": "Le fotografie di Le Blanc & Moi: autori, fonti, licenze e modifiche.",
+    "hero": {
+      "title": "La fotografia di Le Blanc",
+      "file": "File utilizzato",
+      "work": "Opera",
+      "author": "Autore",
+      "source": "Fonte",
+      "license": "Licenza",
+      "description": "La città alta, il castello di Naillac, la chiesa di Saint-Cyran e il fiume Creuse.",
+      "changes": "Modifiche: ritaglio in formato 16:9 dell’originale di 4 928 × 3 264 px (x = 0, y = 390, larghezza = 4 928, altezza = 2 772), riduzione a 1 920 × 1 080 px e compressione JPEG con qualità 78. Nessun elemento è stato aggiunto alla fotografia.",
+      "original": "Visualizza il file originale",
+      "publication": "Pubblicazione originale su Flickr"
+    },
+    "categories": {
+      "title": "Immagini delle categorie",
+      "file": "File",
+      "subject": "Soggetto",
+      "source": "URL Unsplash",
+      "description": "Questi file illustrano eventi fittizi. Le pagine originali sono state fornite dal proprietario del progetto. I collegamenti sono conservati per garantirne la tracciabilità.",
+      "license": "Licenza Unsplash",
+      "subjects": {
+        "culture": "Spettacolo sul palco",
+        "sport": "Escursione nel bosco",
+        "fete": "Mercato di frutta e verdura",
+        "association": "Piantumazione",
+        "autre": "Stagno e ninfee"
+      }
+    },
+    "footer": {
+      "title": "Note e licenze",
+      "note": "Questi crediti possono essere modificati in qualsiasi momento.",
+      "eventImages": "Le immagini degli eventi restano soggette alle condizioni delle rispettive fonti. Consulta le licenze complete qui sotto.",
+      "ccLicense": "Licenza CC BY 2.0 completa"
+    }
   }
 }

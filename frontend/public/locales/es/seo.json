@@ -23,5 +23,9 @@
   "notFound": {
     "title": "Página no encontrada — Le Blanc & Moi",
     "description": "La página solicitada no existe."
+  },
+  "credits": {
+    "title": "Créditos fotográficos | Le Blanc & Moi",
+    "description": "Las fotografías de Le Blanc & Moi: autores, fuentes, licencias y modificaciones."
   }
 }

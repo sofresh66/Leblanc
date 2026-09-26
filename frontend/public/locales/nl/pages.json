@@ -54,5 +54,42 @@
   "notFound": {
     "code": "404",
     "backHome": "Terug naar de startpagina"
+  },
+  "credits": {
+    "title": "Fotocredits",
+    "description": "De foto’s op Le Blanc & Moi: makers, bronnen, licenties en bewerkingen.",
+    "hero": {
+      "title": "De foto van Le Blanc",
+      "file": "Gebruikt bestand",
+      "work": "Werk",
+      "author": "Fotograaf",
+      "source": "Bron",
+      "license": "Licentie",
+      "description": "De bovenstad, het kasteel Naillac, de kerk Saint-Cyran en de rivier de Creuse.",
+      "changes": "Bewerkingen: uitsnede in 16:9 van het origineel van 4 928 × 3 264 px (x = 0, y = 390, breedte = 4 928, hoogte = 2 772), verkleining naar 1 920 × 1 080 px en JPEG-compressie met kwaliteit 78. Er zijn geen elementen aan de foto toegevoegd.",
+      "original": "Bekijk het originele bestand",
+      "publication": "Oorspronkelijke publicatie op Flickr"
+    },
+    "categories": {
+      "title": "Categorieafbeeldingen",
+      "file": "Bestand",
+      "subject": "Onderwerp",
+      "source": "Unsplash-URL",
+      "description": "Deze bestanden illustreren fictieve evenementen. De oorspronkelijke pagina’s zijn aangeleverd door de projecteigenaar. De links worden bewaard om de herkomst te kunnen nagaan.",
+      "license": "Unsplash-licentie",
+      "subjects": {
+        "culture": "Optreden op een podium",
+        "sport": "Boswandeling",
+        "fete": "Groente- en fruitmarkt",
+        "association": "Aanplanten",
+        "autre": "Vijver en waterlelies"
+      }
+    },
+    "footer": {
+      "title": "Opmerkingen en licenties",
+      "note": "Deze fotocredits kunnen op elk moment worden gewijzigd.",
+      "eventImages": "Voor evenementafbeeldingen blijven de voorwaarden van hun bronnen gelden. Bekijk hieronder de volledige licenties.",
+      "ccLicense": "Volledige CC BY 2.0-licentie"
+    }
   }
 }

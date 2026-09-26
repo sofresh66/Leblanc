@@ -54,5 +54,42 @@
   "notFound": {
     "code": "404",
     "backHome": "Volver al inicio"
+  },
+  "credits": {
+    "title": "Créditos fotográficos",
+    "description": "Las fotografías de Le Blanc & Moi: autores, fuentes, licencias y modificaciones.",
+    "hero": {
+      "title": "La fotografía de Le Blanc",
+      "file": "Archivo utilizado",
+      "work": "Obra",
+      "author": "Autor",
+      "source": "Fuente",
+      "license": "Licencia",
+      "description": "La ciudad alta, el castillo de Naillac, la iglesia de Saint-Cyran y el río Creuse.",
+      "changes": "Modificaciones: recorte a 16:9 del original de 4 928 × 3 264 px (x = 0, y = 390, anchura = 4 928, altura = 2 772), reducción a 1 920 × 1 080 px y compresión JPEG con calidad 78. No se añadió ningún elemento a la fotografía.",
+      "original": "Ver el archivo original",
+      "publication": "Publicación original en Flickr"
+    },
+    "categories": {
+      "title": "Imágenes de categorías",
+      "file": "Archivo",
+      "subject": "Tema",
+      "source": "URL de Unsplash",
+      "description": "Estos archivos ilustran eventos ficticios. El propietario del proyecto proporcionó las páginas originales. Se conservan los enlaces para facilitar su trazabilidad.",
+      "license": "Licencia de Unsplash",
+      "subjects": {
+        "culture": "Espectáculo en un escenario",
+        "sport": "Senderismo en el bosque",
+        "fete": "Mercado de frutas y verduras",
+        "association": "Plantación",
+        "autre": "Estanque y nenúfares"
+      }
+    },
+    "footer": {
+      "title": "Avisos y licencias",
+      "note": "Estos créditos pueden modificarse en cualquier momento.",
+      "eventImages": "Las imágenes de los eventos siguen sujetas a las condiciones de sus fuentes. Consulte las licencias completas a continuación.",
+      "ccLicense": "Licencia CC BY 2.0 completa"
+    }
   }
 }

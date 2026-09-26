@@ -54,5 +54,42 @@
   "notFound": {
     "code": "404",
     "backHome": "Retour à l’accueil"
+  },
+  "credits": {
+    "title": "Crédits photographiques",
+    "description": "Les photographies de Le Blanc & Moi : auteurs, sources, licences et modifications.",
+    "hero": {
+      "title": "La photographie du Blanc",
+      "file": "Fichier utilisé",
+      "work": "Œuvre",
+      "author": "Auteur",
+      "source": "Source",
+      "license": "Licence",
+      "description": "Ville Haute, château Naillac, église Saint-Cyran et Creuse.",
+      "changes": "Modifications : recadrage 16:9 de l’original de 4 928 × 3 264 px (x = 0, y = 390, largeur = 4 928, hauteur = 2 772), réduction à 1 920 × 1 080 px et compression JPEG qualité 78. Aucun élément n’a été ajouté à la photographie.",
+      "original": "Voir le fichier original",
+      "publication": "Publication d’origine sur Flickr"
+    },
+    "categories": {
+      "title": "Images de catégories",
+      "file": "Fichier",
+      "subject": "Sujet",
+      "source": "URL Unsplash",
+      "description": "Ces fichiers illustrent des événements fictifs. Leurs pages d’origine ont été fournies par le propriétaire du projet. Les liens sont conservés pour la traçabilité.",
+      "license": "Licence Unsplash",
+      "subjects": {
+        "culture": "Spectacle sur scène",
+        "sport": "Randonnée en forêt",
+        "fete": "Marché de fruits et légumes",
+        "association": "Plantation",
+        "autre": "Étang et nénuphars"
+      }
+    },
+    "footer": {
+      "title": "Mentions et licences",
+      "note": "Ces crédits peuvent être modifiés à tout moment.",
+      "eventImages": "Les visuels des événements restent soumis aux conditions de leurs sources. Consultez les licences complètes ci-dessous.",
+      "ccLicense": "Licence CC BY 2.0 complète"
+    }
   }
 }

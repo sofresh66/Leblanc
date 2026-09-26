@@ -54,5 +54,42 @@
   "notFound": {
     "code": "404",
     "backHome": "Back to home"
+  },
+  "credits": {
+    "title": "Photo credits",
+    "description": "Photography on Le Blanc & Moi: authors, sources, licences and modifications.",
+    "hero": {
+      "title": "The photograph of Le Blanc",
+      "file": "File used",
+      "work": "Work",
+      "author": "Photographer",
+      "source": "Source",
+      "license": "Licence",
+      "description": "The upper town, Château Naillac, Saint-Cyran church and the River Creuse.",
+      "changes": "Modifications: a 16:9 crop of the 4,928 × 3,264 px original (x = 0, y = 390, width = 4,928, height = 2,772), resized to 1,920 × 1,080 px and JPEG compression at quality 78. No elements were added to the photograph.",
+      "original": "View the original file",
+      "publication": "Original publication on Flickr"
+    },
+    "categories": {
+      "title": "Category images",
+      "file": "File",
+      "subject": "Subject",
+      "source": "Unsplash URL",
+      "description": "These files illustrate fictional events. Their original pages were supplied by the project owner. Links are retained for traceability.",
+      "license": "Unsplash licence",
+      "subjects": {
+        "culture": "Stage performance",
+        "sport": "Forest hike",
+        "fete": "Fruit and vegetable market",
+        "association": "Planting",
+        "autre": "Pond and water lilies"
+      }
+    },
+    "footer": {
+      "title": "Notices and licences",
+      "note": "These credits may be updated at any time.",
+      "eventImages": "Event images remain subject to the terms of their sources. See the full licences below.",
+      "ccLicense": "Full CC BY 2.0 licence"
+    }
   }
 }

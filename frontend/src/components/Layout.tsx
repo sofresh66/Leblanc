@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState, type FocusEvent, type MouseEvent } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLocalizedPath } from '../hooks/useLocalizedPath';
@@ -148,6 +148,7 @@ export function Layout() {
           <p>&copy; {new Date().getFullYear()} {t('common:app.name')} — {t('common:footer.rights')}</p>
           <div className="flex flex-col items-center gap-1 text-center sm:items-end sm:text-right">
             <span>{t('common:footer.sources')}</span>
+            <Link to={getLocalizedPath('credits')} className="inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900">{t('nav:credits')}</Link>
             <span className="text-xs text-gray-500">
               <a
                 href="https://commons.wikimedia.org/wiki/File:Le_Blanc_(Indre)._(35763042230).jpg"

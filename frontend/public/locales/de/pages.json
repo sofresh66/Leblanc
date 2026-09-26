@@ -54,5 +54,42 @@
   "notFound": {
     "code": "404",
     "backHome": "Zurück zur Startseite"
+  },
+  "credits": {
+    "title": "Bildnachweise",
+    "description": "Die Fotografien auf Le Blanc & Moi: Urheber, Quellen, Lizenzen und Bearbeitungen.",
+    "hero": {
+      "title": "Die Fotografie von Le Blanc",
+      "file": "Verwendete Datei",
+      "work": "Werk",
+      "author": "Fotograf",
+      "source": "Quelle",
+      "license": "Lizenz",
+      "description": "Die Oberstadt, das Château Naillac, die Kirche Saint-Cyran und die Creuse.",
+      "changes": "Bearbeitungen: Zuschnitt des Originals mit 4 928 × 3 264 px auf 16:9 (x = 0, y = 390, Breite = 4 928, Höhe = 2 772), Verkleinerung auf 1 920 × 1 080 px und JPEG-Komprimierung mit Qualität 78. Der Fotografie wurden keine Elemente hinzugefügt.",
+      "original": "Originaldatei ansehen",
+      "publication": "Ursprüngliche Veröffentlichung auf Flickr"
+    },
+    "categories": {
+      "title": "Kategoriebilder",
+      "file": "Datei",
+      "subject": "Motiv",
+      "source": "Unsplash-URL",
+      "description": "Diese Dateien illustrieren fiktive Veranstaltungen. Die ursprünglichen Seiten wurden vom Projektinhaber bereitgestellt. Die Links bleiben zur Nachvollziehbarkeit erhalten.",
+      "license": "Unsplash-Lizenz",
+      "subjects": {
+        "culture": "Bühnenaufführung",
+        "sport": "Wanderung im Wald",
+        "fete": "Obst- und Gemüsemarkt",
+        "association": "Pflanzarbeiten",
+        "autre": "Teich und Seerosen"
+      }
+    },
+    "footer": {
+      "title": "Hinweise und Lizenzen",
+      "note": "Diese Bildnachweise können jederzeit aktualisiert werden.",
+      "eventImages": "Für Veranstaltungsbilder gelten weiterhin die Bedingungen ihrer Quellen. Die vollständigen Lizenzen sind unten verlinkt.",
+      "ccLicense": "Vollständige CC-BY-2.0-Lizenz"
+    }
   }
 }

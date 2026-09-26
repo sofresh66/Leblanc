@@ -1,7 +1,10 @@
+import { Link } from 'react-router-dom';
+import { useLocalizedPath } from '../hooks/useLocalizedPath';
 import { PageSeo } from '../components/PageSeo';
 import { useTranslation } from 'react-i18next';
 
 export function AboutPage() {
+  const getLocalizedPath = useLocalizedPath();
   const { t } = useTranslation('pages');
 
   return (
@@ -35,7 +38,7 @@ export function AboutPage() {
         <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-brenne-900/5 space-y-5">
           <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.photosTitle')}</h2>
           <p className="text-base leading-loose text-gray-700">{t('about.photosBody')}</p>
-          <a href="/images/CREDITS.md" className="inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900 font-semibold">{t('about.creditsLink')}</a>
+          <Link to={getLocalizedPath('credits')} className="inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900 font-semibold">{t('about.creditsLink')}</Link>
         </section>
         <section className="rounded-2xl bg-sable-100 p-6 sm:p-8 border border-sable-200 space-y-5">
           <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.legalTitle')}</h2>
