@@ -184,3 +184,119 @@ node scripts/audit-seo.mjs
 ```
 
 Ce script utilise Chromium via Playwright, lit les données réelles et contrôle 36 pages localisées, les balises après navigation, les erreurs applicatives, l'isolation de la carte et la navigation à 320 px. Il écrit ses captures et mesures dans `artifacts/lot8-2/`. La navigation ne déborde plus dans les six langues ; un débordement distinct de 1 px subsiste sur une carte de catégorie de l'accueil allemand à 320 px, conservé pour respecter les styles validés hors navigation.
+
+## Production — ingestion quotidienne (Lot 9)
+
+- Site : https://leblanc-et-moi.pages.dev
+- API : https://leblanc-api.elharchdenis.workers.dev (santé : `/health`, données : `/api/v1/…`).
+- Dépôt : https://github.com/sofresh66/Leblanc ; branche de production : `main`.
+- Workflow : [production.yml](.github/workflows/production.yml).
+
+Le workflow exécute, dans cet ordre : checkout, Node.js 24, contrôle de configuration, `npm ci`, `npm test`, ingestion DATAtourisme complète, build frontend, vérification du build, publication Pages. Les tests incluent les 139 tests existants et les nouveaux tests du contrôle de publication. Les secrets sont transmis uniquement aux étapes de contrôle, d’ingestion ou de publication qui en ont besoin ; le build ne reçoit aucun secret de base de données ou d’API DATAtourisme.
+
+Déclenchements : `workflow_dispatch` et `0 3 * * *` avec `timezone: Europe/Paris`, donc 3 h locales toute l’année. Le workflow doit être présent sur `main`. Aucune ingestion n’est déclenchée par un push. Le job est limité au dépôt `sofresh66/Leblanc` et à `main`, avec `contents: read`, `persist-credentials: false`, runner Linux standard et timeout global de 15 minutes.
+
+La [planification GitHub](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule) peut être retardée ou omise en période de charge. Sur ce dépôt public, les planifications peuvent être désactivées après 60 jours sans activité du dépôt : vérifier leur activation dans Actions et les réactiver si nécessaire. Les runners standards sont gratuits pour ce dépôt public ; aucune ressource payante n’est ajoutée, les quotas Cloudflare/Neon/DATAtourisme restent applicables.
+
+### Secrets et variables GitHub
+
+Configurer les **Repository secrets** dans [Settings → Secrets and variables → Actions](https://github.com/sofresh66/Leblanc/settings/secrets/actions), et les **Repository variables** dans [l’onglet Variables](https://github.com/sofresh66/Leblanc/settings/variables/actions). Ne pas utiliser des secrets d’environnement GitHub : ce workflow ne référence pas d’`environment`.
+
+| Nom | Type | Valeur / provenance |
+| --- | --- | --- |
+| `DATABASE_URL_DIRECT` | Secret | Connexion directe Neon, sans `-pooler`, depuis le `.env` local existant ou [Neon Console](https://console.neon.tech) → projet → branche de production → Connect, pooling désactivé. Conserver les paramètres SSL. |
+| `DATATOURISME_API_KEY` | Secret | Clé existante `DATATOURISME_API_KEY` du `.env` local, utilisée par l’ingestion validée. |
+| `CLOUDFLARE_API_TOKEN` | Secret | Token personnalisé décrit ci-dessous. |
+| `CLOUDFLARE_ACCOUNT_ID` | Variable | `f3fbcbb1368768039312d4877ac6d48c` |
+| `VITE_API_URL` | Variable | `https://leblanc-api.elharchdenis.workers.dev/api` |
+| `VITE_SITE_URL` | Variable | `https://leblanc-et-moi.pages.dev` |
+| `SITEMAP_API_URL` | Variable | `https://leblanc-api.elharchdenis.workers.dev/api` |
+
+`VITE_USE_MOCK=false` est fixé dans le workflow. La connexion poolée `DATABASE_URL` reste exclusivement dans les secrets du Worker. Aucun secret OpenAgenda n’est nécessaire.
+
+Créer le token dans [Cloudflare → My Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens) :
+
+1. **Create Token → Custom token → Get started**.
+2. Nom : **GitHub Actions Pages deployment**.
+3. Permission unique : **Account → Cloudflare Pages → Edit**.
+4. Account Resources : **Include → Specific account**, compte `f3fbcbb1368768039312d4877ac6d48c`.
+5. Ne pas fixer de filtre IP lié à l’ordinateur local : les runners GitHub utilisent d’autres adresses. Si une expiration est définie, prévoir le renouvellement du secret GitHub avant cette date.
+6. **Continue to summary → Create Token**. Copier le token directement dans `CLOUDFLARE_API_TOKEN`, sans le coller dans un fichier versionné, une commande ou un message.
+
+Cette permission permet la publication Pages sur ce compte ; elle n’autorise pas le déploiement du Worker. [Guide Cloudflare](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/).
+
+Commandes alternatives dans **Git Bash**, avec GitHub CLI installé et connecté (`gh auth login` si nécessaire). Les trois commandes de secrets ouvrent une saisie interactive masquée ; ne pas ajouter leur valeur avec `--body` :
+
+```bash
+gh secret set DATABASE_URL_DIRECT --repo sofresh66/Leblanc
+gh secret set DATATOURISME_API_KEY --repo sofresh66/Leblanc
+gh secret set CLOUDFLARE_API_TOKEN --repo sofresh66/Leblanc
+
+gh variable set CLOUDFLARE_ACCOUNT_ID --repo sofresh66/Leblanc --body 'f3fbcbb1368768039312d4877ac6d48c'
+gh variable set VITE_API_URL --repo sofresh66/Leblanc --body 'https://leblanc-api.elharchdenis.workers.dev/api'
+gh variable set VITE_SITE_URL --repo sofresh66/Leblanc --body 'https://leblanc-et-moi.pages.dev'
+gh variable set SITEMAP_API_URL --repo sofresh66/Leblanc --body 'https://leblanc-api.elharchdenis.workers.dev/api'
+```
+
+### Vérifications et première exécution
+
+Depuis la racine, dans Git Bash :
+
+```bash
+npm run typecheck
+npm run lint
+npm test
+VITE_API_URL='https://leblanc-api.elharchdenis.workers.dev/api' \
+VITE_SITE_URL='https://leblanc-et-moi.pages.dev' \
+VITE_USE_MOCK='false' \
+SITEMAP_API_URL='https://leblanc-api.elharchdenis.workers.dev/api' \
+npm run build
+node scripts/verify-production-build.mjs
+```
+
+Le [contrôle du build](scripts/verify-production-build.mjs) exige un fichier `index.html` non vide, un `sitemap.xml` de **plus de 50 000 octets** (kB décimaux, seuil strict) et au moins une URL de fiche événement UUID sur le domaine de production. Il retourne 0 si tout est valide, 1 avec un message français et une annotation GitHub `warning` sinon. C’est un contrôle de publication, pas une preuve d’exhaustivité : il détecte le fallback aux 36 pages statiques mais peut aussi bloquer un catalogue réellement devenu plus petit. Diagnostiquer avant de modifier le seuil.
+
+Après revue, l’éditeur effectue lui-même le commit et le push :
+
+```bash
+git diff --check
+git add .github/workflows/production.yml scripts/verify-production-build.mjs scripts/__tests__/verify-production-build.test.mjs README.md
+git diff --cached
+git commit -m "ci: automatiser l'ingestion quotidienne et la publication Pages"
+git push origin main
+```
+
+Configurer les secrets/variables **avant** ce push pour que le prochain créneau planifié soit opérationnel. Puis ouvrir [Actions → Production](https://github.com/sofresh66/Leblanc/actions/workflows/production.yml) → **Run workflow → main → Run workflow**, ou :
+
+```bash
+gh workflow run production.yml --ref main --repo sofresh66/Leblanc
+gh run list --workflow production.yml --repo sofresh66/Leblanc --limit 5
+gh run watch <RUN_ID> --repo sofresh66/Leblanc --exit-status
+```
+
+Vérifier le résultat `success` de l’ingestion dans les logs, la taille et le nombre de fiches du sitemap, la réussite de la publication, puis ouvrir le site et `/sitemap.xml`. Lancer une seule fois ; un second lancement annule le premier. Ne pas publier de logs contenant des secrets. Un passage manuel réussi ne prouve pas le premier déclenchement automatique à 3 h, à vérifier ensuite dans Actions.
+
+### Échecs, annulations et retour arrière
+
+Une étape en échec bloque les étapes suivantes : aucune publication si tests, ingestion, build ou vérification échouent. Le déploiement Pages précédent reste servi tant qu’une nouvelle publication n’a pas réussi. Aucun déploiement Worker, migration, suppression de production ou restauration automatique n’est lancé.
+
+**Limite liée à Neon :** l’ingestion existante écrit par transactions de lots. Un échec après certains lots peut donc avoir déjà actualisé des données visibles via l’API, même sans nouvelle publication Pages. Il ne s’agit pas d’une transaction globale et le workflow ne promet pas de rollback de la base.
+
+**Annulation demandée :** le groupe `leblanc-production` utilise `cancel-in-progress: true`. Une annulation ou le timeout peut interrompre l’ingestion avant son nettoyage, laisser un état `running` et conserver le bail `sync_state.lease_until` jusqu’à une heure après son dernier renouvellement. Le nouveau run peut échouer sur ce verrou ; attendre son expiration avant de relancer. Ne pas supprimer le verrou sans avoir vérifié qu’aucune ingestion n’est active. Une annulation après réception de la publication par Cloudflare ne garantit pas qu’elle n’a pas été activée : vérifier Deployments avant toute reprise.
+
+Pour revenir à une version frontend précédente :
+
+1. Désactiver le workflow pour éviter qu’un prochain passage remplace le rollback : `gh workflow disable production.yml --repo sofresh66/Leblanc`. Cela n’annule pas un run déjà actif : le vérifier dans Actions et l’annuler si nécessaire (`gh run cancel <RUN_ID> --repo sofresh66/Leblanc`).
+2. Dans [Cloudflare Pages → leblanc-et-moi](https://dash.cloudflare.com/f3fbcbb1368768039312d4877ac6d48c/pages/view/leblanc-et-moi), ouvrir **Deployments**, sélectionner un ancien déploiement **Production** réussi et **Rollback to this deployment**.
+3. Vérifier le site et le sitemap. Ce rollback restaure les fichiers Pages, **pas les données Neon ni le Worker**. Toute restauration de données nécessite une procédure séparée et une sauvegarde exploitable.
+4. Corriger et valider la cause, puis réactiver : `gh workflow enable production.yml --repo sofresh66/Leblanc`.
+
+Pour republier manuellement un build vérifié sans ingestion, depuis Git Bash avec Wrangler connecté :
+
+```bash
+node scripts/verify-production-build.mjs && \
+CLOUDFLARE_ACCOUNT_ID='f3fbcbb1368768039312d4877ac6d48c' \
+npx --no-install wrangler pages deploy frontend/dist --project-name leblanc-et-moi --branch main
+```
+
+Ne pas utiliser `--force` : le projet Pages existe déjà. Le [rollback Pages](https://developers.cloudflare.com/pages/configuration/rollbacks/) peut cibler un précédent déploiement de production réussi.

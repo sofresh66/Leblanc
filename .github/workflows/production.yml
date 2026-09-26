@@ -1,0 +1,83 @@
+name: Production — ingestion et publication
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+      timezone: Europe/Paris
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: leblanc-production
+  cancel-in-progress: true
+
+jobs:
+  production:
+    if: github.repository == 'sofresh66/Leblanc' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      VITE_API_URL: ${{ vars.VITE_API_URL }}
+      VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
+      VITE_USE_MOCK: 'false'
+      SITEMAP_API_URL: ${{ vars.SITEMAP_API_URL }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Installer Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Vérifier la configuration sans afficher les secrets
+        env:
+          DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+          DATATOURISME_API_KEY: ${{ secrets.DATATOURISME_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          node --input-type=module <<'NODE'
+          const expected = {
+            CLOUDFLARE_ACCOUNT_ID: 'f3fbcbb1368768039312d4877ac6d48c',
+            VITE_API_URL: 'https://leblanc-api.elharchdenis.workers.dev/api',
+            VITE_SITE_URL: 'https://leblanc-et-moi.pages.dev',
+            SITEMAP_API_URL: 'https://leblanc-api.elharchdenis.workers.dev/api',
+          };
+          for (const [name, value] of Object.entries(expected)) {
+            if (process.env[name] !== value) throw new Error(`Variable absente ou incorrecte : ${name}`);
+          }
+          for (const name of ['DATABASE_URL_DIRECT', 'DATATOURISME_API_KEY', 'CLOUDFLARE_API_TOKEN']) {
+            if (!process.env[name]?.trim()) throw new Error(`Secret manquant : ${name}`);
+          }
+          console.log('Configuration de production présente.');
+          NODE
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Exécuter tous les tests
+        run: npm test
+
+      - name: Actualiser les événements DATAtourisme
+        env:
+          DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+          DATATOURISME_API_KEY: ${{ secrets.DATATOURISME_API_KEY }}
+        run: npm run db:ingest:datatourisme
+
+      - name: Construire le frontend de production
+        run: npm run build --workspace=@leblanc/frontend
+
+      - name: Vérifier le build et le sitemap
+        run: node scripts/verify-production-build.mjs
+
+      - name: Publier sur Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx --no-install wrangler pages deploy frontend/dist --project-name leblanc-et-moi --branch main
