@@ -1,3 +1,4 @@
+import { PriceBadge } from './PriceBadge';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -47,21 +48,6 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
           minimumFractionDigits: 0,
         }).format(event.distance / 1000)
       : null;
-
-  // Format price
-  let priceText = '';
-  if (event.isFree) {
-    priceText = t('price.free', { ns: 'events' });
-  } else if (event.priceMin !== null && event.priceMin !== undefined) {
-    const formattedAmount = new Intl.NumberFormat(currentLang, {
-      style: 'currency',
-      currency: event.currency || 'EUR',
-      maximumFractionDigits: 2,
-    }).format(event.priceMin);
-    priceText = t('price.from', { price: formattedAmount, ns: 'events' });
-  } else {
-    priceText = t('price.paid', { ns: 'events' });
-  }
 
   // Lieu et ville peuvent être nuls : aucun texte n'est affiché si les deux manquent.
   const venueCity = formatVenueCity(event);
@@ -116,7 +102,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
         )}
 
         {/* Category Badge */}
-        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+        <div className="absolute top-3 inset-x-3 flex flex-wrap items-center gap-1.5">
           <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full border shadow-sm ${badgeClass}`}>
             {t(`categories.${event.category}`, { ns: 'events' })}
           </span>
@@ -128,13 +114,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
               FR
             </span>
           )}
-        </div>
-
-        {/* Price tag */}
-        <div className="absolute top-3 right-3">
-          <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-white/95 text-brenne-950 shadow-sm backdrop-blur-sm border border-white">
-            {priceText}
-          </span>
+          <div className="ml-auto"><PriceBadge event={event} /></div>
         </div>
       </div>
 

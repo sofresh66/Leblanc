@@ -9,7 +9,8 @@
   "price": {
     "free": "Gratis",
     "from": "Vanaf {{price}}",
-    "paid": "Betaald"
+    "paid": "Betaald",
+    "unknown": "Prijs niet gespecificeerd"
   },
   "distance": {
     "km": "{{distance}} km"

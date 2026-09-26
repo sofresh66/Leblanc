@@ -4,6 +4,21 @@ import { MockEventsRepository } from './eventsRepository';
 describe('MockEventsRepository', () => {
   const repository = new MockEventsRepository();
 
+  it('exclut les tarifs inconnus des filtres gratuit et payant', async () => {
+    const first = (await repository.listEvents({ lang: 'fr', limit: 1 })).items[0]!;
+    const prices = new MockEventsRepository([
+      { ...first, id: 'e1000000-0000-4000-8000-000000000001', isFree: true },
+      { ...first, id: 'e1000000-0000-4000-8000-000000000002', isFree: false },
+      { ...first, id: 'e1000000-0000-4000-8000-000000000003', isFree: null },
+    ]);
+    expect((await prices.listEvents({ lang: 'fr' })).items).toHaveLength(3);
+    for (const isFree of [true, false]) {
+      const result = await prices.listEvents({ lang: 'fr', isFree });
+      expect(result.items).toHaveLength(1);
+      expect(result.items[0]?.isFree).toBe(isFree);
+    }
+  });
+
   it('gère une page pleine avec 20 items et nextCursor non null (NB2)', async () => {
     const response = await repository.listEvents({
       lang: 'fr',

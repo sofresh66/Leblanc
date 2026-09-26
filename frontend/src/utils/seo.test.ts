@@ -10,6 +10,14 @@ async function fixture() {
 }
 
 describe('SEO et sitemap', () => {
+  it('ne déclare ni gratuité ni offre pour un tarif inconnu', async () => {
+    const schema = eventStructuredData(
+      { ...(await fixture()), isFree: null, priceMin: null },
+      'https://example.test/event', 'https://example.test/image',
+    );
+    expect(schema).not.toHaveProperty('offers');
+    expect(schema).not.toHaveProperty('isAccessibleForFree');
+  });
   it('sérialise les contenus externes sans fermeture de script HTML', () => {
     const value = { description: '</script><script>alert(1)</script>' };
     const json = serializeJsonLd(value);

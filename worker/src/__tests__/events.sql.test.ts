@@ -20,6 +20,13 @@ const row: EventDbRow = {
 beforeEach(() => executeQuery.mockReset());
 
 describe('Contrats des requêtes SQL Worker', () => {
+  it.each([true, false])('filtre par égalité SQL stricte avec isFree=%s', async (isFree) => {
+    executeQuery.mockResolvedValue([]);
+    await listEventsFromDb('test', parseEventListQuery(new URL(`https://example.test/?isFree=${isFree}`)), now);
+    expect(executeQuery.mock.calls[0]?.[1]).toMatch(/AND e\.is_free = \$\d+/);
+    expect(executeQuery.mock.calls[0]?.[2]).toContain(isFree);
+    expect(executeQuery.mock.calls[0]?.[1]).not.toMatch(/COALESCE\(e\.is_free/);
+  });
   it('applique une borne exclusive aux dates seules et inclusive aux instants', async () => {
     executeQuery.mockResolvedValue([]);
     await listEventsFromDb('test', parseEventListQuery(new URL('https://example.test/?to=2026-10-24')), now);

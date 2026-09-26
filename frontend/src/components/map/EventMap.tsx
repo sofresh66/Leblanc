@@ -1,3 +1,4 @@
+import { PriceBadge } from '../events/PriceBadge';
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -143,10 +144,8 @@ export const EventMap: React.FC<EventMapProps> = ({
 
                   {venueCity && <p className="text-xs text-gray-600 truncate">{venueCity}</p>}
 
-                  <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-gray-900">
-                      {event.isFree ? t('price.free', { ns: 'events' }) : t('price.paid', { ns: 'events' })}
-                    </span>
+                  <div className="pt-2 border-t border-gray-100 flex flex-wrap gap-2 items-center justify-between">
+                    <PriceBadge event={event} />
                     <Link
                       to={detailUrl}
                       className="text-xs font-bold text-brenne-700 hover:text-brenne-900 underline"

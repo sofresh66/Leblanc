@@ -26,6 +26,26 @@ const fixture = () => ({
 });
 
 describe('normaliseur DATAtourisme', () => {
+  it.each([{}, 'invalid', [null], [{ priceSpecification: [null] }],
+    [{ priceSpecification: [{ price: -1 }] }],
+    [{ priceSpecification: [{ price: 0 }, { price: 'invalid' }] }],
+  ].map((offers) => ({ offers })))('signale une offre mal formée sans annoncer de gratuité : $offers', ({ offers }) => {
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const result = normalizeDatatourismeEvent({ ...fixture(), offers });
+      expect(result.event.isFree).toBeNull();
+      expect(result.event.priceMin).toBeNull();
+      expect(warning).toHaveBeenCalledOnce();
+    } finally { warning.mockRestore(); }
+  });
+
+  it('conserve le minimum positif quand gratuité et tarifs payants coexistent', () => {
+    const raw = fixture();
+    raw.offers = [{ priceSpecification: [{ price: 0 }, { price: 50 }, { minPrice: [25] }] }];
+    const result = normalizeDatatourismeEvent(raw);
+    expect(result.event.isFree).toBe(false);
+    expect(result.event.priceMin).toBe(25);
+  });
   it('convertit les champs et heures complètes', () => {
     const result = normalizeDatatourismeEvent(fixture());
     expect(result.ok).toBe(true);
@@ -53,23 +73,23 @@ describe('normaliseur DATAtourisme', () => {
     delete raw.offers;
     const result = normalizeDatatourismeEvent(raw);
     expect(result.event.imageUrl).toBeNull();
-    expect(result.event.isFree).toBe(true);
+    expect(result.event.isFree).toBeNull();
     expect(result.event.priceMin).toBeNull();
   });
 
-  it('traite offers null comme gratuit sans prix affiché', () => {
+  it('traite offers null comme tarif non précisé', () => {
     const raw = fixture();
     raw.offers = null;
     const result = normalizeDatatourismeEvent(raw);
-    expect(result.event.isFree).toBe(true);
+    expect(result.event.isFree).toBeNull();
     expect(result.event.priceMin).toBeNull();
   });
 
-  it('traite offers vide comme gratuit sans prix affiché', () => {
+  it('traite offers vide comme tarif non précisé', () => {
     const raw = fixture();
     raw.offers = [];
     const result = normalizeDatatourismeEvent(raw);
-    expect(result.event.isFree).toBe(true);
+    expect(result.event.isFree).toBeNull();
     expect(result.event.priceMin).toBeNull();
   });
 
@@ -97,13 +117,13 @@ describe('normaliseur DATAtourisme', () => {
     expect(result.event.priceMin).toBeNull();
   });
 
-  it('signale une spécification absente et applique le défaut gratuit', () => {
+  it('signale une spécification absente et conserve un tarif non précisé', () => {
     const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
     try {
       const raw = fixture();
       raw.offers = [{ priceSpecification: [] }];
       const result = normalizeDatatourismeEvent(raw);
-      expect(result.event.isFree).toBe(true);
+      expect(result.event.isFree).toBeNull();
       expect(result.event.priceMin).toBeNull();
       expect(JSON.parse(warning.mock.calls[0][0]).code).toBe('malformed_price_specification');
     } finally {
@@ -117,7 +137,7 @@ describe('normaliseur DATAtourisme', () => {
       const raw = fixture();
       raw.offers = [{ priceSpecification: [{ price: 'quinze' }] }];
       const result = normalizeDatatourismeEvent(raw);
-      expect(result.event.isFree).toBe(true);
+      expect(result.event.isFree).toBeNull();
       expect(result.event.priceMin).toBeNull();
       expect(warning).toHaveBeenCalledOnce();
     } finally {
@@ -125,14 +145,14 @@ describe('normaliseur DATAtourisme', () => {
     }
   });
 
-  it('ne déduit pas un tarif général payant d’un seul tarif réduit', () => {
+  it('ne présente pas un tarif réduit positif comme gratuit', () => {
     const raw = fixture();
     raw.offers = [
       { priceSpecification: [{ price: 15, hasEligiblePolicy: [{ key: 'ChildRate' }] }] },
     ];
     const result = normalizeDatatourismeEvent(raw);
-    expect(result.event.isFree).toBe(true);
-    expect(result.event.priceMin).toBeNull();
+    expect(result.event.isFree).toBe(false);
+    expect(result.event.priceMin).toBe(15);
   });
 
   it('rejette un titre français absent', () => {

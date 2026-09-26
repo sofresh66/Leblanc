@@ -194,7 +194,7 @@ Ce script utilise Chromium via Playwright, lit les données réelles et contrôl
 
 Actions utilisées : `actions/checkout@v5` et `actions/setup-node@v5`, dont le runtime interne est Node.js 24. `setup-node` installe également Node.js 24 pour les commandes du projet et gère le cache npm ; aucune action `cache` ou `upload-artifact` séparée n’est utilisée. Le runner reste `ubuntu-latest`.
 
-Le workflow exécute, dans cet ordre : checkout, Node.js 24, contrôle de configuration, `npm ci`, `npm test`, ingestion DATAtourisme complète, build frontend, vérification du build, publication Pages. Les tests incluent les 139 tests existants et les nouveaux tests du contrôle de publication. Les secrets sont transmis uniquement aux étapes de contrôle, d’ingestion ou de publication qui en ont besoin ; le build ne reçoit aucun secret de base de données ou d’API DATAtourisme.
+Le workflow exécute, dans cet ordre : checkout, Node.js 24, contrôle de configuration, `npm ci`, `npm test`, `npm run db:migrate`, ingestion DATAtourisme complète, build frontend, vérification du build, publication Pages. Les secrets sont transmis uniquement aux étapes de contrôle, de migration, d’ingestion ou de publication qui en ont besoin ; le build ne reçoit aucun secret de base de données ou d’API DATAtourisme.
 
 Déclenchements : `workflow_dispatch` et `0 3 * * *` avec `timezone: Europe/Paris`, donc 3 h locales toute l’année. Le workflow doit être présent sur `main`. Aucune ingestion n’est déclenchée par un push. Le job est limité au dépôt `sofresh66/Leblanc` et à `main`, avec `contents: read`, `persist-credentials: false`, runner Linux standard et timeout global de 15 minutes.
 
@@ -280,7 +280,7 @@ Vérifier le résultat `success` de l’ingestion dans les logs, la taille et le
 
 ### Échecs, annulations et retour arrière
 
-Une étape en échec bloque les étapes suivantes : aucune publication si tests, ingestion, build ou vérification échouent. Le déploiement Pages précédent reste servi tant qu’une nouvelle publication n’a pas réussi. Aucun déploiement Worker, migration, suppression de production ou restauration automatique n’est lancé.
+Une étape en échec bloque les étapes suivantes : aucune publication si tests, migration, ingestion, build ou vérification échouent. Le déploiement Pages précédent reste servi tant qu’une nouvelle publication n’a pas réussi. Les migrations sont appliquées par le runner existant (verrou consultatif, checksums et transaction par fichier). Aucun déploiement Worker, suppression de production ou restauration automatique n’est lancé.
 
 **Limite liée à Neon :** l’ingestion existante écrit par transactions de lots. Un échec après certains lots peut donc avoir déjà actualisé des données visibles via l’API, même sans nouvelle publication Pages. Il ne s’agit pas d’une transaction globale et le workflow ne promet pas de rollback de la base.
 
@@ -302,3 +302,46 @@ npx --no-install wrangler pages deploy frontend/dist --project-name leblanc-et-m
 ```
 
 Ne pas utiliser `--force` : le projet Pages existe déjà. Le [rollback Pages](https://developers.cloudflare.com/pages/configuration/rollbacks/) peut cibler un précédent déploiement de production réussi.
+
+### Tarifs DATAtourisme : trois états
+
+Décision : **option B**, `events.is_free` / `isFree` nullable, sans champ `price_status` redondant.
+
+| Valeur | Signification | Affichage |
+| --- | --- | --- |
+| `true` | Gratuité confirmée (prix zéro ou politique explicite `Free`) | Badge vert « Gratuit » |
+| `false` | Prix positif structuré | Badge orange « Dès X € », ou « Payant » sans montant |
+| `null` | Prix non renseigné ou inexploitable | Badge gris « Tarif non précisé » |
+
+`offers` absent, null ou vide ne prouve pas la gratuité. Une offre mal formée produit un tarif inconnu et un warning ne contenant que l'identifiant source et un code. Un prix positif, même réduit ou accompagné d'une gratuité pour certains publics, prime ; le minimum positif est conservé. Aucun prix n'est déduit du texte libre. `priceMin` reste null pour la gratuité et l'inconnu. Les autres sources gardent leur normalisation actuelle.
+
+La migration `005_nullable_event_price.sql` retire seulement `NOT NULL` ; elle ne requalifie aucune ligne historique. La réingestion applique le nouveau classement sans changer les identifiants. L'API préserve null, les filtres Gratuit/Payant utilisent une égalité stricte (les tarifs inconnus restent visibles dans « Tous »). Le badge partagé couvre cartes, fiches et infobulles en six langues. Le JSON-LD omet `offers` et `isAccessibleForFree` pour un tarif inconnu.
+
+**Premier déploiement, ordre convenu avec l'éditeur :**
+
+1. Valider les tests et le build, puis l'éditeur commit et push l'ensemble. Ne pas lancer le workflow à ce stade. Éviter le créneau automatique de 03 h Paris ; si nécessaire désactiver temporairement le workflow pendant cette transition et le réactiver après le déploiement Worker.
+2. Depuis la racine du dépôt dans Git Bash, construire le module partagé puis déployer le Worker :
+
+   ```bash
+   npm run build --workspace=@leblanc/shared && \
+   npx --no-install wrangler deploy --config worker/wrangler.jsonc
+   ```
+
+   Le fichier de configuration cible `leblanc-api`, compte `f3fbcbb1368768039312d4877ac6d48c`. Le secret `DATABASE_URL` déjà présent reste utilisé.
+3. Vérifier `/health` et les endpoints événements. Avant migration/réingestion, « Nuit de gongs » peut encore avoir `isFree: true` : le déploiement Worker seul ne corrige pas la base.
+4. Lancer manuellement Production sur `main` : tests → migrations → ingestion → build → vérification sitemap → publication Pages. Aucun nouveau secret n'est requis.
+5. Vérifier la fiche `/fr/evenements/4d6ec782-e715-4742-916e-90bdba57b6ca`, la réponse API avec `isFree: null, priceMin: null`, les filtres et les comptages SQL ci-dessous.
+
+**Limite de cet ordre :** entre la réingestion et la publication Pages, l'ancien frontend peut refuser les réponses contenant null. Cette fenêtre se prolonge si le build ou le déploiement échoue ; les onglets ayant chargé l'ancien JavaScript nécessitent un rechargement. Une transition sans cette fenêtre exige de publier le frontend compatible avant la réingestion. Après migration, ne pas restaurer un ancien frontend ou Worker incompatible avec null ; republier une version corrigée qui conserve ce contrat. Ne pas rétablir `NOT NULL` tant que des lignes ont un tarif inconnu.
+
+Audit du 26 septembre 2026, avant réingestion : 189 événements publiés DATAtourisme (93 marqués gratuits, 96 payants). Lecture de la source à cet instant : 186 événements ; simulation du nouveau normaliseur : 57 gratuits, 96 payants, 33 inconnus. Ce n'est pas un comptage SQL après ingestion : les événements déjà stockés mais absents de la réponse courante ne sont pas supprimés par l'ingestion. Les chiffres finaux doivent être mesurés.
+
+```sql
+SELECT is_free, price_min IS NULL AS price_null, COUNT(*)::int
+FROM events
+WHERE status = 'published' AND id IN (
+  SELECT event_id FROM source_records WHERE source = 'datatourisme'
+)
+GROUP BY is_free, price_null
+ORDER BY is_free, price_null;
+```

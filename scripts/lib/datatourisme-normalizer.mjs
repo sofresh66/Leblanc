@@ -84,14 +84,23 @@ function categoryFor(types) {
 }
 
 function pricing(offers) {
-  const free = (warning = null) => ({ isFree: true, priceMin: null, currency: 'EUR', warning });
-  if (offers == null || (Array.isArray(offers) && offers.length === 0)) return free();
-  if (!Array.isArray(offers)) return free('malformed_offers');
+  const unknown = (warning = null) => ({ isFree: null, priceMin: null, currency: 'EUR', warning });
+  const free = () => ({ isFree: true, priceMin: null, currency: 'EUR', warning: null });
+  if (offers == null || (Array.isArray(offers) && offers.length === 0)) return unknown();
+  if (!Array.isArray(offers)) return unknown('malformed_offers');
+  if (offers.some((offer) =>
+    !Array.isArray(offer?.priceSpecification) || offer.priceSpecification.length === 0,
+  )) {
+    return unknown('malformed_price_specification');
+  }
 
-  const specs = offers.flatMap((offer) =>
-    Array.isArray(offer?.priceSpecification) ? offer.priceSpecification : [],
-  );
-  if (specs.length === 0) return free('malformed_price_specification');
+  const specs = offers.flatMap((offer) => offer.priceSpecification);
+  const validPrice = (value) => typeof value === 'number' && Number.isFinite(value) && value >= 0;
+  if (specs.some((spec) => !spec || typeof spec !== 'object' ||
+    (spec.price != null && !validPrice(spec.price)) ||
+    (spec.minPrice != null && (!Array.isArray(spec.minPrice) || !spec.minPrice.every(validPrice))))) {
+    return unknown('malformed_price_specification');
+  }
 
   const hasFreePolicy = specs.some(
     (spec) =>
@@ -100,28 +109,19 @@ function pricing(offers) {
   );
   const prices = specs.flatMap((spec) => {
     const values = [spec?.price, ...(Array.isArray(spec?.minPrice) ? spec.minPrice : [])];
-    const restricted =
-      Array.isArray(spec?.hasEligiblePolicy) &&
-      spec.hasEligiblePolicy.length > 0 &&
-      spec.hasEligiblePolicy.every(
-        (policy) => policy?.key !== 'BaseRateFullRate' && policy?.key !== 'FullRate',
-      );
-    return values
-      .filter((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0)
-      .map((value) => ({ value, restricted }));
+    return values.filter(validPrice);
   });
-  const generalPositive = prices
-    .filter((price) => price.value > 0 && !price.restricted)
-    .map((price) => price.value);
-  if (generalPositive.length > 0) {
+  const positivePrices = prices.filter((price) => price > 0);
+  // Un tarif positif, même réduit, interdit d'annoncer une gratuité générale.
+  if (positivePrices.length > 0) {
     return {
       isFree: false,
-      priceMin: Math.min(...prices.filter((price) => price.value > 0).map((price) => price.value)),
+      priceMin: Math.min(...positivePrices),
       currency: 'EUR',
       warning: null,
     };
   }
-  if (!hasFreePolicy && prices.length === 0) return free('malformed_price_specification');
+  if (!hasFreePolicy && prices.length === 0) return unknown('malformed_price_specification');
   return free();
 }
 

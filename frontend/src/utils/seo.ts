@@ -33,7 +33,7 @@ export function eventStructuredData(
         : {}),
       geo: { '@type': 'GeoCoordinates', latitude: event.latitude, longitude: event.longitude },
     },
-    ...(event.isFree || event.priceMin !== null
+    ...(event.isFree === true || (event.isFree === false && event.priceMin !== null)
       ? {
           offers: {
             '@type': 'Offer',
@@ -43,7 +43,7 @@ export function eventStructuredData(
           },
         }
       : {}),
-    isAccessibleForFree: event.isFree,
+    ...(event.isFree !== null ? { isAccessibleForFree: event.isFree } : {}),
     // Le contrat API ne fournit pas d'organisateur : ne pas confondre avec la source.
   };
 }

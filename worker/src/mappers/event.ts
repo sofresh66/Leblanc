@@ -28,7 +28,7 @@ export interface EventDbRow {
   longitude: number | string;
   public_url: string | null;
   image_url: string | null;
-  is_free: boolean;
+  is_free: boolean | null;
   price_min: number | string | null;
   currency?: string | null | undefined;
   starts_at: string | Date;
@@ -85,7 +85,7 @@ export function mapDbRowToEvent(row: EventDbRow, lang: SupportedLanguage): Event
     latitude: typeof row.latitude === 'string' ? parseFloat(row.latitude) : row.latitude,
     longitude: typeof row.longitude === 'string' ? parseFloat(row.longitude) : row.longitude,
     imageUrl: row.image_url,
-    isFree: Boolean(row.is_free),
+    isFree: row.is_free,
     priceMin:
       row.price_min !== null && row.price_min !== undefined
         ? typeof row.price_min === 'string'

@@ -1,3 +1,4 @@
+import { PriceBadge } from '../components/events/PriceBadge';
 import { PageSeo } from '../components/PageSeo';
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -134,21 +135,6 @@ export const EventPage: React.FC = () => {
         }).format(event.distance / 1000)
       : null;
 
-  // Format price
-  let priceText = '';
-  if (event.isFree) {
-    priceText = t('price.free', { ns: 'events' });
-  } else if (event.priceMin !== null && event.priceMin !== undefined) {
-    const formattedAmount = new Intl.NumberFormat(currentLang, {
-      style: 'currency',
-      currency: event.currency || 'EUR',
-      maximumFractionDigits: 2,
-    }).format(event.priceMin);
-    priceText = t('price.from', { price: formattedAmount, ns: 'events' });
-  } else {
-    priceText = t('price.paid', { ns: 'events' });
-  }
-
   // Category styles
   const categoryBadgeColors: Record<string, string> = {
     culture: 'bg-violet-100 text-violet-900 border-violet-200',
@@ -201,7 +187,7 @@ export const EventPage: React.FC = () => {
             <span className={`px-3 py-1 text-xs font-semibold rounded-full border shadow-sm ${badgeClass}`}>
               {t(`categories.${event.category}`, { ns: 'events' })}
             </span>
-            <span className="px-3 py-1 text-xs font-bold rounded-full bg-white text-brenne-950 shadow-sm">{priceText}</span>
+            <PriceBadge event={event} />
             {event.isFallback && (
               <span className="px-3 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-950 backdrop-blur-sm tracking-wide">
                 {t('details.fallbackNotice', { ns: 'events' })}
@@ -360,7 +346,7 @@ export const EventPage: React.FC = () => {
             <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
               {t('price.label', { ns: 'filters' })}
             </span>
-            <span className="text-2xl font-bold text-gray-900">{priceText}</span>
+            <PriceBadge event={event} />
           </div>
 
           {/* Bloc Lieu & Distance */}

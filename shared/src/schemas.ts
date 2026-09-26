@@ -48,7 +48,8 @@ export const RawEventSchema = z.object({
         'imageUrl doit être une URL complète (http/https) ou un chemin relatif commençant par /',
     })
     .nullable(),
-  isFree: z.boolean(),
+  // null : aucune information tarifaire structurée exploitable.
+  isFree: z.boolean().nullable(),
   priceMin: z.number().nonnegative().nullable(),
   currency: z.string().default(DEFAULT_CURRENCY),
   publicUrl: z.string().url().nullable(),

@@ -36,6 +36,12 @@ describe('Mappers de données DB (worker/src/mappers/event.ts)', () => {
     distance: 120,
   };
 
+  it('préserve un tarif inconnu dans la liste et la fiche', () => {
+    const row = { ...sampleRow, is_free: null, price_min: null };
+    expect(mapDbRowToEvent(row, 'fr').isFree).toBeNull();
+    expect(mapDbRowToEventDetail(row, [], 'fr').isFree).toBeNull();
+  });
+
   it('mappe une ligne DB complète vers un Event avec langue directe', () => {
     const eventEn = mapDbRowToEvent(sampleRow, 'en');
 

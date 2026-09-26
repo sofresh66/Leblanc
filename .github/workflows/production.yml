@@ -65,6 +65,12 @@ jobs:
       - name: Exécuter tous les tests
         run: npm test
 
+      # Déployer manuellement le Worker compatible avant la première exécution.
+      - name: Appliquer les migrations de base de données
+        env:
+          DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+        run: npm run db:migrate
+
       - name: Actualiser les événements DATAtourisme
         env:
           DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}

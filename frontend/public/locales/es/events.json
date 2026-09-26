@@ -9,7 +9,8 @@
   "price": {
     "free": "Gratis",
     "from": "Desde {{price}}",
-    "paid": "De pago"
+    "paid": "De pago",
+    "unknown": "Precio no especificado"
   },
   "distance": {
     "km": "{{distance}} km"
