@@ -123,5 +123,16 @@
       "body": "Pour toute question sur vos données, contactez Denis El Harch à l’adresse ci-dessous. Si vous écrivez par courriel, votre adresse et les informations transmises seront utilisées pour traiter votre demande."
     },
     "creditsLink": "Consulter les crédits et les mentions légales"
+  },
+  "eat": {
+    "title": "Où manger autour du Blanc",
+    "comingSoon": "Bientôt disponible",
+    "description": "Nous préparons une sélection des meilleurs restaurants, producteurs et marchés locaux autour du Blanc. Vous pourrez bientôt découvrir les saveurs du territoire et préparer vos prochaines sorties gourmandes.",
+    "items": {
+      "restaurants": "Restaurants et bistrots locaux",
+      "producers": "Producteurs et marchés fermiers",
+      "specialties": "Spécialités du terroir"
+    },
+    "backHome": "Retour à l’accueil"
   }
 }

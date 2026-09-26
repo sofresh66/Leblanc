@@ -123,5 +123,16 @@
       "body": "Per domande sui tuoi dati, contatta Denis El Harch all’indirizzo indicato qui sotto. Se invii un’e-mail, il tuo indirizzo e le informazioni fornite saranno utilizzati per gestire la richiesta."
     },
     "creditsLink": "Consulta i crediti e le note legali"
+  },
+  "eat": {
+    "title": "Dove mangiare nei dintorni di Le Blanc",
+    "comingSoon": "Prossimamente",
+    "description": "Stiamo preparando una selezione dei migliori ristoranti, produttori e mercati locali nei dintorni di Le Blanc. Presto potrai scoprire i sapori del territorio e organizzare le tue prossime gite gastronomiche.",
+    "items": {
+      "restaurants": "Ristoranti e bistrot locali",
+      "producers": "Produttori e mercati contadini",
+      "specialties": "Specialità del territorio"
+    },
+    "backHome": "Torna alla home"
   }
 }

@@ -73,9 +73,10 @@ describe('SEO et sitemap', () => {
       fetcher,
     );
     expect(result.partial).toBe(false);
-    expect(result.count).toBe(42);
+    expect(result.count).toBe(48);
     expect(result.xml).toContain(`/de/veranstaltungen/${event.id}`);
     expect(result.xml).toContain('/it/chi-siamo');
+    for (const path of ["/fr/ou-manger","/en/where-to-eat","/es/donde-comer","/de/wo-essen","/it/dove-mangiare","/nl/waar-eten"]) expect(result.xml).toContain(path);
     for (const path of ['/fr/confidentialite', '/en/privacy', '/es/privacidad', '/de/datenschutz', '/it/privacy', '/nl/privacy']) expect(result.xml).toContain(path);
     for (const path of ['/fr/credits', '/en/credits', '/es/creditos', '/de/bildnachweise', '/it/crediti', '/nl/credits']) expect(result.xml).toContain(path);
     expect(String(fetcher.mock.calls[1]![0])).toContain('cursor=page2');
@@ -84,7 +85,7 @@ describe('SEO et sitemap', () => {
     expect(result.robots).toContain('Sitemap: https://example.test/sitemap.xml');
   });
 
-  it('revient aux seules 36 pages en cas de panne pendant la pagination', async () => {
+  it('revient aux seules 42 pages en cas de panne pendant la pagination', async () => {
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(
@@ -93,11 +94,11 @@ describe('SEO et sitemap', () => {
       .mockRejectedValueOnce(new Error('offline'));
     const result = await generateSitemap('https://example.test', '/api', fetcher);
     expect(result.partial).toBe(true);
-    expect(result.count).toBe(36);
+    expect(result.count).toBe(42);
     expect(result.xml).not.toContain('/evenements/');
   });
 
-  it('revient aux 36 pages pour une réponse invalide ou HTTP 503', async () => {
+  it('revient aux 42 pages pour une réponse invalide ou HTTP 503', async () => {
     for (const response of [Response.json({ invalid: true }), new Response('', { status: 503 })]) {
       const result = await generateSitemap(
         'https://example.test',
@@ -105,7 +106,7 @@ describe('SEO et sitemap', () => {
         vi.fn<typeof fetch>().mockResolvedValue(response),
       );
       expect(result.partial).toBe(true);
-      expect(result.count).toBe(36);
+      expect(result.count).toBe(42);
     }
   });
 
@@ -117,7 +118,7 @@ describe('SEO et sitemap', () => {
       );
     const result = await generateSitemap('https://example.test', '/api', fetcher);
     expect(result.partial).toBe(true);
-    expect(result.count).toBe(36);
+    expect(result.count).toBe(42);
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });

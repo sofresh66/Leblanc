@@ -123,5 +123,16 @@
       "body": "For questions about your data, contact Denis El Harch at the address below. If you send an email, your address and the information you provide will be used to handle your request."
     },
     "creditsLink": "View credits and legal notice"
+  },
+  "eat": {
+    "title": "Where to eat around Le Blanc",
+    "comingSoon": "Coming soon",
+    "description": "We are preparing a selection of the best restaurants, producers and local markets around Le Blanc. Soon you will be able to discover local flavours and plan your next food outing.",
+    "items": {
+      "restaurants": "Local restaurants and bistros",
+      "producers": "Local producers and farmers’ markets",
+      "specialties": "Regional specialities"
+    },
+    "backHome": "Back to home"
   }
 }

@@ -1,6 +1,7 @@
 import { resolveRoute } from './routeMapping';
 
 export const pageImports = {
+  eat: () => import('../pages/EatPage').then((module) => ({ default: module.EatPage })),
   list: () => import('../pages/ListPage'),
   map: () => import('../pages/MapPage'),
   events: () => import('../pages/EventPage'),

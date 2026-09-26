@@ -22,6 +22,7 @@ export function Layout() {
   const navItems = [
     { to: getLocalizedPath('home'), label: t('nav:home'), end: true },
     { to: getLocalizedPath('map'), label: t('nav:map'), end: false },
+    { to: getLocalizedPath('eat'), label: t('nav:eat'), end: false },
     { to: getLocalizedPath('list'), label: t('nav:list'), end: false },
     { to: getLocalizedPath('about'), label: t('nav:about'), end: false },
   ];
@@ -65,7 +66,7 @@ export function Layout() {
             Le Blanc <span className="text-brenne-700">&amp;</span> Moi
           </NavLink>
 
-          <nav aria-label={t('nav:menu')} className="hidden md:flex items-center gap-8 lg:gap-10">
+          <nav aria-label={t('nav:menu')} className="hidden md:flex items-center gap-4 lg:gap-8">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}

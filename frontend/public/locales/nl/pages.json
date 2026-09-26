@@ -123,5 +123,16 @@
       "body": "Neem voor vragen over uw gegevens contact op met Denis El Harch via het onderstaande adres. Als u een e-mail stuurt, worden uw adres en de verstrekte informatie gebruikt om uw verzoek te behandelen."
     },
     "creditsLink": "Bekijk de fotocredits en juridische informatie"
+  },
+  "eat": {
+    "title": "Waar eten in en rond Le Blanc",
+    "comingSoon": "Binnenkort beschikbaar",
+    "description": "We bereiden een selectie voor van de beste restaurants, producenten en lokale markten in en rond Le Blanc. Binnenkort kun je de smaken van de streek ontdekken en je volgende culinaire uitstapje plannen.",
+    "items": {
+      "restaurants": "Lokale restaurants en bistro’s",
+      "producers": "Lokale producenten en boerenmarkten",
+      "specialties": "Streekspecialiteiten"
+    },
+    "backHome": "Terug naar de homepage"
   }
 }

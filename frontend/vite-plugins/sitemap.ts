@@ -5,7 +5,7 @@ import { buildLocalizedPath, type RouteSection } from '../src/routes/routeMappin
 
 export const SITEMAP_WARNING =
   'Sitemap généré sans les fiches événements (API indisponible). Rebuild recommandé.';
-const MAIN_SECTIONS: RouteSection[] = ['home', 'list', 'map', 'about', 'credits', 'privacy'];
+const MAIN_SECTIONS: RouteSection[] = ['home', 'list', 'map', 'about', 'credits', 'privacy', 'eat'];
 const escapeXml = (value: string) =>
   value.replace(
     /[<>&"']/g,
@@ -53,7 +53,7 @@ export async function generateSitemap(
     } while (cursor);
   } catch {
     partial = true;
-    ids.clear(); // Une panne en cours de pagination revient aussi aux 36 pages principales.
+    ids.clear(); // Une panne en cours de pagination revient aussi aux 42 pages principales.
   }
   for (const id of [...ids].sort()) {
     for (const lang of SUPPORTED_LANGUAGES)

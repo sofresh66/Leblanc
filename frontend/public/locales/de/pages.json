@@ -123,5 +123,16 @@
       "body": "Bei Fragen zu Ihren Daten wenden Sie sich an Denis El Harch unter der unten angegebenen Adresse. Wenn Sie eine E-Mail senden, werden Ihre Adresse und die übermittelten Informationen zur Bearbeitung Ihrer Anfrage verwendet."
     },
     "creditsLink": "Bildnachweise und Impressum ansehen"
+  },
+  "eat": {
+    "title": "Essen gehen rund um Le Blanc",
+    "comingSoon": "Bald verfügbar",
+    "description": "Wir stellen eine Auswahl der besten Restaurants, regionalen Erzeuger und Wochenmärkte rund um Le Blanc zusammen. Bald können Sie die Spezialitäten der Region entdecken und Ihren nächsten kulinarischen Ausflug planen.",
+    "items": {
+      "restaurants": "Lokale Restaurants und Bistros",
+      "producers": "Regionale Erzeuger und Bauernmärkte",
+      "specialties": "Regionale Spezialitäten"
+    },
+    "backHome": "Zur Startseite"
   }
 }
