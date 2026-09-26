@@ -11,9 +11,9 @@ import { downloadIcsFile } from '../utils/ics';
 
 export const EventPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { t, i18n } = useTranslation(['events', 'pages', 'common', 'errors']);
+  const { t, i18n } = useTranslation(['events', 'pages', 'common', 'errors', 'filters']);
   const [copied, setCopied] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const { formatDate } = useLocalizedDate();
 
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
@@ -46,14 +46,14 @@ export const EventPage: React.FC = () => {
   // État de chargement
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-8 animate-pulse" role="status" aria-busy="true">
+      <div className="mx-auto space-y-8 py-6 sm:py-8 animate-pulse" role="status" aria-busy="true">
         <div className="w-full aspect-[21/9] bg-gray-200 rounded-2xl" />
         <div className="space-y-4">
           <div className="h-8 bg-gray-200 rounded w-2/3" />
           <div className="h-4 bg-gray-200 rounded w-1/3" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 min-w-0 space-y-4">
             <div className="h-4 bg-gray-200 rounded w-full" />
             <div className="h-4 bg-gray-200 rounded w-full" />
             <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -81,7 +81,7 @@ export const EventPage: React.FC = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h1 className="text-xl font-bold text-gray-900 mb-2">
+        <h1 className="font-display text-[28px] font-bold text-brenne-950 mb-2">
           {t('event.notFound', { ns: 'pages' })}
         </h1>
         <p className="text-sm text-gray-500 mb-6">
@@ -148,10 +148,10 @@ export const EventPage: React.FC = () => {
 
   // Category styles
   const categoryBadgeColors: Record<string, string> = {
-    culture: 'bg-creuse-100 text-creuse-800 border-creuse-200',
-    sport: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    fete: 'bg-amber-100 text-amber-800 border-amber-200',
-    association: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    culture: 'bg-violet-100 text-violet-900 border-violet-200',
+    sport: 'bg-creuse-100 text-creuse-900 border-creuse-200',
+    fete: 'bg-orange-100 text-orange-900 border-orange-200',
+    association: 'bg-brenne-100 text-brenne-900 border-brenne-200',
     autre: 'bg-gray-100 text-gray-800 border-gray-200',
   };
   const badgeClass = categoryBadgeColors[event.category] || categoryBadgeColors.autre;
@@ -161,12 +161,12 @@ export const EventPage: React.FC = () => {
   const venueCity = formatVenueCity(event);
 
   return (
-    <article className="max-w-4xl mx-auto space-y-8">
+    <article className="mx-auto space-y-8 sm:space-y-12 py-6 sm:py-8">
       {/* Navigation retour */}
       <div>
         <Link
           to={buildLocalizedPath('list', currentLang)}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-brenne-700 hover:text-brenne-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-creuse-800 hover:text-creuse-900 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -176,41 +176,42 @@ export const EventPage: React.FC = () => {
       </div>
 
       {/* Hero Header */}
-      <div className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-brenne-900 text-white">
-        {event.imageUrl && !imageError ? (
-          <div className="relative aspect-[21/9] w-full">
+      <div className="relative isolate rounded-2xl overflow-hidden shadow-md bg-brenne-900 text-white">
+        {event.imageUrl && event.imageUrl !== failedImageUrl ? (
+          <div className="absolute inset-0 -z-10">
             <img
               src={event.imageUrl}
               alt={event.title}
-              onError={() => setImageError(true)}
-              className="w-full h-full object-cover opacity-80"
+              onError={() => setFailedImageUrl(event.imageUrl ?? null)}
+              className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-gray-950/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/50" />
           </div>
         ) : (
-          <div className="py-14 px-8 bg-gradient-to-r from-brenne-800 to-brenne-900" />
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-br from-brenne-700 via-brenne-900 to-brenne-950"><div className="absolute -right-16 -top-16 h-80 w-80 rounded-full border-[40px] border-white/5" /><div className="absolute -bottom-24 right-20 h-72 w-72 rounded-full border border-white/10" /></div>
         )}
 
         {/* Hero Content Overlay / Header */}
-        <div className="p-6 sm:p-8 space-y-4">
+        <div className="relative flex min-h-[360px] flex-col justify-end p-6 pt-20 sm:min-h-[460px] sm:p-12 sm:pt-28 space-y-6">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`px-3 py-1 text-xs font-semibold rounded-full border shadow-sm ${badgeClass}`}>
               {t(`categories.${event.category}`, { ns: 'events' })}
             </span>
+            <span className="px-3 py-1 text-xs font-bold rounded-full bg-white text-brenne-950 shadow-sm">{priceText}</span>
             {event.isFallback && (
-              <span className="px-3 py-1 text-xs font-bold rounded-full bg-amber-500/90 text-white backdrop-blur-sm tracking-wide">
+              <span className="px-3 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-950 backdrop-blur-sm tracking-wide">
                 {t('details.fallbackNotice', { ns: 'events' })}
               </span>
             )}
           </div>
 
-          <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
+          <h1 className="max-w-4xl font-display text-3xl sm:text-[40px] font-bold text-white leading-[1.3] break-words [overflow-wrap:anywhere]">
             {event.title}
           </h1>
 
           <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-gray-200">
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-brenne-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-4 h-4 text-brenne-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>{formattedDate}</span>
@@ -218,7 +219,7 @@ export const EventPage: React.FC = () => {
 
             {venueCity && (
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-brenne-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <svg className="w-4 h-4 text-brenne-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -230,12 +231,12 @@ export const EventPage: React.FC = () => {
       </div>
 
       {/* Barre d'actions principales */}
-      <div className="flex flex-wrap items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex flex-wrap items-center gap-3 p-5 sm:p-6 bg-white rounded-2xl border border-brenne-900/5 shadow-md">
         <a
           href={googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-primary text-sm inline-flex items-center gap-2 flex-1 sm:flex-initial justify-center"
+          className="btn-primary min-h-12 px-5 py-3 text-sm inline-flex items-center gap-2 w-full sm:w-auto justify-center"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -246,7 +247,7 @@ export const EventPage: React.FC = () => {
         <button
           type="button"
           onClick={() => downloadIcsFile(event)}
-          className="btn-secondary text-sm inline-flex items-center gap-2 flex-1 sm:flex-initial justify-center"
+          className="btn-secondary min-h-12 px-5 py-3 text-sm inline-flex items-center gap-2 w-full sm:w-auto justify-center"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -257,7 +258,7 @@ export const EventPage: React.FC = () => {
         <button
           type="button"
           onClick={handleShare}
-          className="btn-secondary text-sm inline-flex items-center gap-2 flex-1 sm:flex-initial justify-center relative"
+          className="btn-secondary min-h-12 px-5 py-3 text-sm inline-flex items-center gap-2 w-full sm:w-auto justify-center relative"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -278,13 +279,13 @@ export const EventPage: React.FC = () => {
       {/* Contenu principal : 2 colonnes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Colonne gauche : Description */}
-        <div className="md:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-3">
+        <div className="lg:col-span-2 min-w-0 space-y-6">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-brenne-900/5 shadow-md space-y-4">
+            <h2 className="font-display text-[28px] sm:text-[32px] leading-tight font-bold text-brenne-950 border-b border-brenne-900/10 pb-4">
               {t('event.title', { ns: 'pages' })}
             </h2>
 
-            <div className="text-gray-700 whitespace-pre-line leading-relaxed text-base">
+            <div className="text-gray-700 whitespace-pre-line leading-loose text-base break-words [overflow-wrap:anywhere]">
               {event.description}
             </div>
 
@@ -294,7 +295,7 @@ export const EventPage: React.FC = () => {
                   href={event.publicUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-brenne-700 hover:text-brenne-900 font-semibold inline-flex items-center gap-1.5 text-sm"
+                  className="text-creuse-800 hover:text-creuse-900 font-semibold inline-flex items-center gap-1.5 text-sm"
                 >
                   <span>{t('details.viewWebsite', { ns: 'events' })}</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -305,16 +306,53 @@ export const EventPage: React.FC = () => {
             )}
           </div>
 
-          {/* Mentions de source */}
-          <div className="text-xs text-gray-500 px-2">
-            {t('details.source', { source: event.source, ns: 'events' })}
-          </div>
+          <section aria-label={t('details.occurrencesTitle', { ns: 'events' })} className="bg-white rounded-2xl p-6 sm:p-8 border border-brenne-900/5 shadow-md space-y-6">
+            <h2 className="font-display text-[28px] sm:text-[32px] font-bold text-brenne-950">{t('details.occurrencesTitle', { ns: 'events' })}</h2>
+            <ol className="space-y-2">
+              {event.occurrences.map((occurrence) => {
+                const isPast = new Date(occurrence.startDate).getTime() < Date.now();
+                const dateOptions: Intl.DateTimeFormatOptions = {
+                  dateStyle: 'full',
+                  timeZone: occurrence.timezone,
+                };
+                const timeOptions: Intl.DateTimeFormatOptions = {
+                  dateStyle: undefined,
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: occurrence.timezone,
+                };
+                const startDay = formatDate(occurrence.startDate, dateOptions);
+                const startTime = formatDate(occurrence.startDate, timeOptions);
+                const endDay = occurrence.endDate ? formatDate(occurrence.endDate, dateOptions) : null;
+                const endTime = occurrence.endDate ? formatDate(occurrence.endDate, timeOptions) : null;
+
+                return (
+                  <li key={occurrence.id} data-testid="event-occurrence" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-l-4 border-brenne-200 bg-sable-50 px-4 py-4">
+                    <div className="text-sm text-gray-800">
+                      <time dateTime={occurrence.startDate} className="font-semibold capitalize">{startDay}</time>
+                      <span className="block text-gray-600">
+                        {startTime}{endTime ? ` – ${endDay !== startDay ? `${endDay} ` : ''}${endTime}` : ''}
+                      </span>
+                    </div>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-brenne-100 text-brenne-900'}`}>
+                      {t(isPast ? 'details.occurrencePast' : 'details.occurrenceFuture', { ns: 'events' })}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
         </div>
 
         {/* Colonne droite : Informations pratiques */}
-        <div className="space-y-6">
+        <div className="order-first lg:order-last space-y-6">
+          {/* Dates principales */}
+          <div className="bg-white rounded-2xl p-6 border border-brenne-900/5 shadow-md space-y-3">
+            <span className="block text-xs font-semibold text-gray-600 uppercase tracking-wider">{t('dates.label', { ns: 'filters' })}</span>
+            <p className="font-semibold text-brenne-900 leading-relaxed">{formattedDate}</p>
+          </div>
           {/* Bloc Tarif */}
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div className="bg-white rounded-2xl p-6 border border-brenne-900/5 shadow-md">
             <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
               {t('price.label', { ns: 'filters' })}
             </span>
@@ -322,7 +360,7 @@ export const EventPage: React.FC = () => {
           </div>
 
           {/* Bloc Lieu & Distance */}
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-3">
+          <div className="bg-white rounded-2xl p-6 border border-brenne-900/5 shadow-md space-y-3">
             <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
               {t('details.location', { ns: 'events' })}
             </span>
@@ -345,43 +383,11 @@ export const EventPage: React.FC = () => {
               </div>
             )}
           </div>
-          <section aria-label={t('details.occurrencesTitle', { ns: 'events' })} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-3">
-            <h2 className="text-lg font-bold text-gray-900">{t('details.occurrencesTitle', { ns: 'events' })}</h2>
-            <ol className="space-y-2">
-              {event.occurrences.map((occurrence) => {
-                const isPast = new Date(occurrence.startDate).getTime() < Date.now();
-                const dateOptions: Intl.DateTimeFormatOptions = {
-                  dateStyle: 'full',
-                  timeZone: occurrence.timezone,
-                };
-                const timeOptions: Intl.DateTimeFormatOptions = {
-                  dateStyle: undefined,
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  timeZone: occurrence.timezone,
-                };
-                const startDay = formatDate(occurrence.startDate, dateOptions);
-                const startTime = formatDate(occurrence.startDate, timeOptions);
-                const endDay = occurrence.endDate ? formatDate(occurrence.endDate, dateOptions) : null;
-                const endTime = occurrence.endDate ? formatDate(occurrence.endDate, timeOptions) : null;
 
-                return (
-                  <li key={occurrence.id} data-testid="event-occurrence" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
-                    <div className="text-sm text-gray-800">
-                      <time dateTime={occurrence.startDate} className="font-semibold capitalize">{startDay}</time>
-                      <span className="block text-gray-600">
-                        {startTime}{endTime ? ` – ${endDay !== startDay ? `${endDay} ` : ''}${endTime}` : ''}
-                      </span>
-                    </div>
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-emerald-100 text-emerald-800'}`}>
-                      {t(isPast ? 'details.occurrencePast' : 'details.occurrenceFuture', { ns: 'events' })}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
         </div>
+      </div>
+      <div className="border-t border-brenne-900/10 pt-6 text-[13px] text-gray-600">
+        {t('details.source', { source: event.source, ns: 'events' })}
       </div>
     </article>
   );

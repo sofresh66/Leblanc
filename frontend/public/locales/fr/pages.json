@@ -15,7 +15,12 @@
     "title": "Carte des événements",
     "subtitle": "Localisez facilement les animations et festivités autour du Blanc (rayon 20 km)",
     "placeholder": "La carte interactive affiche les événements du moment.",
-    "limitBanner": "{{count}} événements affichés (limite de la carte). Utilisez les filtres pour affiner."
+    "limitBanner": "{{count}} événements affichés (limite de la carte). Affinez vos filtres pour voir les autres.",
+    "limitBannerWithTotal": "{{count}} événements affichés sur {{total}}. Affinez vos filtres pour voir les autres.",
+    "results": "{{count}} événements sur la carte",
+    "showOnMap": "Voir sur la carte",
+    "selected": "Sélectionné sur la carte",
+    "selectEvent": "Afficher {{title}} sur la carte"
   },
   "list": {
     "title": "Agenda complet des événements",
@@ -29,6 +34,25 @@
   },
   "about": {
     "title": "À propos de Le Blanc & Moi",
-    "description": "Application citoyenne et touristique indépendante recensant les événements culturels, festifs et sportifs dans un rayon de 20 km autour du Blanc (Indre, 36300)."
+    "description": "Application citoyenne et touristique indépendante recensant les événements culturels, festifs et sportifs dans un rayon de 20 km autour du Blanc (Indre, 36300).",
+    "projectTitle": "Le projet",
+    "projectBody": "Retrouvez les sorties culturelles, sportives, festives et associatives dans un rayon de 20 km autour du Blanc. Parcourez la liste ou la carte, filtrez selon vos envies et consultez les informations pratiques de chaque événement. Le site est disponible en six langues.",
+    "dataTitle": "Les données",
+    "dataBody": "Les sources de données du projet sont DATAtourisme et OpenAgenda. Les informations sont fournies par les organismes et organisateurs contributeurs. Consultez le site officiel de l’événement pour vérifier les détails avant votre déplacement.",
+    "datatourismeLabel": "DATAtourisme — conditions de réutilisation",
+    "datatourismeLicense": "Données sous Licence Ouverte, avec attribution de la source.",
+    "openagendaLabel": "OpenAgenda — conditions de réutilisation",
+    "openagendaLicense": "Annonces publiques réutilisables selon la licence ouverte applicable.",
+    "updates": "Une mise à jour quotidienne des données est prévue.",
+    "photosTitle": "Crédits photos",
+    "photosBody": "La photographie du Blanc utilisée sur l’accueil est de Daniel Jolivet, sous licence CC BY 2.0. Les sources, licences et modifications des images locales sont détaillées dans le document de crédits. Les visuels des événements restent soumis aux conditions de leurs sources.",
+    "creditsLink": "Consulter les crédits photographiques",
+    "legalTitle": "Mentions légales",
+    "legalPending": "[À compléter par l’éditeur]",
+    "contactPending": "Contact : [contact à définir]"
+  },
+  "notFound": {
+    "code": "404",
+    "backHome": "Retour à l’accueil"
   }
 }

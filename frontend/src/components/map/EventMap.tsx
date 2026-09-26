@@ -50,7 +50,7 @@ const MapController: React.FC<MapControllerProps> = ({ events, selectedEventId }
     if (selectedEventId) {
       const selected = events.find((e) => e.id === selectedEventId);
       if (selected) {
-        map.setView([selected.latitude, selected.longitude], 14, { animate: true });
+        map.setView([selected.latitude, selected.longitude], 14, { animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches });
       }
     }
   }, [selectedEventId, events, map]);
@@ -111,6 +111,8 @@ export const EventMap: React.FC<EventMapProps> = ({
           return (
             <Marker
               key={event.id}
+              alt={event.title}
+              title={event.title}
               position={[event.latitude, event.longitude]}
               icon={createEventMarkerIcon(event.category)}
               eventHandlers={{

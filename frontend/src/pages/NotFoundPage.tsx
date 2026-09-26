@@ -3,24 +3,25 @@ import { Link } from 'react-router-dom';
 import { useLocalizedPath } from '../hooks/useLocalizedPath';
 
 export function NotFoundPage() {
-  const { t } = useTranslation(['errors', 'nav']);
+  const { t } = useTranslation(['errors', 'pages']);
   const getLocalizedPath = useLocalizedPath();
 
   return (
-    <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100 max-w-xl mx-auto my-12">
-      <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide">404</p>
-      <h1 className="mt-2 text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">
+    <div className="relative overflow-hidden bg-white rounded-2xl px-6 py-12 sm:p-16 text-center shadow-md border border-brenne-900/5 max-w-3xl mx-auto my-6 sm:my-12">
+      <div aria-hidden="true" className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-sable-100" />
+      <p className="relative font-display text-[112px] sm:text-[160px] leading-none text-brenne-800">{t('pages:notFound.code')}</p>
+      <h1 className="relative mt-8 [overflow-wrap:anywhere] font-display text-3xl sm:text-[40px] leading-tight font-bold text-brenne-950">
         {t('errors:notFound.title')}
       </h1>
-      <p className="mt-4 text-base text-gray-500">
+      <p className="relative mt-6 text-base leading-relaxed text-gray-600 max-w-md mx-auto">
         {t('errors:notFound.description')}
       </p>
       <div className="mt-8">
         <Link
           to={getLocalizedPath('home')}
-          className="inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          className="btn-primary min-h-12 px-6 py-3"
         >
-          {t('nav:home')}
+          {t('pages:notFound.backHome')}
         </Link>
       </div>
     </div>

@@ -4,13 +4,43 @@ export function AboutPage() {
   const { t } = useTranslation('pages');
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-      <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-        {t('about.title')}
-      </h1>
-      <p className="mt-4 text-gray-600 leading-relaxed">
-        {t('about.description')}
-      </p>
-    </div>
+    <article className="space-y-10 sm:space-y-12 py-6 sm:py-8 pb-12">
+      <header className="rounded-2xl bg-sable-100 border border-sable-200 p-6 py-12 sm:p-12 lg:p-16 space-y-6">
+        <h1 className="section-title text-4xl sm:text-[40px] [overflow-wrap:anywhere] max-w-3xl">{t('about.title')}</h1>
+        <p className="max-w-3xl text-base sm:text-lg leading-relaxed text-gray-700">{t('about.description')}</p>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-brenne-900/5 space-y-5">
+          <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.projectTitle')}</h2>
+          <p className="text-base leading-loose text-gray-700">{t('about.projectBody')}</p>
+        </section>
+        <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-brenne-900/5 space-y-5">
+          <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.dataTitle')}</h2>
+          <p className="text-base leading-loose text-gray-700">{t('about.dataBody')}</p>
+          <ul className="space-y-4 text-base leading-relaxed text-gray-700">
+            <li>
+              <a className="text-creuse-800 underline underline-offset-4 hover:text-creuse-900" href="https://www.datatourisme.fr/ressources-juridiques/">{t('about.datatourismeLabel')}</a>
+              <p className="mt-1">{t('about.datatourismeLicense')}</p>
+            </li>
+            <li>
+              <a className="text-creuse-800 underline underline-offset-4 hover:text-creuse-900" href="https://doc.openagenda.com/fr/article/conditions-generales-dutilisation-xq325m/">{t('about.openagendaLabel')}</a>
+              <p className="mt-1">{t('about.openagendaLicense')}</p>
+            </li>
+          </ul>
+          <p className="rounded-xl bg-brenne-50 p-4 text-sm leading-relaxed text-brenne-900">{t('about.updates')}</p>
+        </section>
+        <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-brenne-900/5 space-y-5">
+          <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.photosTitle')}</h2>
+          <p className="text-base leading-loose text-gray-700">{t('about.photosBody')}</p>
+          <a href="/images/CREDITS.md" className="inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900 font-semibold">{t('about.creditsLink')}</a>
+        </section>
+        <section className="rounded-2xl bg-sable-100 p-6 sm:p-8 border border-sable-200 space-y-5">
+          <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.legalTitle')}</h2>
+          <p className="text-base leading-loose text-gray-700">{t('about.legalPending')}</p>
+          <p className="text-sm leading-relaxed text-gray-600">{t('about.contactPending')}</p>
+        </section>
+      </div>
+    </article>
   );
 }

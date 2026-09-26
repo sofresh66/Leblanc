@@ -45,24 +45,24 @@ export const ListPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-10 sm:space-y-12 py-6 sm:py-8 pb-12">
       {/* Page Header */}
-      <div className="space-y-2">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+      <div className="space-y-5">
+        <h1 className="section-title text-4xl sm:text-[40px] [overflow-wrap:anywhere]">
           {t('list.title', { ns: 'pages' })}
         </h1>
-        <p className="text-sm sm:text-base text-gray-600">
+        <p className="max-w-2xl text-base leading-relaxed text-gray-600">
           {t('list.subtitle', { ns: 'pages' })}
         </p>
       </div>
 
       {/* Main Grid: Filters Sidebar + Event List */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-        <aside className="lg:col-span-1 lg:sticky lg:top-24">
+      <div className="grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-8 items-start">
+        <aside className="lg:sticky lg:top-24">
           <EventFilters />
         </aside>
 
-        <div className="lg:col-span-3">
+        <div className="min-w-0">
           <EventList
             filters={filters}
             onResetFilters={handleResetFilters}

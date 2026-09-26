@@ -15,7 +15,12 @@
     "title": "Event Map",
     "subtitle": "Easily locate activities and festivals around Le Blanc (20 km radius)",
     "placeholder": "Interactive map displaying upcoming events.",
-    "limitBanner": "{{count}} events displayed (map limit). Use the filters to narrow the results."
+    "limitBanner": "{{count}} events displayed (map limit). Refine your filters to see the others.",
+    "limitBannerWithTotal": "{{count}} of {{total}} events displayed. Refine your filters to see the others.",
+    "results": "{{count}} events on the map",
+    "showOnMap": "Show on map",
+    "selected": "Selected on the map",
+    "selectEvent": "Show {{title}} on the map"
   },
   "list": {
     "title": "Complete Event Calendar",
@@ -29,6 +34,25 @@
   },
   "about": {
     "title": "About Le Blanc & Moi",
-    "description": "Independent civic and tourist application listing cultural, festive and sporting events within a 20 km radius of Le Blanc (Indre, France)."
+    "description": "Independent civic and tourist application listing cultural, festive and sporting events within a 20 km radius of Le Blanc (Indre, France).",
+    "projectTitle": "The project",
+    "projectBody": "Find cultural, sporting, festive and community events within 20 km of Le Blanc. Browse the list or map, filter by your interests and check practical details for each event. The site is available in six languages.",
+    "dataTitle": "The data",
+    "dataBody": "The project’s data sources are DATAtourisme and OpenAgenda. Information is supplied by contributing organisations and event organisers. Check the event’s official website before travelling.",
+    "datatourismeLabel": "DATAtourisme — reuse conditions",
+    "datatourismeLicense": "Data under the Open Licence, with source attribution.",
+    "openagendaLabel": "OpenAgenda — reuse conditions",
+    "openagendaLicense": "Public event listings may be reused under the applicable open licence.",
+    "updates": "Daily data updates are planned.",
+    "photosTitle": "Photo credits",
+    "photosBody": "The photograph of Le Blanc on the home page is by Daniel Jolivet, under CC BY 2.0. Sources, licences and changes to local images are detailed in the credits document. Event images remain subject to their sources’ terms.",
+    "creditsLink": "View photo credits",
+    "legalTitle": "Legal information",
+    "legalPending": "[To be completed by the publisher]",
+    "contactPending": "Contact: [contact to be defined]"
+  },
+  "notFound": {
+    "code": "404",
+    "backHome": "Back to home"
   }
 }

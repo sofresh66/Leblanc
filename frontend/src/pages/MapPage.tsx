@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   SEARCH_RADIUS_METERS,
@@ -12,7 +12,7 @@ import { EventFilters } from '../components/events/EventFilters';
 import { EventMap } from '../components/map/EventMap';
 import { resolveMaxDistanceMeters, useEvents } from '../hooks/useEvents';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
-import { buildLocalizedPath } from '../routes/routeMapping';
+import { EventCard } from '../components/events/EventCard';
 
 /** Nombre maximal d'événements demandé à l'API pour l'affichage cartographique. */
 const MAP_LIMIT = 50;
@@ -53,82 +53,70 @@ export const MapPage: React.FC = () => {
   const isAtMapLimit = events.length >= MAP_LIMIT;
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+    <div className="space-y-10 sm:space-y-12 py-6 sm:py-8 pb-12">
+      <header className="space-y-5">
+        <h1 className="section-title text-4xl sm:text-[40px] [overflow-wrap:anywhere]">
           {t('map.title', { ns: 'pages' })}
         </h1>
-        <p className="text-sm sm:text-base text-gray-600">
+        <p className="max-w-2xl text-base leading-relaxed text-gray-600">
           {t('map.subtitle', { ns: 'pages' })}
         </p>
-      </div>
+      </header>
 
-      {/* Main Container: Filters Sidebar + Map */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-        <aside className="lg:col-span-1">
-          <EventFilters />
+      <EventFilters layout="horizontal" />
 
-          {/* Quick list of mapped events */}
-          <div className="mt-4 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hidden lg:block max-h-96 overflow-y-auto space-y-2">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">
-              {events.length} {t('list.title', { ns: 'pages' })}
-            </span>
-            {events.map((event) => {
-              const isSelected = event.id === selectedEventId;
-              return (
-                <button
-                  key={event.id}
-                  type="button"
-                  onClick={() => setSelectedEventId(event.id)}
-                  className={`w-full text-left p-2.5 rounded-xl text-xs transition-colors flex flex-col gap-1 border ${
-                    isSelected
-                      ? 'bg-brenne-50 border-brenne-500 text-brenne-900 font-bold'
-                      : 'hover:bg-gray-50 border-transparent text-gray-700'
-                  }`}
-                >
-                  <span className="truncate">{event.title}</span>
-                  <div className="flex items-center justify-between text-[11px] text-gray-500 font-normal">
-                    <span>{event.city}</span>
-                    <Link
-                      to={buildLocalizedPath('events', currentLang, event.id)}
-                      className="text-brenne-700 hover:underline font-semibold"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {t('actions.view', { ns: 'common' })}
-                    </Link>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </aside>
+      {isAtMapLimit && !isError && (
+        <p role="status" className="rounded-xl border border-creuse-200 bg-creuse-50 px-5 py-4 text-sm leading-relaxed text-creuse-900">
+          {t(data?.total !== undefined ? 'map.limitBannerWithTotal' : 'map.limitBanner', {
+            ns: 'pages', count: events.length, total: data?.total,
+          })}
+        </p>
+      )}
 
-        <div className="lg:col-span-3 space-y-3">
-          {isAtMapLimit && !isError && (
-            <p
-              role="status"
-              className="text-xs sm:text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5"
-            >
-              {t('map.limitBanner', { ns: 'pages', count: events.length })}
-            </p>
-          )}
-
-          {isError ? (
-            <ErrorState error={error} onRetry={() => void refetch()} />
-          ) : isLoading && events.length === 0 ? (
-            <div className="h-[500px] lg:h-[650px] w-full bg-gray-200 rounded-2xl animate-pulse flex items-center justify-center text-gray-500 text-sm">
-              {t('actions.loading', { ns: 'common' })}
-            </div>
-          ) : (
-            <EventMap
-              events={events}
-              selectedEventId={selectedEventId}
-              onSelectEvent={(e) => setSelectedEventId(e.id)}
-            />
-          )}
+      {isError ? (
+        <ErrorState error={error} onRetry={() => void refetch()} />
+      ) : isLoading && events.length === 0 ? (
+        <div role="status" aria-busy="true" className="h-[420px] lg:h-[720px] w-full bg-brenne-100 rounded-2xl animate-pulse flex items-center justify-center text-brenne-900 text-sm">
+          {t('actions.loading', { ns: 'common' })}
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-8 items-start">
+          <EventMap
+            events={events}
+            selectedEventId={selectedEventId}
+            onSelectEvent={(event) => setSelectedEventId(event.id)}
+            className="h-[420px] sm:h-[520px] lg:h-[720px] w-full shadow-md"
+          />
+          <section aria-label={t('map.results', { ns: 'pages', count: events.length })} className="min-w-0">
+            <h2 className="font-display text-[28px] leading-tight text-brenne-950 mb-5">
+              {t('map.results', { ns: 'pages', count: events.length })}
+            </h2>
+            {events.length === 0 ? (
+              <div className="rounded-2xl bg-white p-6 shadow-md space-y-3">
+                <h3 className="font-display text-2xl text-brenne-950">{t('list.emptyTitle', { ns: 'events' })}</h3>
+                <p className="text-gray-600 leading-relaxed">{t('list.emptyDescription', { ns: 'events' })}</p>
+              </div>
+            ) : (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 lg:max-h-[664px] lg:overflow-y-auto p-1 pb-4 lg:pr-3">
+                {events.map((event) => (
+                  <li key={event.id} className={'rounded-xl p-1 ' + (event.id === selectedEventId ? 'ring-2 ring-brenne-700 bg-brenne-50' : '')}>
+                    <div><EventCard event={event} /></div>
+                    <button
+                      type="button"
+                      aria-pressed={event.id === selectedEventId}
+                      aria-label={t('map.selectEvent', { ns: 'pages', title: event.title })}
+                      onClick={() => setSelectedEventId(event.id)}
+                      className="btn-secondary w-full min-h-11 mt-3 text-creuse-800 border-creuse-200 hover:bg-creuse-50"
+                    >
+                      {t(event.id === selectedEventId ? 'map.selected' : 'map.showOnMap', { ns: 'pages' })}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      )}
     </div>
   );
 };

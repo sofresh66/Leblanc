@@ -15,7 +15,12 @@
     "title": "Evenementenkaart",
     "subtitle": "Vind gemakkelijk activiteiten en feesten rond Le Blanc",
     "placeholder": "Interactieve kaart met actuele evenementen.",
-    "limitBanner": "{{count}} evenementen weergegeven (kaartlimiet). Gebruik de filters om de resultaten te verfijnen."
+    "limitBanner": "{{count}} evenementen weergegeven (kaartlimiet). Verfijn de filters om de andere te zien.",
+    "limitBannerWithTotal": "{{count}} van {{total}} evenementen weergegeven. Verfijn de filters om de andere te zien.",
+    "results": "{{count}} evenementen op de kaart",
+    "showOnMap": "Toon op de kaart",
+    "selected": "Geselecteerd op de kaart",
+    "selectEvent": "Toon {{title}} op de kaart"
   },
   "list": {
     "title": "Volledige evenementenkalender",
@@ -29,6 +34,25 @@
   },
   "about": {
     "title": "Over Le Blanc & Moi",
-    "description": "Onafhankelijke burger- en toeristische applicatie met evenementen binnen 20 km rond Le Blanc."
+    "description": "Onafhankelijke burger- en toeristische applicatie met evenementen binnen 20 km rond Le Blanc.",
+    "projectTitle": "Het project",
+    "projectBody": "Ontdek culturele, sportieve, feestelijke en verenigingsactiviteiten binnen 20 km van Le Blanc. Bekijk de lijst of kaart, filter op je interesses en raadpleeg de praktische informatie per evenement. De website is beschikbaar in zes talen.",
+    "dataTitle": "De gegevens",
+    "dataBody": "De gegevensbronnen van het project zijn DATAtourisme en OpenAgenda. De informatie wordt aangeleverd door deelnemende organisaties en organisatoren. Controleer de officiële website van het evenement voordat je vertrekt.",
+    "datatourismeLabel": "DATAtourisme — hergebruikvoorwaarden",
+    "datatourismeLicense": "Gegevens onder de Licence Ouverte, met bronvermelding.",
+    "openagendaLabel": "OpenAgenda — hergebruikvoorwaarden",
+    "openagendaLicense": "Openbare evenementaankondigingen mogen volgens de toepasselijke open licentie worden hergebruikt.",
+    "updates": "Dagelijkse gegevensupdates zijn gepland.",
+    "photosTitle": "Fotocredits",
+    "photosBody": "De foto van Le Blanc op de startpagina is van Daniel Jolivet, onder CC BY 2.0. Bronnen, licenties en wijzigingen van lokale afbeeldingen staan in het creditdocument. Voor evenementafbeeldingen gelden de voorwaarden van hun bronnen.",
+    "creditsLink": "Bekijk de fotocredits",
+    "legalTitle": "Juridische informatie",
+    "legalPending": "[Aan te vullen door de uitgever]",
+    "contactPending": "Contact: [nog te bepalen]"
+  },
+  "notFound": {
+    "code": "404",
+    "backHome": "Terug naar de startpagina"
   }
 }

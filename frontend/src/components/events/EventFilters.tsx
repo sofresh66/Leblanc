@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,11 +32,13 @@ export type FilterFormValues = {
 export interface EventFiltersProps {
   onFiltersChange?: ((filters: Omit<EventListParamsInput, 'cursor'>) => void) | undefined;
   className?: string | undefined;
+  layout?: 'sidebar' | 'horizontal';
 }
 
 export const EventFilters: React.FC<EventFiltersProps> = ({
   onFiltersChange,
   className = '',
+  layout = 'sidebar',
 }) => {
   const { t, i18n } = useTranslation(['filters', 'events', 'common']);
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
@@ -73,6 +75,7 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
     defaultValues: getInitialValues(),
   });
 
+  const formId = useId();
   const watchedDistance = watch('maxDistanceKm', 20);
 
   // Emit filter params to parent
@@ -154,11 +157,11 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
   }, [searchParams, reset]);
 
   return (
-    <div className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6 ${className}`}>
+    <div className={`bg-white rounded-2xl border border-brenne-900/5 shadow-md p-5 sm:p-6 ${className}`}>
       {/* Mobile Header Toggle */}
-      <div className="flex items-center justify-between lg:hidden mb-2">
-        <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-          <svg className="w-5 h-5 text-brenne-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <div className="flex items-center justify-between gap-3 lg:hidden mb-2">
+        <h2 className="min-w-0 flex-1 [overflow-wrap:anywhere] font-display text-2xl font-bold text-brenne-950 flex items-center gap-2">
+          <svg className="w-5 h-5 shrink-0 text-brenne-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
           {t('title', { ns: 'filters' })}
@@ -166,20 +169,22 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
         <button
           type="button"
           onClick={() => setIsOpenMobile(!isOpenMobile)}
-          className="text-sm font-semibold text-brenne-700 hover:text-brenne-900 py-1 px-2.5 rounded-lg bg-brenne-50"
+          className="max-w-[45%] shrink-0 break-words text-sm font-semibold text-brenne-700 hover:text-brenne-900 min-h-11 py-2 px-3 rounded-lg bg-brenne-50"
           aria-expanded={isOpenMobile}
+          aria-controls={formId}
         >
           {isOpenMobile ? t('actions.close', { ns: 'common' }) : t('title', { ns: 'filters' })}
         </button>
       </div>
 
       <form
+        id={formId}
         onSubmit={handleSubmit(applyFilters)}
-        className={`${isOpenMobile ? 'block' : 'hidden'} lg:block space-y-5`}
+        className={`${isOpenMobile ? 'block' : 'hidden'} ${layout === 'horizontal' ? 'lg:grid lg:grid-cols-2 xl:grid-cols-4 lg:gap-6 space-y-6 lg:space-y-0' : 'lg:block space-y-6'}`}
       >
-        <div className="hidden lg:flex items-center justify-between pb-3 border-b border-gray-100">
-          <h2 className="text-base font-bold text-gray-900 flex items-center gap-2">
-            <svg className="w-5 h-5 text-brenne-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <div className="hidden lg:flex lg:col-span-full items-center justify-between pb-3 border-b border-gray-100">
+          <h2 className="min-w-0 flex-1 [overflow-wrap:anywhere] font-display text-2xl font-bold text-brenne-950 flex items-center gap-2">
+            <svg className="w-5 h-5 shrink-0 text-brenne-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
             {t('title', { ns: 'filters' })}
@@ -188,24 +193,26 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
 
         {/* Dates Range */}
         <div>
-          <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+          <p className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
             {t('dates.label', { ns: 'filters' })}
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
             <div>
-              <span className="block text-[11px] text-gray-500 mb-1">{t('dates.from', { ns: 'filters' })}</span>
+              <label htmlFor={`${formId}-from`} className="block text-[13px] text-gray-600 mb-1">{t('dates.from', { ns: 'filters' })}</label>
               <input
+                id={`${formId}-from`}
                 type="date"
                 {...register('from')}
-                className="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-brenne-500 focus:ring-brenne-500 py-1.5 px-2.5"
+                className="min-w-0 w-full min-h-11 text-sm rounded-lg border border-gray-300 bg-sable-50 focus:border-brenne-700 py-2 px-3"
               />
             </div>
             <div>
-              <span className="block text-[11px] text-gray-500 mb-1">{t('dates.to', { ns: 'filters' })}</span>
+              <label htmlFor={`${formId}-to`} className="block text-[13px] text-gray-600 mb-1">{t('dates.to', { ns: 'filters' })}</label>
               <input
+                id={`${formId}-to`}
                 type="date"
                 {...register('to')}
-                className="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-brenne-500 focus:ring-brenne-500 py-1.5 px-2.5"
+                className="min-w-0 w-full min-h-11 text-sm rounded-lg border border-gray-300 bg-sable-50 focus:border-brenne-700 py-2 px-3"
               />
             </div>
           </div>
@@ -219,7 +226,7 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
           <select
             id="category-select"
             {...register('category')}
-            className="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-brenne-500 focus:ring-brenne-500 py-2 px-2.5 bg-white"
+            className="w-full min-h-11 text-sm rounded-lg border border-gray-300 bg-sable-50 focus:border-brenne-700 py-2 px-3"
           >
             <option value="">{t('categories.all', { ns: 'filters' })}</option>
             {CATEGORIES.map((cat) => (
@@ -231,10 +238,10 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
         </div>
 
         {/* Price filter */}
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+        <fieldset className="min-w-0">
+          <legend className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
             {t('price.label', { ns: 'filters' })}
-          </label>
+          </legend>
           <div className="grid grid-cols-3 gap-2">
             {[
               { id: 'all', label: t('price.all', { ns: 'filters' }) },
@@ -243,7 +250,7 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
             ].map((option) => (
               <label
                 key={option.id}
-                className="flex items-center justify-center p-2 text-xs font-medium rounded-lg border cursor-pointer transition-colors text-center has-[:checked]:bg-brenne-50 has-[:checked]:border-brenne-500 has-[:checked]:text-brenne-900 border-gray-200 text-gray-700 hover:bg-gray-50"
+                className="min-w-0 flex items-center justify-center min-h-11 p-2 text-[13px] font-medium rounded-lg border cursor-pointer transition-colors duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-creuse-700 has-[:focus-visible]:ring-offset-2 text-center has-[:checked]:bg-brenne-50 has-[:checked]:border-brenne-500 has-[:checked]:text-brenne-900 border-gray-200 text-gray-700 hover:bg-gray-50"
               >
                 <input
                   type="radio"
@@ -251,11 +258,11 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
                   {...register('priceType')}
                   className="sr-only"
                 />
-                <span className="truncate">{option.label}</span>
+                <span className="min-w-0 break-words">{option.label}</span>
               </label>
             ))}
           </div>
-        </div>
+        </fieldset>
 
         {/* Distance Slider */}
         <div>
@@ -284,24 +291,24 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
             )}
           />
           <div className="flex justify-between text-[10px] text-gray-600 mt-1">
-            <span>1 km</span>
-            <span>10 km</span>
-            <span>20 km</span>
+            <span>{t('distance.km', { distance: 1, ns: 'events' })}</span>
+            <span>{t('distance.km', { distance: 10, ns: 'events' })}</span>
+            <span>{t('distance.km', { distance: 20, ns: 'events' })}</span>
           </div>
         </div>
 
         {/* Form Actions */}
-        <div className="pt-3 border-t border-gray-100 flex items-center gap-3">
+        <div className={`pt-5 border-t border-brenne-900/10 flex flex-wrap items-center gap-3 ${layout === 'horizontal' ? 'lg:col-span-full lg:justify-end' : ''}`}>
           <button
             type="submit"
-            className="btn-primary flex-1 py-2 text-sm justify-center shadow-sm"
+            className={`btn-primary min-h-11 py-2 text-sm justify-center shadow-sm ${layout === 'horizontal' ? 'flex-1 lg:flex-none lg:px-8' : 'flex-1'}`}
           >
             {t('actions.apply', { ns: 'filters' })}
           </button>
           <button
             type="button"
             onClick={handleReset}
-            className="btn-secondary py-2 px-3 text-sm"
+            className="btn-secondary min-h-11 py-2 px-3 text-sm"
             title={t('actions.reset', { ns: 'filters' })}
           >
             {t('actions.reset', { ns: 'filters' })}

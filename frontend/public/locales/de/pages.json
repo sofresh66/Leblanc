@@ -15,7 +15,12 @@
     "title": "Veranstaltungskarte",
     "subtitle": "Finden Sie Aktivitäten und Feste im 20-km-Umkreis",
     "placeholder": "Interaktive Karte der aktuellen Veranstaltungen.",
-    "limitBanner": "{{count}} Veranstaltungen angezeigt (Kartenlimit). Nutzen Sie die Filter, um die Auswahl einzugrenzen."
+    "limitBanner": "{{count}} Veranstaltungen angezeigt (Kartenlimit). Grenze die Filter ein, um weitere zu sehen.",
+    "limitBannerWithTotal": "{{count}} von {{total}} Veranstaltungen angezeigt. Grenze die Filter ein, um weitere zu sehen.",
+    "results": "{{count}} Veranstaltungen auf der Karte",
+    "showOnMap": "Auf der Karte zeigen",
+    "selected": "Auf der Karte ausgewählt",
+    "selectEvent": "{{title}} auf der Karte anzeigen"
   },
   "list": {
     "title": "Vollständiger Veranstaltungskalender",
@@ -29,6 +34,25 @@
   },
   "about": {
     "title": "Über Le Blanc & Moi",
-    "description": "Unabhängige Bürger- und Tourismus-App mit Veranstaltungen im Umkreis von 20 km um Le Blanc."
+    "description": "Unabhängige Bürger- und Tourismus-App mit Veranstaltungen im Umkreis von 20 km um Le Blanc.",
+    "projectTitle": "Das Projekt",
+    "projectBody": "Entdecke Kultur-, Sport-, Fest- und Vereinsveranstaltungen im Umkreis von 20 km um Le Blanc. Nutze die Liste oder Karte, filtere nach deinen Interessen und informiere dich über die einzelnen Veranstaltungen. Die Website ist in sechs Sprachen verfügbar.",
+    "dataTitle": "Die Daten",
+    "dataBody": "Die Datenquellen des Projekts sind DATAtourisme und OpenAgenda. Die Informationen stammen von beteiligten Organisationen und Veranstaltern. Prüfe vor der Anreise die offizielle Website der Veranstaltung.",
+    "datatourismeLabel": "DATAtourisme — Nutzungsbedingungen",
+    "datatourismeLicense": "Daten unter der Licence Ouverte mit Quellenangabe.",
+    "openagendaLabel": "OpenAgenda — Nutzungsbedingungen",
+    "openagendaLicense": "Öffentliche Veranstaltungshinweise dürfen gemäß der geltenden offenen Lizenz weiterverwendet werden.",
+    "updates": "Eine tägliche Aktualisierung der Daten ist geplant.",
+    "photosTitle": "Bildnachweise",
+    "photosBody": "Das Foto von Le Blanc auf der Startseite stammt von Daniel Jolivet und steht unter CC BY 2.0. Quellen, Lizenzen und Änderungen der lokalen Bilder sind im Bildnachweis aufgeführt. Für Veranstaltungsbilder gelten die Bedingungen ihrer Quellen.",
+    "creditsLink": "Bildnachweise ansehen",
+    "legalTitle": "Rechtliche Hinweise",
+    "legalPending": "[Vom Herausgeber zu ergänzen]",
+    "contactPending": "Kontakt: [noch festzulegen]"
+  },
+  "notFound": {
+    "code": "404",
+    "backHome": "Zurück zur Startseite"
   }
 }
