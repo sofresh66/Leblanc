@@ -12,6 +12,7 @@
   "footer": {
     "rights": "Todos los derechos reservados",
     "sources": "Fuentes de datos",
-    "heroPhotoCredit": "Foto: {{author}}, {{license}}"
+    "heroPhotoCredit": "Foto: {{author}}, {{license}}",
+    "madeBy": "Hecho con ❤️ por {{author}}"
   }
 }

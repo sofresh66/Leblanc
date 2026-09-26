@@ -12,6 +12,7 @@ export interface CommonResource {
     retry: string;
   };
   footer: {
+    madeBy: string;
     rights: string;
     sources: string;
   };

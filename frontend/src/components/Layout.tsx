@@ -169,6 +169,9 @@ export function Layout() {
                 ↗
               </a>
             </span>
+            <p className="mt-2 text-xs leading-relaxed text-gray-600">
+              {t('common:footer.madeBy', { author: 'Denis El Harch' })}
+            </p>
           </div>
         </div>
       </footer>
