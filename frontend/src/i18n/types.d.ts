@@ -116,8 +116,8 @@ export interface FiltersResource {
   price: {
     label: string;
     all: string;
-    freeOnly: string;
-    paidOnly: string;
+    free: string;
+    paid: string;
   };
   distance: {
     label: string;

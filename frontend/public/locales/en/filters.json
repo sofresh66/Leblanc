@@ -12,8 +12,8 @@
   "price": {
     "label": "Price",
     "all": "All",
-    "freeOnly": "Free only",
-    "paidOnly": "Paid only"
+    "free": "Free",
+    "paid": "Paid"
   },
   "distance": {
     "label": "Search Radius",

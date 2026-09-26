@@ -242,15 +242,15 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
           <legend className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
             {t('price.label', { ns: 'filters' })}
           </legend>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="flex flex-wrap gap-2">
             {[
               { id: 'all', label: t('price.all', { ns: 'filters' }) },
-              { id: 'free', label: t('price.freeOnly', { ns: 'filters' }) },
-              { id: 'paid', label: t('price.paidOnly', { ns: 'filters' }) },
+              { id: 'free', label: t('price.free', { ns: 'filters' }) },
+              { id: 'paid', label: t('price.paid', { ns: 'filters' }) },
             ].map((option) => (
               <label
                 key={option.id}
-                className="min-w-0 flex items-center justify-center min-h-11 p-2 text-[13px] font-medium rounded-lg border cursor-pointer transition-colors duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-creuse-700 has-[:focus-visible]:ring-offset-2 text-center has-[:checked]:bg-brenne-50 has-[:checked]:border-brenne-500 has-[:checked]:text-brenne-900 border-gray-200 text-gray-700 hover:bg-gray-50"
+                className="min-w-fit flex-1 flex items-center justify-center min-h-11 p-2 whitespace-nowrap text-[13px] font-medium rounded-lg border cursor-pointer transition-colors duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-creuse-700 has-[:focus-visible]:ring-offset-2 text-center has-[:checked]:bg-brenne-50 has-[:checked]:border-brenne-500 has-[:checked]:text-brenne-900 border-gray-200 text-gray-700 hover:bg-gray-50"
               >
                 <input
                   type="radio"
@@ -258,7 +258,7 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
                   {...register('priceType')}
                   className="sr-only"
                 />
-                <span className="min-w-0 break-words">{option.label}</span>
+                <span className="whitespace-nowrap">{option.label}</span>
               </label>
             ))}
           </div>

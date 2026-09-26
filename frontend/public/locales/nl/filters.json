@@ -12,8 +12,8 @@
   "price": {
     "label": "Tarief",
     "all": "Alles",
-    "freeOnly": "Alleen gratis",
-    "paidOnly": "Alleen betaald"
+    "free": "Gratis",
+    "paid": "Betaald"
   },
   "distance": {
     "label": "Zoekstraal",

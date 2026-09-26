@@ -12,8 +12,8 @@
   "price": {
     "label": "Eintritt",
     "all": "Alle",
-    "freeOnly": "Nur kostenlos",
-    "paidOnly": "Nur kostenpflichtig"
+    "free": "Kostenlos",
+    "paid": "Kostenpflichtig"
   },
   "distance": {
     "label": "Suchradius",

@@ -12,8 +12,8 @@
   "price": {
     "label": "Precio",
     "all": "Todos",
-    "freeOnly": "Solo gratis",
-    "paidOnly": "Solo de pago"
+    "free": "Gratis",
+    "paid": "De pago"
   },
   "distance": {
     "label": "Radio de búsqueda",
