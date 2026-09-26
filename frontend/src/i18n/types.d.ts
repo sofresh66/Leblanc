@@ -40,7 +40,7 @@ export interface SeoResource {
   home: { title: string; description: string };
   map: { title: string; description: string };
   list: { title: string; description: string };
-  event: { title: string; description: string };
+  event: { title: string; description: string; dynamicTitle: string };
   about: { title: string; description: string };
   notFound: { title: string; description: string };
 }

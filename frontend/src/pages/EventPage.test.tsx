@@ -1,3 +1,4 @@
+import { HelmetProvider } from 'react-helmet-async';
 // @vitest-environment jsdom
 import { randomUUID } from 'node:crypto';
 import { render, screen } from '@testing-library/react';
@@ -34,9 +35,9 @@ describe('Historique des séances sur la fiche événement', () => {
     });
 
     render(
-      <MemoryRouter initialEntries={[`/fr/evenements/${first.id}`]}>
+      <HelmetProvider><MemoryRouter initialEntries={[`/fr/evenements/${first.id}`]}>
         <Routes><Route path="/fr/evenements/:id" element={<EventPage />} /></Routes>
-      </MemoryRouter>,
+      </MemoryRouter></HelmetProvider>,
     );
 
     expect(screen.getAllByTestId('event-occurrence')).toHaveLength(2);

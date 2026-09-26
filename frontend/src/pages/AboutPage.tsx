@@ -1,3 +1,4 @@
+import { PageSeo } from '../components/PageSeo';
 import { useTranslation } from 'react-i18next';
 
 export function AboutPage() {
@@ -5,6 +6,7 @@ export function AboutPage() {
 
   return (
     <article className="space-y-10 sm:space-y-12 py-6 sm:py-8 pb-12">
+      <PageSeo section="about" />
       <header className="rounded-2xl bg-sable-100 border border-sable-200 p-6 py-12 sm:p-12 lg:p-16 space-y-6">
         <h1 className="section-title text-4xl sm:text-[40px] [overflow-wrap:anywhere] max-w-3xl">{t('about.title')}</h1>
         <p className="max-w-3xl text-base sm:text-lg leading-relaxed text-gray-700">{t('about.description')}</p>

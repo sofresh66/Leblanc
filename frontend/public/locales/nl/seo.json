@@ -13,7 +13,8 @@
   },
   "event": {
     "title": "Evenementdetails — Le Blanc & Moi",
-    "description": "Bekijk informatie en tijden van dit evenement in Le Blanc."
+    "description": "Bekijk informatie en tijden van dit evenement in Le Blanc.",
+    "dynamicTitle": "{{title}} — Le Blanc & Moi"
   },
   "about": {
     "title": "Over ons — Le Blanc & Moi",

@@ -1,3 +1,4 @@
+import { PageSeo } from '../components/PageSeo';
 import React, { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -46,6 +47,7 @@ export const ListPage: React.FC = () => {
 
   return (
     <div className="space-y-10 sm:space-y-12 py-6 sm:py-8 pb-12">
+      <PageSeo section="list" />
       {/* Page Header */}
       <div className="space-y-5">
         <h1 className="section-title text-4xl sm:text-[40px] [overflow-wrap:anywhere]">

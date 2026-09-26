@@ -13,7 +13,8 @@
   },
   "event": {
     "title": "Veranstaltungsdetails — Le Blanc & Moi",
-    "description": "Erfahren Sie mehr über Termine und Details der Veranstaltung in Le Blanc."
+    "description": "Erfahren Sie mehr über Termine und Details der Veranstaltung in Le Blanc.",
+    "dynamicTitle": "{{title}} — Le Blanc & Moi"
   },
   "about": {
     "title": "Über uns — Le Blanc & Moi",

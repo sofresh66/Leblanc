@@ -4,11 +4,14 @@ import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../i18n/languages';
 import { ROUTE_SEGMENTS, detectPreferredLanguage } from './routeMapping';
 import { LocalizedRoute } from './LocalizedRoute';
 import { HomePage } from '../pages/HomePage';
-import { MapPage } from '../pages/MapPage';
-import { ListPage } from '../pages/ListPage';
-import { EventPage } from '../pages/EventPage';
-import { AboutPage } from '../pages/AboutPage';
-import { NotFoundPage } from '../pages/NotFoundPage';
+import { lazy } from 'react';
+import { pageImports } from './pageImports';
+
+const MapPage = lazy(pageImports.map);
+const ListPage = lazy(pageImports.list);
+const EventPage = lazy(pageImports.events);
+const AboutPage = lazy(pageImports.about);
+const NotFoundPage = lazy(pageImports.notFound);
 
 /**
  * Composant de redirection racine (/) vers la langue préférée :

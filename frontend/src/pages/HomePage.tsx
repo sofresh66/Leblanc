@@ -1,4 +1,6 @@
-import React from 'react';
+import { PageSeo } from '../components/PageSeo';
+import React, { useEffect } from 'react';
+import { prefetchPage } from '../routes/pageImports';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { CATEGORIES, type Event, type EventCategory } from '@leblanc/shared';
@@ -62,6 +64,10 @@ export const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation(['pages', 'events', 'common']);
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
   const listPath = buildLocalizedPath('list', currentLang);
+  useEffect(() => {
+    const timer = window.setTimeout(() => prefetchPage(listPath), 2000);
+    return () => window.clearTimeout(timer);
+  }, [listPath]);
 
   const { data, isLoading, isError, error, refetch } = useEvents({ lang: currentLang, limit: 15 });
   const allEvents: Event[] = data?.items ?? [];
@@ -76,6 +82,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="-mt-2 sm:-mt-4">
+      <PageSeo section="home" />
       <section
         aria-labelledby="home-title"
         className="relative isolate flex min-h-[510px] items-center overflow-hidden rounded-[24px] bg-brenne-950 bg-cover bg-center px-6 py-14 text-white shadow-xl sm:min-h-[540px] sm:rounded-[32px] sm:px-12 lg:min-h-[580px] lg:px-20"

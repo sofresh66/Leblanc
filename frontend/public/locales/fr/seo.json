@@ -13,7 +13,8 @@
   },
   "event": {
     "title": "Détails de l'événement — Le Blanc & Moi",
-    "description": "Consultez les informations et horaires de cet événement au Blanc."
+    "description": "Consultez les informations et horaires de cet événement au Blanc.",
+    "dynamicTitle": "{{title}} — Le Blanc & Moi"
   },
   "about": {
     "title": "À propos — Le Blanc & Moi",

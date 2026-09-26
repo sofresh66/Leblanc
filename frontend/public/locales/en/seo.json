@@ -13,7 +13,8 @@
   },
   "event": {
     "title": "Event Details — Le Blanc & Moi",
-    "description": "View event information and schedules around Le Blanc."
+    "description": "View event information and schedules around Le Blanc.",
+    "dynamicTitle": "{{title}} — Le Blanc & Moi"
   },
   "about": {
     "title": "About — Le Blanc & Moi",

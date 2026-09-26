@@ -1,8 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState, type FocusEvent, type MouseEvent } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLocalizedPath } from '../hooks/useLocalizedPath';
+import { prefetchPage } from '../routes/pageImports';
+
+function prefetchLink(event: FocusEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>) {
+  if (!(event.target instanceof Element)) return;
+  const link = event.target.closest('a');
+  if (link instanceof HTMLAnchorElement && link.origin === window.location.origin) prefetchPage(link.pathname);
+}
 
 export function Layout() {
   const { t } = useTranslation(['common', 'nav']);
@@ -46,9 +53,9 @@ export function Layout() {
   }, [menuOpen]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-sable-50 text-gray-900">
+    <div className="min-h-screen flex flex-col bg-sable-50 text-gray-900" onMouseOver={prefetchLink} onFocus={prefetchLink}>
       <header className="sticky top-0 z-50 border-b border-brenne-900/10 bg-white/90 backdrop-blur-xl shadow-[0_4px_20px_rgba(27,50,13,0.04)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[72px] flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[72px] flex items-center justify-between gap-4 max-[360px]:gap-1">
           <NavLink
             to={getLocalizedPath('home')}
             aria-label={t('common:app.name')}
@@ -77,7 +84,7 @@ export function Layout() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 max-[360px]:gap-1">
             <LanguageSwitcher />
             <button
               ref={menuButton}
@@ -131,7 +138,9 @@ export function Layout() {
       </header>
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <Outlet />
+        <Suspense fallback={<div role="status" className="py-12 text-center">{t('common:actions.loading')}</div>}>
+          <Outlet />
+        </Suspense>
       </main>
 
       <footer className="bg-white border-t border-brenne-900/10 py-6">
