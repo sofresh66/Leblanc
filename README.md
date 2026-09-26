@@ -139,7 +139,9 @@ Lors du contrôle du 26 septembre 2026 : **134 fiches × 6 langues + 24 pages pr
 
 L'adresse API du build est résolue dans cet ordre : `SITEMAP_API_URL`, `VITE_API_URL`, puis `/api` sur `VITE_SITE_URL`. Les URLs d'API absolues doivent inclure le préfixe `/api`. En production, configurer l'URL publique du Worker si l'API n'est pas servie par Pages sur cette origine.
 
-En cas de panne réseau, réponse invalide, erreur HTTP, pagination incohérente ou dépassement du délai global de 30 secondes, le build **réussit avec les 24 pages principales uniquement**, même si quelques pages d'événements ont déjà été lues. Il affiche :
+La page de crédits photographiques ajoute désormais six URLs : `/fr/credits`, `/en/credits`, `/es/creditos`, `/de/bildnachweise`, `/it/crediti` et `/nl/credits`. Accessible depuis À propos et le pied de page, elle reprend les sources et modifications de `frontend/public/images/CREDITS.md`. Le sitemap comprend donc maintenant **30 pages principales**, en plus des fiches événements.
+
+En cas de panne réseau, réponse invalide, erreur HTTP, pagination incohérente ou dépassement du délai global de 30 secondes, le build **réussit avec les 30 pages principales uniquement**, même si quelques pages d'événements ont déjà été lues. Il affiche :
 
 > Sitemap généré sans les fiches événements (API indisponible). Rebuild recommandé.
 

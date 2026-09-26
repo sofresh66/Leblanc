@@ -11,6 +11,7 @@ export default tseslint.config(
       '**/worker-configuration.d.ts',
       '**/*.tsbuildinfo',
       'coverage/**',
+      'artifacts/**',
     ],
   },
   js.configs.recommended,
