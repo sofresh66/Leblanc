@@ -192,6 +192,8 @@ Ce script utilise Chromium via Playwright, lit les données réelles et contrôl
 - Dépôt : https://github.com/sofresh66/Leblanc ; branche de production : `main`.
 - Workflow : [production.yml](.github/workflows/production.yml).
 
+Actions utilisées : `actions/checkout@v5` et `actions/setup-node@v5`, dont le runtime interne est Node.js 24. `setup-node` installe également Node.js 24 pour les commandes du projet et gère le cache npm ; aucune action `cache` ou `upload-artifact` séparée n’est utilisée. Le runner reste `ubuntu-latest`.
+
 Le workflow exécute, dans cet ordre : checkout, Node.js 24, contrôle de configuration, `npm ci`, `npm test`, ingestion DATAtourisme complète, build frontend, vérification du build, publication Pages. Les tests incluent les 139 tests existants et les nouveaux tests du contrôle de publication. Les secrets sont transmis uniquement aux étapes de contrôle, d’ingestion ou de publication qui en ont besoin ; le build ne reçoit aucun secret de base de données ou d’API DATAtourisme.
 
 Déclenchements : `workflow_dispatch` et `0 3 * * *` avec `timezone: Europe/Paris`, donc 3 h locales toute l’année. Le workflow doit être présent sur `main`. Aucune ingestion n’est déclenchée par un push. Le job est limité au dépôt `sofresh66/Leblanc` et à `main`, avec `contents: read`, `persist-credentials: false`, runner Linux standard et timeout global de 15 minutes.
