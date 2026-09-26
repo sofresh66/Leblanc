@@ -6,7 +6,7 @@ import {
   type SupportedLanguage,
 } from '../i18n/languages';
 
-export type RouteSection = 'home' | 'map' | 'list' | 'events' | 'about' | 'credits';
+export type RouteSection = 'home' | 'map' | 'list' | 'events' | 'about' | 'credits' | 'privacy';
 
 export const ROUTE_SECTIONS: readonly RouteSection[] = [
   'home',
@@ -15,15 +15,16 @@ export const ROUTE_SECTIONS: readonly RouteSection[] = [
   'events',
   'about',
   'credits',
+  'privacy',
 ] as const;
 
 export const ROUTE_SEGMENTS: Record<SupportedLanguage, Record<RouteSection, string>> = {
-  fr: { home: '', map: 'carte', list: 'liste', events: 'evenements', about: 'a-propos', credits: 'credits' },
-  en: { home: '', map: 'map', list: 'list', events: 'events', about: 'about', credits: 'credits' },
-  es: { home: '', map: 'mapa', list: 'lista', events: 'eventos', about: 'acerca-de', credits: 'creditos' },
-  de: { home: '', map: 'karte', list: 'liste', events: 'veranstaltungen', about: 'ueber-uns', credits: 'bildnachweise' },
-  it: { home: '', map: 'mappa', list: 'lista', events: 'eventi', about: 'chi-siamo', credits: 'crediti' },
-  nl: { home: '', map: 'kaart', list: 'lijst', events: 'evenementen', about: 'over-ons', credits: 'credits' },
+  fr: { home: '', map: 'carte', list: 'liste', events: 'evenements', about: 'a-propos', credits: 'credits', privacy: 'confidentialite' },
+  en: { home: '', map: 'map', list: 'list', events: 'events', about: 'about', credits: 'credits', privacy: 'privacy' },
+  es: { home: '', map: 'mapa', list: 'lista', events: 'eventos', about: 'acerca-de', credits: 'creditos', privacy: 'privacidad' },
+  de: { home: '', map: 'karte', list: 'liste', events: 'veranstaltungen', about: 'ueber-uns', credits: 'bildnachweise', privacy: 'datenschutz' },
+  it: { home: '', map: 'mappa', list: 'lista', events: 'eventi', about: 'chi-siamo', credits: 'crediti', privacy: 'privacy' },
+  nl: { home: '', map: 'kaart', list: 'lijst', events: 'evenementen', about: 'over-ons', credits: 'credits', privacy: 'privacy' },
 };
 
 export interface ResolvedRoute {
@@ -69,6 +70,10 @@ export function resolveRoute(pathname: string): ResolvedRoute {
   }
   if (sectionSegment === langSegments.about) {
     return { lang, section: 'about' };
+  }
+
+  if (sectionSegment === langSegments.privacy && segments.length === 2) {
+    return { lang, section: 'privacy' };
   }
 
   if (sectionSegment === langSegments.credits && segments.length === 2) {

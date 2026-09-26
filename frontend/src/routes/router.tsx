@@ -12,6 +12,7 @@ const ListPage = lazy(pageImports.list);
 const EventPage = lazy(pageImports.events);
 const AboutPage = lazy(pageImports.about);
 const CreditsPage = lazy(pageImports.credits);
+const PrivacyPage = lazy(pageImports.privacy);
 const NotFoundPage = lazy(pageImports.notFound);
 
 /**
@@ -33,7 +34,7 @@ function RootRedirect() {
 }
 
 /**
- * Les 36 routes localisées (6 langues × 6 sections : home, map, list, events, about, credits)
+ * Les 42 routes localisées (6 langues × 7 sections : home, map, list, events, about, credits, privacy)
  * sont générées automatiquement et programmatiquement depuis la table `routeMapping.ts`
  * (source unique de vérité), garantissant l'exhaustivité et la cohérence des URLs.
  */
@@ -74,6 +75,10 @@ const localizedLanguageRoutes = SUPPORTED_LANGUAGES.map((lang: SupportedLanguage
       {
         path: segments.credits,
         element: <CreditsPage />,
+      },
+      {
+        path: segments.privacy,
+        element: <PrivacyPage />,
       },
       {
         path: '*',

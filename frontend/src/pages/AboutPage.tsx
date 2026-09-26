@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLocalizedPath } from '../hooks/useLocalizedPath';
+import { LegalNotice } from '../components/LegalNotice';
 import { PageSeo } from '../components/PageSeo';
 import { useTranslation } from 'react-i18next';
 
@@ -42,8 +43,7 @@ export function AboutPage() {
         </section>
         <section className="rounded-2xl bg-sable-100 p-6 sm:p-8 border border-sable-200 space-y-5">
           <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.legalTitle')}</h2>
-          <p className="text-base leading-loose text-gray-700">{t('about.legalPending')}</p>
-          <p className="text-sm leading-relaxed text-gray-600">{t('about.contactPending')}</p>
+          <LegalNotice />
         </section>
       </div>
     </article>

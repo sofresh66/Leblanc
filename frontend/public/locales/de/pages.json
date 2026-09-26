@@ -47,9 +47,7 @@
     "photosTitle": "Bildnachweise",
     "photosBody": "Das Foto von Le Blanc auf der Startseite stammt von Daniel Jolivet und steht unter CC BY 2.0. Quellen, Lizenzen und Änderungen der lokalen Bilder sind im Bildnachweis aufgeführt. Für Veranstaltungsbilder gelten die Bedingungen ihrer Quellen.",
     "creditsLink": "Bildnachweise ansehen",
-    "legalTitle": "Rechtliche Hinweise",
-    "legalPending": "[Vom Herausgeber zu ergänzen]",
-    "contactPending": "Kontakt: [noch festzulegen]"
+    "legalTitle": "Rechtliche Hinweise"
   },
   "notFound": {
     "code": "404",
@@ -91,5 +89,39 @@
       "eventImages": "Für Veranstaltungsbilder gelten weiterhin die Bedingungen ihrer Quellen. Die vollständigen Lizenzen sind unten verlinkt.",
       "ccLicense": "Vollständige CC-BY-2.0-Lizenz"
     }
+  },
+  "legal": {
+    "title": "Impressum",
+    "publisher": "Herausgeber",
+    "personalProject": "privates Projekt",
+    "contact": "Kontakt",
+    "director": "Verantwortlich für die Veröffentlichung",
+    "host": "Hosting-Anbieter",
+    "database": "Datenbank",
+    "databaseLocation": "Frankfurt am Main, Deutschland"
+  },
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "description": "Wie Le Blanc & Moi den Browserspeicher und die für den Betrieb erforderlichen Dienste nutzt.",
+    "storage": {
+      "title": "Ihre Spracheinstellung",
+      "body": "Diese Website verwendet ausschließlich den lokalen Speicher (localStorage) Ihres Browsers, um Ihre Spracheinstellung zu speichern. Diese Einstellung bleibt in Ihrem Browser und wird nicht als Tracking-Kennung verwendet.",
+      "delete": "Sie können die Sprache jederzeit ändern oder die Einstellung durch Löschen der Websitedaten in Ihren Browsereinstellungen entfernen. Sie bleibt gespeichert, bis sie ersetzt oder gelöscht wird."
+    },
+    "tracking": {
+      "title": "Kein Werbetracking",
+      "body": "Die Website setzt weder Werbetracker noch Reichweitenmessung ein. Der Herausgeber erhebt keine personenbezogenen Daten zu Tracking- oder Werbezwecken."
+    },
+    "services": {
+      "title": "Technische Dienste und externe Inhalte",
+      "body": "Cloudflare hostet die Website und kann technische Daten, einschließlich Ihrer IP-Adresse, zur Bereitstellung und Absicherung des Dienstes verarbeiten. Die Karte lädt Kartenkacheln von OpenStreetMap; einige Veranstaltungsbilder werden ebenfalls von externen Servern geladen. Diese Anbieter erhalten die für die Anfragen erforderlichen Daten, einschließlich Ihrer IP-Adresse, gemäß ihren eigenen Datenschutzrichtlinien.",
+      "cloudflare": "Datenschutz bei Cloudflare",
+      "osm": "Datenschutz bei OpenStreetMap"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "body": "Bei Fragen zu Ihren Daten wenden Sie sich an Denis El Harch unter der unten angegebenen Adresse. Wenn Sie eine E-Mail senden, werden Ihre Adresse und die übermittelten Informationen zur Bearbeitung Ihrer Anfrage verwendet."
+    },
+    "creditsLink": "Bildnachweise und Impressum ansehen"
   }
 }

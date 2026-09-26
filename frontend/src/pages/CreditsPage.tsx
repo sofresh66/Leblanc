@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { LegalNotice } from '../components/LegalNotice';
 import { PageSeo } from '../components/PageSeo';
 
 const categoryPhotos = [
@@ -73,6 +74,10 @@ export function CreditsPage() {
           <a className={linkStyle} href="https://creativecommons.org/licenses/by/2.0/legalcode">{t('credits.footer.ccLicense')}</a>
           <a className={linkStyle} href="https://unsplash.com/license">{t('credits.categories.license')}</a>
         </div>
+      </section>
+      <section id="legal-notice" className={sectionStyle + ' scroll-mt-24'} aria-labelledby="legal-notice-title">
+        <h2 id="legal-notice-title" className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('legal.title')}</h2>
+        <LegalNotice />
       </section>
     </article>
   );

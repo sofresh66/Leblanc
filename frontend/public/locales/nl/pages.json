@@ -47,9 +47,7 @@
     "photosTitle": "Fotocredits",
     "photosBody": "De foto van Le Blanc op de startpagina is van Daniel Jolivet, onder CC BY 2.0. Bronnen, licenties en wijzigingen van lokale afbeeldingen staan in het creditdocument. Voor evenementafbeeldingen gelden de voorwaarden van hun bronnen.",
     "creditsLink": "Bekijk de fotocredits",
-    "legalTitle": "Juridische informatie",
-    "legalPending": "[Aan te vullen door de uitgever]",
-    "contactPending": "Contact: [nog te bepalen]"
+    "legalTitle": "Juridische informatie"
   },
   "notFound": {
     "code": "404",
@@ -91,5 +89,39 @@
       "eventImages": "Voor evenementafbeeldingen blijven de voorwaarden van hun bronnen gelden. Bekijk hieronder de volledige licenties.",
       "ccLicense": "Volledige CC BY 2.0-licentie"
     }
+  },
+  "legal": {
+    "title": "Juridische informatie",
+    "publisher": "Uitgever",
+    "personalProject": "persoonlijk project",
+    "contact": "Contact",
+    "director": "Verantwoordelijk voor de publicatie",
+    "host": "Hostingprovider",
+    "database": "Database",
+    "databaseLocation": "Frankfurt, Duitsland"
+  },
+  "privacy": {
+    "title": "Privacybeleid",
+    "description": "Hoe Le Blanc & Moi browseropslag gebruikt en welke diensten nodig zijn om de website te laten werken.",
+    "storage": {
+      "title": "Uw taalvoorkeur",
+      "body": "Deze website gebruikt uitsluitend de lokale opslag (localStorage) van uw browser om uw taalvoorkeur te onthouden. Deze voorkeur blijft in uw browser en wordt niet gebruikt als tracking-ID.",
+      "delete": "U kunt de taal op elk moment wijzigen of deze voorkeur verwijderen door de websitegegevens in uw browserinstellingen te wissen. De voorkeur blijft opgeslagen totdat deze wordt vervangen of verwijderd."
+    },
+    "tracking": {
+      "title": "Geen advertentietracking",
+      "body": "De website gebruikt geen advertentietrackers of tools voor bezoekersstatistieken. De uitgever verzamelt geen persoonsgegevens voor tracking of reclame."
+    },
+    "services": {
+      "title": "Technische diensten en externe inhoud",
+      "body": "Cloudflare host de website en kan technische gegevens, waaronder uw IP-adres, verwerken om de dienst te leveren en te beveiligen. De kaart laadt kaarttegels van OpenStreetMap; sommige evenementafbeeldingen worden ook van externe servers geladen. Deze aanbieders ontvangen de gegevens die nodig zijn voor die verzoeken, waaronder uw IP-adres, volgens hun eigen privacybeleid.",
+      "cloudflare": "Privacy bij Cloudflare",
+      "osm": "Privacy bij OpenStreetMap"
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Neem voor vragen over uw gegevens contact op met Denis El Harch via het onderstaande adres. Als u een e-mail stuurt, worden uw adres en de verstrekte informatie gebruikt om uw verzoek te behandelen."
+    },
+    "creditsLink": "Bekijk de fotocredits en juridische informatie"
   }
 }

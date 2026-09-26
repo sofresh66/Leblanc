@@ -47,9 +47,7 @@
     "photosTitle": "Photo credits",
     "photosBody": "The photograph of Le Blanc on the home page is by Daniel Jolivet, under CC BY 2.0. Sources, licences and changes to local images are detailed in the credits document. Event images remain subject to their sources’ terms.",
     "creditsLink": "View photo credits",
-    "legalTitle": "Legal information",
-    "legalPending": "[To be completed by the publisher]",
-    "contactPending": "Contact: [contact to be defined]"
+    "legalTitle": "Legal information"
   },
   "notFound": {
     "code": "404",
@@ -91,5 +89,39 @@
       "eventImages": "Event images remain subject to the terms of their sources. See the full licences below.",
       "ccLicense": "Full CC BY 2.0 licence"
     }
+  },
+  "legal": {
+    "title": "Legal notice",
+    "publisher": "Publisher",
+    "personalProject": "personal project",
+    "contact": "Contact",
+    "director": "Publication director",
+    "host": "Hosting provider",
+    "database": "Database",
+    "databaseLocation": "Frankfurt, Germany"
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "description": "How Le Blanc & Moi uses browser storage and the services needed to operate the site.",
+    "storage": {
+      "title": "Your language preference",
+      "body": "This site only uses your browser’s local storage (localStorage) to remember your language preference. This preference stays in your browser and is not used as a tracking identifier.",
+      "delete": "You can change the language at any time or delete this preference by clearing the site’s data in your browser settings. It remains stored until replaced or deleted."
+    },
+    "tracking": {
+      "title": "No advertising tracking",
+      "body": "The site does not implement advertising trackers or audience measurement tools. The publisher does not collect personal data for tracking or advertising purposes."
+    },
+    "services": {
+      "title": "Technical services and external content",
+      "body": "Cloudflare hosts the site and may process technical data, including your IP address, to deliver and secure the service. The map loads OpenStreetMap tiles; some event images also load from third-party servers. These providers receive the data needed for these requests, including your IP address, under their own privacy policies.",
+      "cloudflare": "Cloudflare privacy policy",
+      "osm": "OpenStreetMap privacy policy"
+    },
+    "contact": {
+      "title": "Contact us",
+      "body": "For questions about your data, contact Denis El Harch at the address below. If you send an email, your address and the information you provide will be used to handle your request."
+    },
+    "creditsLink": "View credits and legal notice"
   }
 }

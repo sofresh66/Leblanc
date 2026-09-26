@@ -47,9 +47,7 @@
     "photosTitle": "Crédits photos",
     "photosBody": "La photographie du Blanc utilisée sur l’accueil est de Daniel Jolivet, sous licence CC BY 2.0. Les sources, licences et modifications des images locales sont détaillées dans le document de crédits. Les visuels des événements restent soumis aux conditions de leurs sources.",
     "creditsLink": "Consulter les crédits photographiques",
-    "legalTitle": "Mentions légales",
-    "legalPending": "[À compléter par l’éditeur]",
-    "contactPending": "Contact : [contact à définir]"
+    "legalTitle": "Mentions légales"
   },
   "notFound": {
     "code": "404",
@@ -91,5 +89,39 @@
       "eventImages": "Les visuels des événements restent soumis aux conditions de leurs sources. Consultez les licences complètes ci-dessous.",
       "ccLicense": "Licence CC BY 2.0 complète"
     }
+  },
+  "legal": {
+    "title": "Mentions légales",
+    "publisher": "Éditeur",
+    "personalProject": "projet personnel",
+    "contact": "Contact",
+    "director": "Directeur de la publication",
+    "host": "Hébergeur",
+    "database": "Base de données",
+    "databaseLocation": "Francfort, Allemagne"
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "description": "Comment Le Blanc & Moi utilise le stockage de votre navigateur et les services nécessaires à son fonctionnement.",
+    "storage": {
+      "title": "Votre choix de langue",
+      "body": "Ce site utilise uniquement le stockage local (localStorage) de votre navigateur pour mémoriser votre choix de langue. Cette préférence reste dans votre navigateur et n’est pas utilisée comme identifiant de suivi.",
+      "delete": "Vous pouvez modifier la langue à tout moment ou effacer cette préférence dans les paramètres de votre navigateur, en supprimant les données du site. Elle reste enregistrée jusqu’à son remplacement ou sa suppression."
+    },
+    "tracking": {
+      "title": "Aucun suivi publicitaire",
+      "body": "Le site ne met en place aucun outil de suivi publicitaire ni de mesure d’audience. L’éditeur ne collecte pas de données personnelles à des fins de suivi ou de publicité."
+    },
+    "services": {
+      "title": "Services techniques et contenus externes",
+      "body": "Cloudflare assure l’hébergement et peut traiter des données techniques, notamment votre adresse IP, pour fournir et sécuriser le service. La carte charge des fonds OpenStreetMap ; certaines images d’événements sont également chargées depuis des serveurs tiers. Ces fournisseurs reçoivent les données nécessaires à ces requêtes, dont votre adresse IP, selon leurs propres politiques de confidentialité.",
+      "cloudflare": "Confidentialité chez Cloudflare",
+      "osm": "Confidentialité chez OpenStreetMap"
+    },
+    "contact": {
+      "title": "Nous contacter",
+      "body": "Pour toute question sur vos données, contactez Denis El Harch à l’adresse ci-dessous. Si vous écrivez par courriel, votre adresse et les informations transmises seront utilisées pour traiter votre demande."
+    },
+    "creditsLink": "Consulter les crédits et les mentions légales"
   }
 }

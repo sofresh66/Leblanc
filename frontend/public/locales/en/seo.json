@@ -27,5 +27,9 @@
   "credits": {
     "title": "Photo credits | Le Blanc & Moi",
     "description": "Photography on Le Blanc & Moi: authors, sources, licences and modifications."
+  },
+  "privacy": {
+    "title": "Privacy policy | Le Blanc & Moi",
+    "description": "How Le Blanc & Moi uses browser storage and the services needed to operate the site."
   }
 }

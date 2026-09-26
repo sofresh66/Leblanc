@@ -18,6 +18,7 @@ export interface CommonResource {
 }
 
 export interface NavResource {
+  privacy: string;
   credits: string;
   home: string;
   map: string;
@@ -38,6 +39,7 @@ export interface ErrorsResource {
 }
 
 export interface SeoResource {
+  privacy: { title: string; description: string };
   credits: { title: string; description: string };
   home: { title: string; description: string };
   map: { title: string; description: string };
@@ -48,6 +50,14 @@ export interface SeoResource {
 }
 
 export interface PagesResource {
+  legal: { title: string; publisher: string; personalProject: string; contact: string; director: string; host: string; database: string; databaseLocation: string };
+  privacy: {
+    title: string; description: string; creditsLink: string;
+    storage: { title: string; body: string; delete: string };
+    tracking: { title: string; body: string };
+    services: { title: string; body: string; cloudflare: string; osm: string };
+    contact: { title: string; body: string };
+  };
   credits: {
     title: string; description: string;
     hero: { title: string; file: string; work: string; author: string; source: string; license: string; description: string; changes: string; original: string; publication: string };

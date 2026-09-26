@@ -6,6 +6,7 @@ export const pageImports = {
   events: () => import('../pages/EventPage'),
   about: () => import('../pages/AboutPage').then((module) => ({ default: module.AboutPage })),
   credits: () => import('../pages/CreditsPage').then((module) => ({ default: module.CreditsPage })),
+  privacy: () => import('../pages/PrivacyPage').then((module) => ({ default: module.PrivacyPage })),
   notFound: () =>
     import('../pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })),
 };
