@@ -256,7 +256,17 @@ npm run build
 node scripts/verify-production-build.mjs
 ```
 
-Le [contrôle du build](scripts/verify-production-build.mjs) exige un fichier `index.html` non vide, un `sitemap.xml` de **plus de 50 000 octets** (kB décimaux, seuil strict) et au moins une URL de fiche événement UUID sur le domaine de production. Il retourne 0 si tout est valide, 1 avec un message français et une annotation GitHub `warning` sinon. C’est un contrôle de publication, pas une preuve d’exhaustivité : il détecte le fallback aux 36 pages statiques mais peut aussi bloquer un catalogue réellement devenu plus petit. Diagnostiquer avant de modifier le seuil.
+Le [contrôle du build](scripts/verify-production-build.mjs) vérifie les invariants suivants :
+
+- `index.html` existe et n'est pas vide ;
+- `sitemap.xml` existe et dépasse **50 000 octets** (kB décimaux, seuil strict) ;
+- au moins une URL de fiche événement avec un UUID et un chemin localisé reconnu est présente sur le domaine de production ;
+- la page principale `https://leblanc-et-moi.pages.dev/fr` est présente (barre oblique finale acceptée) ;
+- le sitemap contient **entre 700 et 1 000 URLs incluses**, comptées à partir des balises `<loc>`.
+
+Il retourne 0 si tout est valide, 1 avec un message français et une annotation GitHub `warning` sinon. Le message de succès indique la taille, le nombre total d'URLs et le nombre de fiches événements observés. Aucun comptage exact d'événements ou d'URLs, aucun titre et aucun identifiant métier précis n'est imposé. Les nombres 189 et 828 cités dans les bilans historiques ne sont pas des assertions de production ; le vérificateur ne consulte pas la base de données.
+
+La fenêtre glissante de 90 jours et l'ingestion quotidienne font varier naturellement le catalogue. La plage 700–1 000 est un garde-fou opérationnel demandé pour sa taille actuelle, pas une preuve d'exhaustivité ni une limite métier : une évolution légitime hors de cette plage nécessitera de revoir `MIN_SITEMAP_URLS` et `MAX_SITEMAP_URLS`. Diagnostiquer la source et le build avant de modifier les seuils. Ces contrôles bloquent notamment un sitemap de repli limité aux pages statiques.
 
 Après revue, l’éditeur effectue lui-même le commit et le push :
 

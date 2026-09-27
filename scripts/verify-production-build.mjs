@@ -4,6 +4,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 // kB décimaux : le seuil demandé est strictement supérieur à 50 000 octets.
 export const MIN_SITEMAP_BYTES = 50_000;
+export const MIN_SITEMAP_URLS = 700;
+export const MAX_SITEMAP_URLS = 1_000;
+const PRODUCTION_ORIGIN = 'https://leblanc-et-moi.pages.dev';
 const DEFAULT_DIST = fileURLToPath(new URL('../frontend/dist/', import.meta.url));
 const EVENT_PATH =
   /^\/(fr\/evenements|en\/events|es\/eventos|de\/veranstaltungen|it\/eventi|nl\/evenementen)\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
@@ -29,26 +32,39 @@ export async function verifyProductionBuild(dist = DEFAULT_DIST) {
   }
   const xml = await readFile(resolve(dist, 'sitemap.xml'), 'utf8');
   // La taille seule ne prouve pas la présence de fiches : contrôler aussi leurs URLs.
-  const eventUrls = [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)].filter(([, location]) => {
+  const locations = [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)];
+  const productionUrls = locations.flatMap(([, location]) => {
     try {
       const url = new URL(location);
-      return url.origin === 'https://leblanc-et-moi.pages.dev' && EVENT_PATH.test(url.pathname);
+      return url.origin === PRODUCTION_ORIGIN ? [url] : [];
     } catch {
-      return false;
+      return [];
     }
-  }).length;
+  });
+  const eventUrls = productionUrls.filter((url) => EVENT_PATH.test(url.pathname)).length;
   if (!eventUrls)
     throw new Error(
       'Aucune URL de fiche événement de production dans le sitemap : publication annulée.',
     );
-  return { sitemapBytes: sitemap.size, eventUrls };
+  if (!productionUrls.some((url) => /^\/fr\/?$/.test(url.pathname))) {
+    throw new Error(
+      'Aucune URL de page principale /fr de production dans le sitemap : publication annulée.',
+    );
+  }
+  const totalUrls = locations.length;
+  if (totalUrls < MIN_SITEMAP_URLS || totalUrls > MAX_SITEMAP_URLS) {
+    throw new Error(
+      `Nombre d’URLs du sitemap hors plage (${totalUrls}, attendu entre ${MIN_SITEMAP_URLS} et ${MAX_SITEMAP_URLS} inclus) : publication annulée.`,
+    );
+  }
+  return { sitemapBytes: sitemap.size, totalUrls, eventUrls };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
     const result = await verifyProductionBuild();
     console.log(
-      `Build validé : index.html présent, sitemap de ${result.sitemapBytes} octets et ${result.eventUrls} URLs de fiches événements.`,
+      `Build validé : index.html non vide, sitemap de ${result.sitemapBytes} octets, ${result.totalUrls} URLs dont ${result.eventUrls} fiches événements et une page principale /fr.`,
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erreur de vérification du build.';

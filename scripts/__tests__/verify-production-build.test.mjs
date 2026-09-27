@@ -2,15 +2,36 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { MIN_SITEMAP_BYTES, verifyProductionBuild } from '../verify-production-build.mjs';
+import {
+  MAX_SITEMAP_URLS,
+  MIN_SITEMAP_BYTES,
+  MIN_SITEMAP_URLS,
+  verifyProductionBuild,
+} from '../verify-production-build.mjs';
 
 const eventUrl =
   'https://leblanc-et-moi.pages.dev/fr/evenements/12345678-1234-1234-1234-123456789abc';
 let dist;
 
+function sitemapWithUrls(urls) {
+  return `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls
+    .map((url) => `<url><loc>${url}</loc></url>`)
+    .join('')}</urlset>`;
+}
+
+function catalogueUrls(count = 800) {
+  return [
+    'https://leblanc-et-moi.pages.dev/fr',
+    ...Array.from(
+      { length: count - 1 },
+      (_, index) =>
+        `https://leblanc-et-moi.pages.dev/fr/evenements/12345678-1234-1234-1234-${index.toString(16).padStart(12, '0')}`,
+    ),
+  ];
+}
+
 function sitemapOfSize(bytes, url = eventUrl) {
-  const xml = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${url}</loc></url></urlset>`;
-  return xml.padEnd(bytes, ' ');
+  return sitemapWithUrls([url]).padEnd(bytes, ' ');
 }
 
 beforeEach(async () => {
@@ -37,13 +58,30 @@ describe('Vérification du build de production', () => {
     await expect(verifyProductionBuild(dist)).rejects.toThrow('Sitemap trop petit');
   });
 
-  it('accepte un build avec une fiche au-dessus du seuil', async () => {
-    await writeFile(join(dist, 'sitemap.xml'), sitemapOfSize(MIN_SITEMAP_BYTES + 1));
-    await expect(verifyProductionBuild(dist)).resolves.toEqual({
-      sitemapBytes: 50_001,
-      eventUrls: 1,
-    });
-  });
+  it.each([MIN_SITEMAP_URLS, 792, 804, MAX_SITEMAP_URLS])(
+    'accepte un sitemap correct de %i URLs, bornes incluses',
+    async (count) => {
+      const xml = sitemapWithUrls(catalogueUrls(count));
+      await writeFile(join(dist, 'sitemap.xml'), xml);
+      await expect(verifyProductionBuild(dist)).resolves.toEqual({
+        sitemapBytes: Buffer.byteLength(xml),
+        totalUrls: count,
+        eventUrls: count - 1,
+      });
+    },
+  );
+
+  it.each([MIN_SITEMAP_URLS - 1, MAX_SITEMAP_URLS + 1])(
+    'refuse %i URLs même avec les pages requises et une taille suffisante',
+    async (count) => {
+      const xml = sitemapWithUrls(catalogueUrls(count));
+      expect(Buffer.byteLength(xml)).toBeGreaterThan(MIN_SITEMAP_BYTES);
+      await writeFile(join(dist, 'sitemap.xml'), xml);
+      await expect(verifyProductionBuild(dist)).rejects.toThrow(
+        'Nombre d’URLs du sitemap hors plage',
+      );
+    },
+  );
 
   it('refuse un index absent', async () => {
     await rm(join(dist, 'index.html'));
@@ -62,18 +100,35 @@ describe('Vérification du build de production', () => {
   });
 
   it('refuse un grand sitemap sans fiche événement', async () => {
-    await writeFile(
-      join(dist, 'sitemap.xml'),
-      sitemapOfSize(51_000, 'https://leblanc-et-moi.pages.dev/fr'),
-    );
+    const urls = catalogueUrls().map((url) => url.replace('/fr/evenements/', '/fr/lieux/'));
+    await writeFile(join(dist, 'sitemap.xml'), sitemapWithUrls(urls));
     await expect(verifyProductionBuild(dist)).rejects.toThrow('Aucune URL de fiche');
   });
 
   it('refuse les fiches d’une autre origine', async () => {
-    await writeFile(
-      join(dist, 'sitemap.xml'),
-      sitemapOfSize(51_000, eventUrl.replace('leblanc-et-moi.pages.dev', 'example.org')),
+    const urls = catalogueUrls().map((url, index) =>
+      index === 0 ? url : url.replace('leblanc-et-moi.pages.dev', 'example.org'),
     );
+    await writeFile(join(dist, 'sitemap.xml'), sitemapWithUrls(urls));
     await expect(verifyProductionBuild(dist)).rejects.toThrow('Aucune URL de fiche');
+  });
+
+  it.each([eventUrl, 'https://example.org/fr', 'https://leblanc-et-moi.pages.dev/france'])(
+    'refuse un sitemap sans page principale /fr de production (%s)',
+    async (replacement) => {
+      const urls = catalogueUrls();
+      urls[0] = replacement;
+      await writeFile(join(dist, 'sitemap.xml'), sitemapWithUrls(urls));
+      await expect(verifyProductionBuild(dist)).rejects.toThrow(
+        'Aucune URL de page principale /fr',
+      );
+    },
+  );
+
+  it('accepte la page principale avec une barre oblique finale', async () => {
+    const urls = catalogueUrls();
+    urls[0] += '/';
+    await writeFile(join(dist, 'sitemap.xml'), sitemapWithUrls(urls));
+    await expect(verifyProductionBuild(dist)).resolves.toMatchObject({ totalUrls: 800 });
   });
 });
