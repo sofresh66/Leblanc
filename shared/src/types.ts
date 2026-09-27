@@ -1,5 +1,14 @@
 import type { z } from 'zod';
 import {
+  OpeningHoursRuleSchema,
+  PlaceDetailSchema,
+  PlaceListParamsSchema,
+  PlaceListResponseSchema,
+  PlacePriceDetailSchema,
+  PlaceSchema,
+  PlaceSourceRecordSchema,
+  PlaceTypeSchema,
+  RawPlaceSchema,
   ApiErrorSchema,
   CursorPayloadSchema,
   EventCategorySchema,
@@ -28,6 +37,17 @@ export type EventDetail = z.infer<typeof EventDetailSchema>;
 export type ApiError = z.infer<typeof ApiErrorSchema>;
 export type CursorPayload = z.infer<typeof CursorPayloadSchema>;
 export { SupportedLanguageSchema };
+
+export type PlaceType = z.infer<typeof PlaceTypeSchema>;
+export type RawPlace = z.infer<typeof RawPlaceSchema>;
+export type Place = z.infer<typeof PlaceSchema>;
+export type PlaceDetail = z.infer<typeof PlaceDetailSchema>;
+export type PlaceListParamsInput = z.input<typeof PlaceListParamsSchema>;
+export type PlaceListParams = z.output<typeof PlaceListParamsSchema>;
+export type PlaceListResponse = z.infer<typeof PlaceListResponseSchema>;
+export type OpeningHoursRule = z.infer<typeof OpeningHoursRuleSchema>;
+export type PlaceSourceRecord = z.infer<typeof PlaceSourceRecordSchema>;
+export type PlacePriceDetail = z.infer<typeof PlacePriceDetailSchema>;
 
 /**
  * Calcule la distance orthodromique entre deux points GPS en mètres (formule de Haversine).

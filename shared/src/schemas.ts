@@ -116,3 +116,140 @@ export const CursorPayloadSchema = z.object({
   ),
   i: z.string().uuid(),
 });
+
+// Contrats des lieux permanents, indépendants des événements.
+export const PlaceTypeSchema = z.enum([
+  'restaurant',
+  'bar',
+  'cafe',
+  'fast_food',
+  'food_truck',
+  'other_food',
+]);
+
+const PlaceTranslationsSchema = z.object({
+  fr: z.string().min(1).optional(),
+  en: z.string().min(1).optional(),
+  es: z.string().min(1).optional(),
+  de: z.string().min(1).optional(),
+  it: z.string().min(1).optional(),
+  nl: z.string().min(1).optional(),
+});
+const PlaceUrlSchema = z
+  .string()
+  .url()
+  .refine((value) => /^https?:\/\//i.test(value));
+const PlacePriceSchema = z.number().nonnegative().max(99999999.99);
+const orderedPrices = (value: { priceRangeMin: number | null; priceRangeMax: number | null }) =>
+  value.priceRangeMin === null ||
+  value.priceRangeMax === null ||
+  value.priceRangeMin <= value.priceRangeMax;
+
+export const PlacePriceDetailSchema = z
+  .object({
+    label_i18n: PlaceTranslationsSchema,
+    policies: z.array(z.string().min(1)),
+    offers: z.array(z.string().min(1)),
+    priceRangeMin: PlacePriceSchema.nullable(),
+    priceRangeMax: PlacePriceSchema.nullable(),
+    currency: z
+      .string()
+      .regex(/^[A-Z]{3}$/)
+      .nullable(),
+  })
+  .refine(orderedPrices, { message: 'Fourchette de prix inversée' });
+
+export const OpeningHoursRuleSchema = z
+  .object({
+    id: z.string().uuid(),
+    placeId: z.string().uuid(),
+    validFrom: z.iso.date().nullable(),
+    validThrough: z.iso.date().nullable(),
+    dayOfWeek: z
+      .array(z.number().int().min(1).max(7))
+      .min(1)
+      .max(7)
+      .refine((days) => new Set(days).size === days.length),
+    opens: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/),
+    closes: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/),
+    weekOfMonth: z.number().int().min(0).max(5).nullable(),
+  })
+  .refine((rule) => !rule.validFrom || !rule.validThrough || rule.validFrom <= rule.validThrough, {
+    message: 'Période de validité inversée',
+  });
+
+export const RawPlaceSchema = z
+  .object({
+    id: z.string().uuid(),
+    type: PlaceTypeSchema,
+    subtypes: z.array(z.string().min(1)),
+    title_i18n: PlaceTranslationsSchema.refine((value) => Object.keys(value).length > 0),
+    description_i18n: PlaceTranslationsSchema,
+    sourceLanguage: SupportedContentLanguageSchema,
+    venueName: z.string().nullable(),
+    address: z.string().nullable(),
+    postalCode: z.string().nullable(),
+    city: z.string().nullable(),
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+    phone: z.string().nullable(),
+    email: z.string().email().nullable(),
+    website: PlaceUrlSchema.nullable(),
+    imageUrl: PlaceUrlSchema.nullable(),
+    publicUrl: PlaceUrlSchema.nullable(),
+    cuisines: z.array(z.string().min(1)),
+    priceRangeMin: PlacePriceSchema.nullable(),
+    priceRangeMax: PlacePriceSchema.nullable(),
+    currency: z
+      .string()
+      .regex(/^[A-Z]{3}$/)
+      .default(DEFAULT_CURRENCY),
+    priceDetails: z.array(PlacePriceDetailSchema),
+    takeaway: z.boolean().nullable(),
+    openingHoursStatus: z.enum(['unknown', 'partial', 'provided']),
+    status: z.enum(['published', 'hidden', 'closed']),
+    normalizedTitle: z.string().min(1),
+  })
+  .refine(orderedPrices, { message: 'Fourchette de prix inversée' });
+
+export const PlaceSchema = RawPlaceSchema.safeExtend({
+  title: z.string().min(1),
+  description: z.string(),
+  contentLanguage: SupportedContentLanguageSchema,
+  isFallback: z.boolean(),
+  distance: z.number().nonnegative(),
+  source: z.string().min(1),
+});
+
+export const PlaceSourceRecordSchema = z.object({
+  id: z.string().uuid(),
+  source: z.string().min(1),
+  externalId: z.string().min(1),
+  placeId: z.string().uuid(),
+  sourceUrl: PlaceUrlSchema.nullable(),
+  sourceUpdatedAt: z.string().datetime({ offset: true }).nullable(),
+  rawExcerpt: z.record(z.string(), z.unknown()).nullable(),
+  lastSeenAt: z.string().datetime({ offset: true }),
+});
+
+export const PlaceDetailSchema = PlaceSchema.safeExtend({
+  openingHours: z.array(OpeningHoursRuleSchema),
+});
+
+export const PlaceListParamsSchema = z.object({
+  lang: SupportedContentLanguageSchema.default('fr'),
+  types: z.array(PlaceTypeSchema).optional(),
+  cuisines: z.array(z.string().trim().min(1)).optional(),
+  takeaway: z.boolean().optional(),
+  maxDistance: z.number().min(1).max(20000).optional(),
+  city: z.string().trim().min(1).optional(),
+  cursor: z.string().min(1).optional(),
+  limit: z.number().int().min(1).max(50).default(20),
+});
+
+export const PlaceListResponseSchema = z.object({
+  items: z.array(PlaceSchema),
+  nextCursor: z.string().nullable(),
+  generatedAt: z.string().datetime({ offset: true }),
+  total: z.number().int().nonnegative().optional(),
+});
