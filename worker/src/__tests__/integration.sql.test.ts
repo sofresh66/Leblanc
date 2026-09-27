@@ -1,9 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { EventDetailSchema, LE_BLANC_CENTER, type Event } from '@leblanc/shared';
+import { EventDetailSchema, LE_BLANC_CENTER, PlaceApiSchema, type Event } from '@leblanc/shared';
 import { executeQuery } from '../db/client.js';
 import { getEventByIdFromDb, listEventsFromDb } from '../db/events.js';
 import { listCitiesFromDb } from '../db/referenceData.js';
+import { getPlaceByIdFromDb, listPlaceCategoriesFromDb, listPlacesFromDb } from '../db/places.js';
+import { parsePlaceListQuery } from '../validation/placesQuery.js';
 import { decodeCursor } from '../validation/cursor.js';
 import { parseEventListQuery } from '../validation/query.js';
 
@@ -135,5 +137,50 @@ describe.skipIf(!databaseUrl)('Intégration SQL sur Neon réel, en lecture seule
     const page = await listEventsFromDb(databaseUrl, query, nowIso);
     expect(page.items.length).toBeGreaterThan(0);
     expect(page.items.every((event) => Date.parse(event.startDate) < Date.parse(query.to ?? ''))).toBe(true);
+  });
+});
+
+describe.skipIf(!databaseUrl)('Intégration SQL des lieux, en lecture seule', () => {
+  const now = new Date();
+  const query = (search: string) => parsePlaceListQuery(new URL(`https://example.test/api/v1/places${search}`));
+
+  beforeAll(async () => {
+    await executeQuery(databaseUrl, 'SELECT 1 AS ready', [], 30000);
+  });
+
+  it('récupère trois lieux publiés', async () => {
+    const page = await listPlacesFromDb(databaseUrl, query('?limit=3'), now);
+    expect(page.items).toHaveLength(3);
+    expect(page.items.every((place) => place.status === 'published')).toBe(true);
+  });
+
+  it('filtre par type restaurant', async () => {
+    const page = await listPlacesFromDb(databaseUrl, query('?type=restaurant&limit=50'), now);
+    expect(page.items.length).toBeGreaterThan(0);
+    expect(page.items.every((place) => place.type === 'restaurant')).toBe(true);
+  });
+
+  it('filtre par cuisine présente dans le référentiel', async () => {
+    const categories = await listPlaceCategoriesFromDb(databaseUrl);
+    const cuisine = categories.cuisines[0]?.value;
+    if (!cuisine) throw new Error('Aucune cuisine disponible pour la fixture');
+    const page = await listPlacesFromDb(databaseUrl, query(`?cuisine=${encodeURIComponent(cuisine)}&limit=50`), now);
+    expect(page.items.length).toBeGreaterThan(0);
+    expect(page.items.every((place) => place.cuisines.includes(cuisine))).toBe(true);
+  });
+
+  it('applique ST_DWithin dans le rayon de 20 km', async () => {
+    const page = await listPlacesFromDb(databaseUrl, query('?limit=50'), now);
+    expect(page.items).toHaveLength(35);
+    expect(page.items.every((place) => place.distance <= 20000)).toBe(true);
+  });
+
+  it('charge le détail d’un lieu existant avec ses horaires', async () => {
+    const page = await listPlacesFromDb(databaseUrl, query('?limit=1'), now);
+    const first = page.items[0];
+    if (!first) throw new Error('Aucun lieu disponible');
+    const detail = PlaceApiSchema.parse(await getPlaceByIdFromDb(databaseUrl, first.id, 'fr', now));
+    expect(detail.id).toBe(first.id);
+    expect(detail.openingHours).toEqual(first.openingHours);
   });
 });

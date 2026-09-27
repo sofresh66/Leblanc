@@ -16,6 +16,11 @@ export const CACHE_PROFILES = {
 
   /** Erreurs ou endpoints dynamiques / health */
   noStore: 'no-store, no-cache, must-revalidate',
+
+  placesList: 'public, max-age=60, s-maxage=60',
+  placesOpenNow: 'public, max-age=30, s-maxage=30',
+  placeDetail: 'public, max-age=120, s-maxage=120',
+  placeCategories: 'public, max-age=3600, s-maxage=3600',
 } as const;
 
 export type CacheProfileKey = keyof typeof CACHE_PROFILES;

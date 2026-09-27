@@ -11,6 +11,7 @@ import { handleCategories } from './routes/categories.js';
 import { handleCities } from './routes/cities.js';
 import { handleGetEventById, handleListEvents } from './routes/events.js';
 import { handleHealth } from './routes/health.js';
+import { handleGetPlaceById, handleListPlaces, handlePlaceCategories } from './routes/places.js';
 
 /**
  * Routeur principal du Cloudflare Worker pour l'API Le Blanc & Moi.
@@ -31,8 +32,12 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
     const isCities = pathname === '/api/v1/cities';
     const isEventsList = pathname === '/api/v1/events';
     const isEventDetail = pathname.startsWith('/api/v1/events/') && pathname.split('/').length === 5;
+    const isPlacesList = pathname === '/api/v1/places';
+    const isPlaceCategories = pathname === '/api/v1/places/categories';
+    const isPlaceDetail = pathname.startsWith('/api/v1/places/') && pathname.split('/').length === 5 && !isPlaceCategories;
 
-    const isKnownRoute = isHealth || isCategories || isCities || isEventsList || isEventDetail;
+    const isKnownRoute = isHealth || isCategories || isCities || isEventsList || isEventDetail ||
+      isPlacesList || isPlaceCategories || isPlaceDetail;
 
     if (!isKnownRoute) {
       response = notFoundResponse(request, env, 'Route introuvable', requestId);
@@ -64,6 +69,13 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
     } else if (isEventDetail) {
       const id = pathname.slice('/api/v1/events/'.length);
       response = await handleGetEventById(request, env, id, nowIso, requestId);
+    } else if (isPlacesList) {
+      response = await handleListPlaces(request, env, nowIso, requestId);
+    } else if (isPlaceCategories) {
+      response = await handlePlaceCategories(request, env);
+    } else if (isPlaceDetail) {
+      const id = pathname.slice('/api/v1/places/'.length);
+      response = await handleGetPlaceById(request, env, id, nowIso, requestId);
     } else {
       response = notFoundResponse(request, env, 'Route introuvable', requestId);
     }

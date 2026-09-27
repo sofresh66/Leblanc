@@ -253,3 +253,23 @@ export const PlaceListResponseSchema = z.object({
   generatedAt: z.string().datetime({ offset: true }),
   total: z.number().int().nonnegative().optional(),
 });
+
+// Contrats HTTP V2 : les schémas de stockage et de la V2 Lot 1 restent inchangés.
+export const PlaceApiListParamsSchema = PlaceListParamsSchema.safeExtend({
+  isOpenNow: z.boolean().optional(),
+});
+
+export const PlaceApiSchema = PlaceDetailSchema.safeExtend({
+  isOpenNow: z.boolean().nullable(),
+});
+
+export const PlaceApiListResponseSchema = z.object({
+  items: z.array(PlaceApiSchema),
+  nextCursor: z.string().nullable(),
+  generatedAt: z.string().datetime({ offset: true }),
+});
+
+export const PlaceCategoriesResponseSchema = z.object({
+  types: z.array(z.object({ value: PlaceTypeSchema, count: z.number().int().nonnegative() })),
+  cuisines: z.array(z.object({ value: z.string().min(1), count: z.number().int().nonnegative() })),
+});
