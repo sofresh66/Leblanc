@@ -11,6 +11,8 @@ import {
 
 const eventUrl =
   'https://leblanc-et-moi.pages.dev/fr/evenements/12345678-1234-1234-1234-123456789abc';
+const placeUrl =
+  'https://leblanc-et-moi.pages.dev/fr/lieux/12345678-1234-1234-1234-123456789abc';
 let dist;
 
 function sitemapWithUrls(urls) {
@@ -22,8 +24,9 @@ function sitemapWithUrls(urls) {
 function catalogueUrls(count = 800) {
   return [
     'https://leblanc-et-moi.pages.dev/fr',
+    placeUrl,
     ...Array.from(
-      { length: count - 1 },
+      { length: count - 2 },
       (_, index) =>
         `https://leblanc-et-moi.pages.dev/fr/evenements/12345678-1234-1234-1234-${index.toString(16).padStart(12, '0')}`,
     ),
@@ -58,7 +61,7 @@ describe('Vérification du build de production', () => {
     await expect(verifyProductionBuild(dist)).rejects.toThrow('Sitemap trop petit');
   });
 
-  it.each([MIN_SITEMAP_URLS, 792, 804, MAX_SITEMAP_URLS])(
+  it.each([MIN_SITEMAP_URLS, 900, 1100, MAX_SITEMAP_URLS])(
     'accepte un sitemap correct de %i URLs, bornes incluses',
     async (count) => {
       const xml = sitemapWithUrls(catalogueUrls(count));
@@ -66,7 +69,8 @@ describe('Vérification du build de production', () => {
       await expect(verifyProductionBuild(dist)).resolves.toEqual({
         sitemapBytes: Buffer.byteLength(xml),
         totalUrls: count,
-        eventUrls: count - 1,
+        eventUrls: count - 2,
+        placeUrls: 1,
       });
     },
   );
@@ -105,6 +109,12 @@ describe('Vérification du build de production', () => {
     await expect(verifyProductionBuild(dist)).rejects.toThrow('Aucune URL de fiche');
   });
 
+  it('refuse un grand sitemap sans fiche lieu', async () => {
+    const urls = catalogueUrls().map((url) => url.replace('/fr/lieux/', '/fr/evenements/'));
+    await writeFile(join(dist, 'sitemap.xml'), sitemapWithUrls(urls));
+    await expect(verifyProductionBuild(dist)).rejects.toThrow('Aucune URL de fiche lieu');
+  });
+
   it('refuse les fiches d’une autre origine', async () => {
     const urls = catalogueUrls().map((url, index) =>
       index === 0 ? url : url.replace('leblanc-et-moi.pages.dev', 'example.org'),
@@ -113,7 +123,7 @@ describe('Vérification du build de production', () => {
     await expect(verifyProductionBuild(dist)).rejects.toThrow('Aucune URL de fiche');
   });
 
-  it.each([eventUrl, 'https://example.org/fr', 'https://leblanc-et-moi.pages.dev/france'])(
+  it.each(['https://leblanc-et-moi.pages.dev/fr/lieux/12345678-1234-1234-1234-123456789abc', 'https://example.org/fr', 'https://leblanc-et-moi.pages.dev/france'])(
     'refuse un sitemap sans page principale /fr de production (%s)',
     async (replacement) => {
       const urls = catalogueUrls();

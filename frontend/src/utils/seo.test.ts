@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { MockEventsRepository } from '../api/eventsRepository';
 import { eventStructuredData, serializeJsonLd } from './seo';
 import { generateSitemap } from '../../vite-plugins/sitemap';
+import { placeFixture } from '../components/places/__tests__/fixture';
 
 async function fixture() {
   const repository = new MockEventsRepository();
@@ -66,6 +67,9 @@ describe('SEO et sitemap', () => {
       )
       .mockResolvedValueOnce(
         Response.json({ items: [event], nextCursor: null, generatedAt: 'now' }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({ items: [placeFixture], nextCursor: null, generatedAt: new Date().toISOString() }),
       );
     const result = await generateSitemap(
       'https://example.test',
@@ -73,8 +77,9 @@ describe('SEO et sitemap', () => {
       fetcher,
     );
     expect(result.partial).toBe(false);
-    expect(result.count).toBe(48);
+    expect(result.count).toBe(54);
     expect(result.xml).toContain(`/de/veranstaltungen/${event.id}`);
+    expect(result.xml).toContain(`/nl/plekken/${placeFixture.id}`);
     expect(result.xml).toContain('/it/chi-siamo');
     for (const path of ["/fr/ou-manger","/en/where-to-eat","/es/donde-comer","/de/wo-essen","/it/dove-mangiare","/nl/waar-eten"]) expect(result.xml).toContain(path);
     for (const path of ['/fr/confidentialite', '/en/privacy', '/es/privacidad', '/de/datenschutz', '/it/privacy', '/nl/privacy']) expect(result.xml).toContain(path);
@@ -85,12 +90,37 @@ describe('SEO et sitemap', () => {
     expect(result.robots).toContain('Sitemap: https://example.test/sitemap.xml');
   });
 
+  it('pagine les lieux, déduplique les IDs et ignore les lieux non publiés', async () => {
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ items: [], nextCursor: null, generatedAt: 'now' }))
+      .mockResolvedValueOnce(Response.json({ items: [placeFixture], nextCursor: 'page2', generatedAt: new Date().toISOString() }))
+      .mockResolvedValueOnce(Response.json({ items: [placeFixture, { ...placeFixture, id: 'a1000000-0000-4000-8000-000000000002', status: 'hidden' }], nextCursor: null, generatedAt: new Date().toISOString() }));
+    const result = await generateSitemap('https://example.test', '/api', fetcher);
+    expect(result.partial).toBe(false);
+    expect(result.count).toBe(48);
+    expect(result.xml.match(new RegExp(placeFixture.id, 'g'))).toHaveLength(6);
+    expect(String(fetcher.mock.calls[2]![0])).toContain('cursor=page2');
+  });
+
+  it('conserve les événements si la collecte des lieux échoue', async () => {
+    const event = await fixture();
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ items: [event], nextCursor: null, generatedAt: 'now' }))
+      .mockRejectedValueOnce(new Error('places offline'));
+    const result = await generateSitemap('https://example.test', '/api', fetcher);
+    expect(result.partial).toBe(true);
+    expect(result.count).toBe(48);
+    expect(result.xml).toContain(event.id);
+    expect(result.xml).not.toContain(placeFixture.id);
+  });
+
   it('revient aux seules 42 pages en cas de panne pendant la pagination', async () => {
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(
         Response.json({ items: [await fixture()], nextCursor: 'page2', generatedAt: 'now' }),
       )
+      .mockRejectedValueOnce(new Error('offline'))
       .mockRejectedValueOnce(new Error('offline'));
     const result = await generateSitemap('https://example.test', '/api', fetcher);
     expect(result.partial).toBe(true);
@@ -119,6 +149,6 @@ describe('SEO et sitemap', () => {
     const result = await generateSitemap('https://example.test', '/api', fetcher);
     expect(result.partial).toBe(true);
     expect(result.count).toBe(42);
-    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(fetcher).toHaveBeenCalledTimes(3);
   });
 });

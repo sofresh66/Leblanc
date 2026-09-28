@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PageSeo } from '../components/PageSeo';
@@ -10,6 +11,8 @@ import { PlacePriceBadge, PlaceStatusBadge, PlaceTypeBadge } from '../components
 import { usePlace } from '../hooks/usePlace';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, LANGUAGES_META } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
+import { getRestaurantJsonLd } from '../utils/seo-places';
+import { serializeJsonLd } from '../utils/seo';
 
 export function PlacePage() {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +21,8 @@ export function PlacePage() {
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const [shareStatus, setShareStatus] = useState<'copied' | 'unavailable' | null>(null);
   const lang = isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE;
-  const { data: place, isLoading, isError, error, refetch } = usePlace(id, lang);
+  const validId = typeof id === 'string' && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id);
+  const { data: place, isLoading, isError, error, refetch } = usePlace(validId ? id : undefined, lang);
 
   if (isLoading) {
     return (
@@ -38,7 +42,7 @@ export function PlacePage() {
     return <><PageSeo section="eat" noindex /><ErrorState error={error} onRetry={() => void refetch()} /></>;
   }
 
-  if (!place) {
+  if (!validId || !place) {
     return (
       <div>
         <div role="status" className="mx-auto mt-8 max-w-3xl rounded-xl border border-brenne-200 bg-brenne-50 px-6 py-5 text-center text-brenne-950">
@@ -83,13 +87,13 @@ export function PlacePage() {
   return (
     <article className="space-y-8 py-6 pb-12 sm:space-y-10 sm:py-8">
       <PageSeo
-        section="eat"
+        section="places"
         titleOverride={`${place.title} — Le Blanc & Moi`}
         descriptionOverride={place.description || t('places:detail.noDescription')}
         canonicalPath={pathname}
         {...(place.imageUrl ? { imageOverride: place.imageUrl } : {})}
-        noindex
       />
+      <Helmet><script type="application/ld+json">{serializeJsonLd(getRestaurantJsonLd(place))}</script></Helmet>
 
       <nav aria-label={t('places:detail.breadcrumb.label')}>
         <ol className="flex flex-wrap items-center gap-2 text-sm text-gray-600">

@@ -6,7 +6,7 @@ import {
   type SupportedLanguage,
 } from '../i18n/languages';
 
-export type RouteSection = 'home' | 'map' | 'list' | 'events' | 'about' | 'credits' | 'privacy' | 'eat';
+export type RouteSection = 'home' | 'map' | 'list' | 'events' | 'about' | 'credits' | 'privacy' | 'eat' | 'places';
 
 export const ROUTE_SECTIONS: readonly RouteSection[] = [
   'home',
@@ -17,15 +17,16 @@ export const ROUTE_SECTIONS: readonly RouteSection[] = [
   'credits',
   'privacy',
   'eat',
+  'places',
 ] as const;
 
 export const ROUTE_SEGMENTS: Record<SupportedLanguage, Record<RouteSection, string>> = {
-  fr: { eat: 'ou-manger', home: '', map: 'carte', list: 'liste', events: 'evenements', about: 'a-propos', credits: 'credits', privacy: 'confidentialite' },
-  en: { eat: 'where-to-eat', home: '', map: 'map', list: 'list', events: 'events', about: 'about', credits: 'credits', privacy: 'privacy' },
-  es: { eat: 'donde-comer', home: '', map: 'mapa', list: 'lista', events: 'eventos', about: 'acerca-de', credits: 'creditos', privacy: 'privacidad' },
-  de: { eat: 'wo-essen', home: '', map: 'karte', list: 'liste', events: 'veranstaltungen', about: 'ueber-uns', credits: 'bildnachweise', privacy: 'datenschutz' },
-  it: { eat: 'dove-mangiare', home: '', map: 'mappa', list: 'lista', events: 'eventi', about: 'chi-siamo', credits: 'crediti', privacy: 'privacy' },
-  nl: { eat: 'waar-eten', home: '', map: 'kaart', list: 'lijst', events: 'evenementen', about: 'over-ons', credits: 'credits', privacy: 'privacy' },
+  fr: { places: 'lieux', eat: 'ou-manger', home: '', map: 'carte', list: 'liste', events: 'evenements', about: 'a-propos', credits: 'credits', privacy: 'confidentialite' },
+  en: { places: 'places', eat: 'where-to-eat', home: '', map: 'map', list: 'list', events: 'events', about: 'about', credits: 'credits', privacy: 'privacy' },
+  es: { places: 'lugares', eat: 'donde-comer', home: '', map: 'mapa', list: 'lista', events: 'eventos', about: 'acerca-de', credits: 'creditos', privacy: 'privacidad' },
+  de: { places: 'orte', eat: 'wo-essen', home: '', map: 'karte', list: 'liste', events: 'veranstaltungen', about: 'ueber-uns', credits: 'bildnachweise', privacy: 'datenschutz' },
+  it: { places: 'luoghi', eat: 'dove-mangiare', home: '', map: 'mappa', list: 'lista', events: 'eventi', about: 'chi-siamo', credits: 'crediti', privacy: 'privacy' },
+  nl: { places: 'plekken', eat: 'waar-eten', home: '', map: 'kaart', list: 'lijst', events: 'evenementen', about: 'over-ons', credits: 'credits', privacy: 'privacy' },
 };
 
 export interface ResolvedRoute {
@@ -76,6 +77,9 @@ export function resolveRoute(pathname: string): ResolvedRoute {
   if (sectionSegment === langSegments.eat && segments.length === 2) {
     return { lang, section: 'eat' };
   }
+  if (sectionSegment === langSegments.places && segments.length === 3 && segments[2]) {
+    return { lang, section: 'places', id: segments[2] };
+  }
 
   if (sectionSegment === langSegments.privacy && segments.length === 2) {
     return { lang, section: 'privacy' };
@@ -102,7 +106,7 @@ export function buildLocalizedPath(
   }
 
   const segment = ROUTE_SEGMENTS[targetLang][section];
-  if (section === 'events') {
+  if (section === 'events' || section === 'places') {
     return id ? `/${targetLang}/${segment}/${encodeURIComponent(id)}` : `/${targetLang}/${segment}`;
   }
 

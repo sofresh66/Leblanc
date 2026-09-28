@@ -2,13 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { PlaceApi } from '@leblanc/shared';
-import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../../i18n/languages';
+import { DEFAULT_LANGUAGE, isSupportedLanguage } from '../../i18n/languages';
+import { buildLocalizedPath } from '../../routes/routeMapping';
 import { PlacePriceBadge, PlaceStatusBadge, PlaceTypeBadge } from './PlaceBadges';
-
-/** Temporaire jusqu'à l'ajout de la section places dans routeMapping (sous-lot 3.4). */
-const DETAIL_SEGMENT: Record<SupportedLanguage, string> = {
-  fr: 'lieux', en: 'places', es: 'lugares', de: 'orte', it: 'luoghi', nl: 'plaatsen',
-};
 
 export function PlaceCard({ place }: { place: PlaceApi }) {
   const { t, i18n } = useTranslation('places');
@@ -16,7 +12,7 @@ export function PlaceCard({ place }: { place: PlaceApi }) {
   const lang = isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE;
   const address = [place.address, place.postalCode, place.city].filter(Boolean).join(', ');
   const distance = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 }).format(place.distance / 1000);
-  const detailPath = `/${lang}/${DETAIL_SEGMENT[lang]}/${encodeURIComponent(place.id)}`;
+  const detailPath = buildLocalizedPath('places', lang, place.id);
 
   return (
     <article data-testid={`place-card-${place.id}`} className="card-event h-full border border-brenne-900/5">

@@ -18,9 +18,9 @@ vi.mock('../components/places/PlaceMap', () => ({
     `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`,
 }));
 
-function renderPage() {
+function renderPage(id = placeFixture.id) {
   return render(<HelmetProvider><I18nextProvider i18n={testI18n}>
-    <MemoryRouter initialEntries={[`/fr/lieux/${placeFixture.id}`]}>
+    <MemoryRouter initialEntries={[`/fr/lieux/${id}`]}>
       <Routes><Route path="/fr/lieux/:id" element={<PlacePage />} /></Routes>
     </MemoryRouter>
   </I18nextProvider></HelmetProvider>);
@@ -29,7 +29,7 @@ function renderPage() {
 afterEach(async () => { cleanup(); await testI18n.changeLanguage('fr'); });
 
 describe('PlacePage', () => {
-  it('affiche la fiche, les contacts, les badges, la carte et le SEO provisoire', async () => {
+  it('affiche la fiche, les contacts, les badges, la carte et le SEO indexable', async () => {
     mockUsePlace.mockReturnValue({
       data: {
         ...placeFixture,
@@ -53,7 +53,9 @@ describe('PlacePage', () => {
     expect(screen.getAllByRole('link', { name: 'Site web' })[0]?.getAttribute('target')).toBe('_blank');
     await waitFor(() => expect(document.title).toBe('La Table — Le Blanc & Moi'));
     expect(document.querySelector('meta[name="description"]')?.getAttribute('content')).toBe('Cuisine locale');
-    expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('noindex, follow');
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('index, follow');
+    expect(document.querySelector('link[rel="alternate"][hreflang="en"]')?.getAttribute('href')).toContain(`/en/places/${placeFixture.id}`);
+    expect([...document.querySelectorAll('script[type="application/ld+json"]')].some((script) => script.textContent?.includes('"@type":"Restaurant"'))).toBe(true);
   });
 
   it('montre un skeleton pendant le chargement', () => {
@@ -76,6 +78,13 @@ describe('PlacePage', () => {
     renderPage();
     expect(screen.getByRole('heading', { name: 'Lieu introuvable' })).toBeTruthy();
     expect(screen.getByText('Ce lieu n’existe pas ou n’est plus disponible.')).toBeTruthy();
+  });
+
+  it('montre la 404 pour un identifiant invalide sans lancer la requête', () => {
+    mockUsePlace.mockReturnValue({ isLoading: false, isError: false, data: undefined });
+    renderPage('invalid-uuid');
+    expect(screen.getByRole('heading', { name: 'Lieu introuvable' })).toBeTruthy();
+    expect(mockUsePlace).toHaveBeenLastCalledWith(undefined, 'fr');
   });
 
   it('masque la carte sans coordonnées valides et indique les données manquantes', () => {

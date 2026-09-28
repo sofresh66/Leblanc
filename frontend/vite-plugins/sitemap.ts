@@ -1,10 +1,10 @@
 import type { Plugin } from 'vite';
-import { EventListResponseSchema } from '@leblanc/shared';
+import { EventListResponseSchema, PlaceApiListResponseSchema } from '@leblanc/shared';
 import { SUPPORTED_LANGUAGES } from '../src/i18n/languages';
 import { buildLocalizedPath, type RouteSection } from '../src/routes/routeMapping';
 
 export const SITEMAP_WARNING =
-  'Sitemap généré sans les fiches événements (API indisponible). Rebuild recommandé.';
+  'Sitemap partiel : fiches événements ou lieux indisponibles via l’API. Rebuild recommandé.';
 const MAIN_SECTIONS: RouteSection[] = ['home', 'list', 'map', 'about', 'credits', 'privacy', 'eat'];
 const escapeXml = (value: string) =>
   value.replace(
@@ -28,7 +28,8 @@ export async function generateSitemap(
   const urls = SUPPORTED_LANGUAGES.flatMap((lang) =>
     MAIN_SECTIONS.map((section) => `${site}${buildLocalizedPath(section, lang)}`),
   );
-  const ids = new Set<string>();
+  const eventIds = new Set<string>();
+  const placeIds = new Set<string>();
   let partial = false;
   try {
     const base = new URL(apiUrl || '/api', `${site}/`).href.replace(/\/+$/, '');
@@ -44,7 +45,7 @@ export async function generateSitemap(
       const response = await fetcher(endpoint, { signal, headers: { Accept: 'application/json' } });
       if (!response.ok) throw new Error(`API HTTP ${response.status}`);
       const page = EventListResponseSchema.parse(await response.json());
-      page.items.forEach((event) => ids.add(event.id));
+      page.items.forEach((event) => eventIds.add(event.id));
       cursor = page.nextCursor;
       if (cursor) {
         if (cursors.has(cursor) || cursors.size >= 1000) throw new Error('Pagination invalide');
@@ -53,11 +54,39 @@ export async function generateSitemap(
     } while (cursor);
   } catch {
     partial = true;
-    ids.clear(); // Une panne en cours de pagination revient aussi aux 42 pages principales.
+    eventIds.clear();
   }
-  for (const id of [...ids].sort()) {
+  try {
+    const base = new URL(apiUrl || '/api', `${site}/`).href.replace(/\/+$/, '');
+    const cursors = new Set<string>();
+    const signal = AbortSignal.timeout(30_000);
+    let cursor: string | null = null;
+    do {
+      const endpoint = new URL(`${base}/v1/places`);
+      endpoint.searchParams.set('lang', 'fr');
+      endpoint.searchParams.set('limit', '50');
+      if (cursor) endpoint.searchParams.set('cursor', cursor);
+      const response = await fetcher(endpoint, { signal, headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error(`API HTTP ${response.status}`);
+      const page = PlaceApiListResponseSchema.parse(await response.json());
+      page.items.filter((place) => place.status === 'published').forEach((place) => placeIds.add(place.id));
+      cursor = page.nextCursor;
+      if (cursor) {
+        if (cursors.has(cursor) || cursors.size >= 1000) throw new Error('Pagination invalide');
+        cursors.add(cursor);
+      }
+    } while (cursor);
+  } catch {
+    partial = true;
+    placeIds.clear();
+  }
+  for (const id of [...eventIds].sort()) {
     for (const lang of SUPPORTED_LANGUAGES)
       urls.push(`${site}${buildLocalizedPath('events', lang, id)}`);
+  }
+  for (const id of [...placeIds].sort()) {
+    for (const lang of SUPPORTED_LANGUAGES)
+      urls.push(`${site}${buildLocalizedPath('places', lang, id)}`);
   }
   return {
     partial,
