@@ -28,5 +28,24 @@
   "cuisines": {
     "TraditionalCuisine": "Cucina tradizionale", "ForeignCuisine": "Cucina internazionale",
     "EuropeanCuisine": "Cucina europea", "GourmetCuisine": "Alta cucina", "Pizzeria": "Pizzeria"
+  },
+  "detail": {
+    "breadcrumb": { "label": "Percorso di navigazione", "home": "Home", "places": "Dove mangiare" },
+    "sections": { "description": "Descrizione", "hours": "Orari di apertura", "location": "Posizione", "practicalInfo": "Informazioni pratiche", "price": "Prezzi" },
+    "fields": { "address": "Indirizzo", "distance": "Distanza da Le Blanc", "phone": "Telefono", "website": "Sito web", "email": "Email" },
+    "hours": {
+      "unknown": "Orari non disponibili", "closedToday": "Chiuso oggi", "closed": "Chiuso", "today": "Oggi",
+      "noSchedule": "Nessun orario disponibile", "currentWeek": "Orari della settimana in corso (ora di Parigi).",
+      "partialNotice": "Questi orari sono incompleti. Verificali con il locale prima di recarti lì.",
+      "day": "Giorno", "times": "Orari", "nextDay": "(giorno successivo)"
+    },
+    "actions": {
+      "getDirections": "Indicazioni", "call": "Chiama", "visitWebsite": "Sito web", "share": "Condividi",
+      "openInMaps": "Apri in Google Maps", "copied": "Link copiato", "unavailable": "Impossibile copiare il link"
+    },
+    "notFound": { "title": "Locale non trovato", "description": "Questo locale non esiste o non è più disponibile." },
+    "source": "Fonte: DATAtourisme", "sourceOther": "Fonte: {{source}}",
+    "noDescription": "Descrizione non disponibile", "addressUnknown": "Indirizzo non disponibile",
+    "fallbackNotice": "Contenuto disponibile in {{language}}.", "mapLoading": "Caricamento mappa…"
   }
 }

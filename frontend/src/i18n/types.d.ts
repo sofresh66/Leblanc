@@ -189,6 +189,39 @@ export interface PlacesResource {
     end: string;
   };
   cuisines: Record<string, string>;
+  detail: {
+    breadcrumb: { label: string; home: string; places: string };
+    sections: { description: string; hours: string; location: string; practicalInfo: string; price: string };
+    fields: { address: string; distance: string; phone: string; website: string; email: string };
+    hours: {
+      unknown: string;
+      closedToday: string;
+      closed: string;
+      today: string;
+      noSchedule: string;
+      currentWeek: string;
+      partialNotice: string;
+      day: string;
+      times: string;
+      nextDay: string;
+    };
+    actions: {
+      getDirections: string;
+      call: string;
+      visitWebsite: string;
+      share: string;
+      openInMaps: string;
+      copied: string;
+      unavailable: string;
+    };
+    notFound: { title: string; description: string };
+    source: string;
+    sourceOther: string;
+    noDescription: string;
+    addressUnknown: string;
+    fallbackNotice: string;
+    mapLoading: string;
+  };
 }
 
 declare module 'react-i18next' {

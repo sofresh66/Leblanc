@@ -15,16 +15,22 @@ interface PageSeoProps {
   section: RouteSection | 'notFound';
   event?: EventDetail;
   noindex?: boolean;
+  titleOverride?: string;
+  descriptionOverride?: string;
+  canonicalPath?: string;
+  imageOverride?: string;
 }
 
-export function PageSeo({ section, event, noindex = false }: PageSeoProps) {
+export function PageSeo({ section, event, noindex = false, titleOverride, descriptionOverride, canonicalPath, imageOverride }: PageSeoProps) {
   const { t, i18n } = useTranslation(['seo', 'nav']);
   const { id } = useParams<{ id: string }>();
   const { pathname } = useLocation();
   const lang = isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE;
   const key = section === 'events' ? 'event' : section;
-  const title = event ? t('event.dynamicTitle', { title: event.title }) : t(`${key}.title`);
-  const description = event?.description.trim()
+  const title = titleOverride ?? (event ? t('event.dynamicTitle', { title: event.title }) : t(`${key}.title`));
+  const description = descriptionOverride?.trim()
+    ? descriptionOverride.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150)
+    : event?.description.trim()
     ? event.description
         .replace(/<[^>]*>/g, ' ')
         .replace(/\s+/g, ' ')
@@ -33,9 +39,9 @@ export function PageSeo({ section, event, noindex = false }: PageSeoProps) {
     : t(`${key}.description`);
   const absolute = (path: string) => new URL(path, `${SITE_URL}/`).href;
   const canonical = absolute(
-    section === 'notFound' ? pathname : buildLocalizedPath(section, lang, id),
+    canonicalPath ?? (section === 'notFound' ? pathname : buildLocalizedPath(section, lang, id)),
   );
-  const image = absolute(event?.imageUrl || '/images/hero-le-blanc.jpg');
+  const image = absolute(imageOverride || event?.imageUrl || '/images/hero-le-blanc.jpg');
   const excluded = noindex || section === 'notFound';
   const breadcrumbs = [{ name: t('nav:home'), item: absolute(buildLocalizedPath('home', lang)) }];
   if (section === 'events') {

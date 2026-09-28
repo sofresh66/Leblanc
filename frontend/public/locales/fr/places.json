@@ -28,5 +28,24 @@
   "cuisines": {
     "TraditionalCuisine": "Cuisine traditionnelle", "ForeignCuisine": "Cuisine du monde",
     "EuropeanCuisine": "Cuisine européenne", "GourmetCuisine": "Cuisine gastronomique", "Pizzeria": "Pizzeria"
+  },
+  "detail": {
+    "breadcrumb": { "label": "Fil d’Ariane", "home": "Accueil", "places": "Où manger" },
+    "sections": { "description": "Description", "hours": "Horaires d’ouverture", "location": "Localisation", "practicalInfo": "Informations pratiques", "price": "Prix" },
+    "fields": { "address": "Adresse", "distance": "Distance depuis Le Blanc", "phone": "Téléphone", "website": "Site web", "email": "Email" },
+    "hours": {
+      "unknown": "Horaires non renseignés", "closedToday": "Fermé aujourd’hui", "closed": "Fermé", "today": "Aujourd’hui",
+      "noSchedule": "Aucun horaire disponible", "currentWeek": "Horaires pour la semaine en cours (heure de Paris).",
+      "partialNotice": "Ces horaires sont partiels. Confirmez-les auprès du lieu avant de vous déplacer.",
+      "day": "Jour", "times": "Horaires", "nextDay": "(le lendemain)"
+    },
+    "actions": {
+      "getDirections": "Y aller", "call": "Appeler", "visitWebsite": "Site web", "share": "Partager",
+      "openInMaps": "Ouvrir dans Google Maps", "copied": "Lien copié", "unavailable": "Impossible de copier le lien"
+    },
+    "notFound": { "title": "Lieu introuvable", "description": "Ce lieu n’existe pas ou n’est plus disponible." },
+    "source": "Source : DATAtourisme", "sourceOther": "Source : {{source}}",
+    "noDescription": "Description non disponible", "addressUnknown": "Adresse non renseignée",
+    "fallbackNotice": "Contenu disponible en {{language}}.", "mapLoading": "Chargement de la carte…"
   }
 }

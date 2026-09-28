@@ -28,5 +28,24 @@
   "cuisines": {
     "TraditionalCuisine": "Traditionele keuken", "ForeignCuisine": "Internationale keuken",
     "EuropeanCuisine": "Europese keuken", "GourmetCuisine": "Gastronomische keuken", "Pizzeria": "Pizzeria"
+  },
+  "detail": {
+    "breadcrumb": { "label": "Broodkruimelnavigatie", "home": "Home", "places": "Waar eten" },
+    "sections": { "description": "Beschrijving", "hours": "Openingstijden", "location": "Locatie", "practicalInfo": "Praktische informatie", "price": "Prijzen" },
+    "fields": { "address": "Adres", "distance": "Afstand vanaf Le Blanc", "phone": "Telefoon", "website": "Website", "email": "E-mail" },
+    "hours": {
+      "unknown": "Openingstijden onbekend", "closedToday": "Vandaag gesloten", "closed": "Gesloten", "today": "Vandaag",
+      "noSchedule": "Geen openingstijden beschikbaar", "currentWeek": "Openingstijden voor deze week (Parijse tijd).",
+      "partialNotice": "Deze openingstijden zijn onvolledig. Controleer ze bij de locatie voordat u vertrekt.",
+      "day": "Dag", "times": "Tijden", "nextDay": "(volgende dag)"
+    },
+    "actions": {
+      "getDirections": "Routebeschrijving", "call": "Bellen", "visitWebsite": "Website", "share": "Delen",
+      "openInMaps": "Openen in Google Maps", "copied": "Link gekopieerd", "unavailable": "Link kopiëren mislukt"
+    },
+    "notFound": { "title": "Locatie niet gevonden", "description": "Deze locatie bestaat niet of is niet meer beschikbaar." },
+    "source": "Bron: DATAtourisme", "sourceOther": "Bron: {{source}}",
+    "noDescription": "Beschrijving niet beschikbaar", "addressUnknown": "Adres onbekend",
+    "fallbackNotice": "Inhoud beschikbaar in {{language}}.", "mapLoading": "Kaart wordt geladen…"
   }
 }
