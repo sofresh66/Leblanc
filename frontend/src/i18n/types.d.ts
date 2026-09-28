@@ -148,6 +148,49 @@ export interface FiltersResource {
   };
 }
 
+export interface PlacesResource {
+  title: string;
+  subtitle: string;
+  count_one: string;
+  count_other: string;
+  distanceKm: string;
+  card: { view: string };
+  types: {
+    restaurant: string;
+    bar: string;
+    cafe: string;
+    fast_food: string;
+    food_truck: string;
+    other_food: string;
+  };
+  status: { open: string; closed: string; unknown: string };
+  price: { range: string; from: string; to: string; exact: string; unknown: string };
+  filters: {
+    title: string;
+    type: string;
+    cuisine: string;
+    openNow: string;
+    openOnly: string;
+    distance: string;
+    reset: string;
+    apply: string;
+    show: string;
+    hide: string;
+    cuisineUnavailable: string;
+    loadingCuisines: string;
+    retry: string;
+  };
+  list: {
+    results: string;
+    loadMore: string;
+    empty: string;
+    emptyDescription: string;
+    error: string;
+    end: string;
+  };
+  cuisines: Record<string, string>;
+}
+
 declare module 'react-i18next' {
   interface CustomTypeOptions {
     defaultNS: 'common';
@@ -159,6 +202,7 @@ declare module 'react-i18next' {
       pages: PagesResource;
       events: EventsResource;
       filters: FiltersResource;
+      places: PlacesResource;
     };
   }
 }

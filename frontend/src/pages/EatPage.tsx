@@ -1,40 +1,54 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { PageSeo } from '../components/PageSeo';
-import { useLocalizedPath } from '../hooks/useLocalizedPath';
+import { PlaceFilters } from '../components/places/PlaceFilters';
+import { PlaceList } from '../components/places/PlaceList';
+import { readPlaceFilterParams, writePlaceFilterParams } from '../components/places/placeFilterParams';
+import { usePlaceCategories } from '../hooks/usePlaceCategories';
+import { DEFAULT_LANGUAGE, isSupportedLanguage } from '../i18n/languages';
 
 export function EatPage() {
-  const { t } = useTranslation('pages');
-  const getLocalizedPath = useLocalizedPath();
+  const { t, i18n } = useTranslation('places');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const lang = isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE;
+  const categories = usePlaceCategories();
+  const total = categories.data?.types.reduce((sum, type) => sum + type.count, 0);
+  const filters = useMemo(() => {
+    const values = readPlaceFilterParams(searchParams);
+    return {
+      lang,
+      ...(values.types.length ? { types: values.types } : {}),
+      ...(values.cuisines.length ? { cuisines: values.cuisines } : {}),
+      ...(values.openNow ? { isOpenNow: true } : {}),
+      ...(values.maxDistanceKm < 20 ? { maxDistance: values.maxDistanceKm * 1000 } : {}),
+    };
+  }, [lang, searchParams]);
+
+  const resetFilters = () => {
+    setSearchParams(writePlaceFilterParams(searchParams, {
+      types: [], cuisines: [], openNow: false, maxDistanceKm: 20,
+    }), { replace: true });
+  };
 
   return (
-    <article className="py-6 sm:py-8 pb-12">
+    <div className="space-y-10 py-6 pb-12 sm:space-y-12 sm:py-8">
       <PageSeo section="eat" />
-      <div className="rounded-2xl border border-sable-200 bg-sable-100 px-6 py-12 sm:p-12 lg:p-16">
-        <div className="max-w-3xl space-y-8">
-          <header className="space-y-5">
-            <p className="inline-block rounded-full border border-brenne-200 bg-brenne-50 px-4 py-2 text-sm font-semibold text-brenne-900">
-              {t('eat.comingSoon')}
-            </p>
-            <h1 className="font-display text-[40px] font-bold leading-tight text-brenne-950 [overflow-wrap:anywhere]">
-              {t('eat.title')}
-            </h1>
-            <p className="text-base sm:text-lg leading-relaxed text-gray-700">
-              {t('eat.description')}
-            </p>
-          </header>
-
-          <ul className="list-disc space-y-3 pl-5 text-base leading-relaxed text-brenne-900 marker:text-brenne-700">
-            <li>{t('eat.items.restaurants')}</li>
-            <li>{t('eat.items.producers')}</li>
-            <li>{t('eat.items.specialties')}</li>
-          </ul>
-
-          <Link to={getLocalizedPath('home')} className="btn-primary min-h-11 text-center">
-            {t('eat.backHome')}
-          </Link>
-        </div>
+      <header className="space-y-5">
+        <h1 className="section-title text-4xl sm:text-[40px] [overflow-wrap:anywhere]">{t('title')}</h1>
+        <p className="max-w-2xl text-base leading-relaxed text-gray-600">{t('subtitle')}</p>
+        {total !== undefined && (
+          <p className="inline-flex rounded-full border border-brenne-200 bg-brenne-50 px-4 py-2 text-sm font-semibold text-brenne-900" role="status">
+            {t('count', { count: total })}
+          </p>
+        )}
+      </header>
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[300px_minmax(0,1fr)]">
+        <div className="lg:sticky lg:top-24"><PlaceFilters /></div>
+        <section id="place-results" className="min-w-0 scroll-mt-24" aria-label={t('list.results')}>
+          <PlaceList filters={filters} onResetFilters={resetFilters} />
+        </section>
       </div>
-    </article>
+    </div>
   );
 }

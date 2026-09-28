@@ -12,7 +12,7 @@ export const i18nReady = i18n
     supportedLngs: SUPPORTED_LANGUAGES,
     load: 'currentOnly',
     fallbackLng: DEFAULT_LANGUAGE,
-    ns: ['common', 'nav', 'errors', 'seo', 'pages', 'events', 'filters'],
+    ns: ['common', 'nav', 'errors', 'seo', 'pages', 'events', 'filters', 'places'],
     defaultNS: 'common',
     interpolation: {
       escapeValue: false,

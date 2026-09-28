@@ -1,0 +1,32 @@
+{
+  "title": "Dónde comer cerca de Le Blanc",
+  "subtitle": "Restaurantes, bares, cafeterías y otros lugares donde comer cerca de Le Blanc.",
+  "count_one": "{{count}} lugar",
+  "count_other": "{{count}} lugares",
+  "distanceKm": "{{distance}} km",
+  "card": { "view": "Ver la ficha de {{title}}" },
+  "types": {
+    "restaurant": "Restaurante", "bar": "Bar", "cafe": "Cafetería",
+    "fast_food": "Comida rápida", "food_truck": "Puesto ambulante", "other_food": "Otra opción gastronómica"
+  },
+  "status": { "open": "Abierto", "closed": "Cerrado", "unknown": "Horario no disponible" },
+  "price": {
+    "range": "{{min}}–{{max}} {{currency}}", "from": "Desde {{min}} {{currency}}",
+    "to": "Hasta {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Precio no disponible"
+  },
+  "filters": {
+    "title": "Filtrar lugares", "type": "Tipo de lugar", "cuisine": "Cocina",
+    "openNow": "Abierto ahora", "openOnly": "Mostrar solo lugares abiertos",
+    "distance": "Radio de búsqueda", "reset": "Restablecer", "apply": "Aplicar",
+    "show": "Mostrar", "hide": "Ocultar", "cuisineUnavailable": "Las cocinas no están disponibles en este momento.",
+    "loadingCuisines": "Cargando cocinas…", "retry": "Reintentar"
+  },
+  "list": {
+    "results": "Lugares donde comer", "loadMore": "Cargar más", "empty": "No se encontraron lugares",
+    "emptyDescription": "Prueba a ampliar los filtros.", "error": "Error al cargar", "end": "Se han mostrado todos los lugares."
+  },
+  "cuisines": {
+    "TraditionalCuisine": "Cocina tradicional", "ForeignCuisine": "Cocina internacional",
+    "EuropeanCuisine": "Cocina europea", "GourmetCuisine": "Alta cocina", "Pizzeria": "Pizzería"
+  }
+}

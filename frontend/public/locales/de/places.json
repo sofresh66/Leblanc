@@ -1,0 +1,32 @@
+{
+  "title": "Essen gehen rund um Le Blanc",
+  "subtitle": "Restaurants, Bars, Cafés und weitere Adressen zum Essen rund um Le Blanc.",
+  "count_one": "{{count}} Adresse",
+  "count_other": "{{count}} Adressen",
+  "distanceKm": "{{distance}} km",
+  "card": { "view": "Details zu {{title}} ansehen" },
+  "types": {
+    "restaurant": "Restaurant", "bar": "Bar", "cafe": "Café",
+    "fast_food": "Schnellrestaurant", "food_truck": "Foodtruck", "other_food": "Weitere Gastronomie"
+  },
+  "status": { "open": "Geöffnet", "closed": "Geschlossen", "unknown": "Öffnungszeiten unbekannt" },
+  "price": {
+    "range": "{{min}}–{{max}} {{currency}}", "from": "Ab {{min}} {{currency}}",
+    "to": "Bis {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Preis unbekannt"
+  },
+  "filters": {
+    "title": "Adressen filtern", "type": "Art des Lokals", "cuisine": "Küche",
+    "openNow": "Jetzt geöffnet", "openOnly": "Nur geöffnete Lokale anzeigen",
+    "distance": "Suchradius", "reset": "Zurücksetzen", "apply": "Anwenden",
+    "show": "Anzeigen", "hide": "Ausblenden", "cuisineUnavailable": "Küchen sind derzeit nicht verfügbar.",
+    "loadingCuisines": "Küchen werden geladen…", "retry": "Erneut versuchen"
+  },
+  "list": {
+    "results": "Adressen zum Essen", "loadMore": "Mehr laden", "empty": "Keine Adressen gefunden",
+    "emptyDescription": "Versuchen Sie, die Filter zu erweitern.", "error": "Ladefehler", "end": "Alle Adressen wurden angezeigt."
+  },
+  "cuisines": {
+    "TraditionalCuisine": "Traditionelle Küche", "ForeignCuisine": "Internationale Küche",
+    "EuropeanCuisine": "Europäische Küche", "GourmetCuisine": "Gourmetküche", "Pizzeria": "Pizzeria"
+  }
+}

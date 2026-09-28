@@ -1,0 +1,32 @@
+{
+  "title": "Waar eten rond Le Blanc",
+  "subtitle": "Restaurants, bars, cafés en andere eetgelegenheden rond Le Blanc.",
+  "count_one": "{{count}} adres",
+  "count_other": "{{count}} adressen",
+  "distanceKm": "{{distance}} km",
+  "card": { "view": "Bekijk de details van {{title}}" },
+  "types": {
+    "restaurant": "Restaurant", "bar": "Bar", "cafe": "Café",
+    "fast_food": "Snelle hap", "food_truck": "Foodtruck", "other_food": "Andere eetgelegenheid"
+  },
+  "status": { "open": "Open", "closed": "Gesloten", "unknown": "Openingstijden onbekend" },
+  "price": {
+    "range": "{{min}}–{{max}} {{currency}}", "from": "Vanaf {{min}} {{currency}}",
+    "to": "Tot {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Prijs onbekend"
+  },
+  "filters": {
+    "title": "Eetgelegenheden filteren", "type": "Soort locatie", "cuisine": "Keuken",
+    "openNow": "Nu open", "openOnly": "Alleen geopende locaties tonen",
+    "distance": "Zoekstraal", "reset": "Herstellen", "apply": "Toepassen",
+    "show": "Tonen", "hide": "Verbergen", "cuisineUnavailable": "Keukens zijn momenteel niet beschikbaar.",
+    "loadingCuisines": "Keukens laden…", "retry": "Opnieuw proberen"
+  },
+  "list": {
+    "results": "Eetgelegenheden", "loadMore": "Meer laden", "empty": "Geen locaties gevonden",
+    "emptyDescription": "Probeer ruimere filters.", "error": "Laden mislukt", "end": "Alle locaties zijn getoond."
+  },
+  "cuisines": {
+    "TraditionalCuisine": "Traditionele keuken", "ForeignCuisine": "Internationale keuken",
+    "EuropeanCuisine": "Europese keuken", "GourmetCuisine": "Gastronomische keuken", "Pizzeria": "Pizzeria"
+  }
+}

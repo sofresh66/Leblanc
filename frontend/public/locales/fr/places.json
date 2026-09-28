@@ -1,0 +1,32 @@
+{
+  "title": "Où manger autour du Blanc",
+  "subtitle": "Restaurants, bars, cafés et autres bonnes adresses autour du Blanc.",
+  "count_one": "{{count}} adresse",
+  "count_other": "{{count}} adresses",
+  "distanceKm": "{{distance}} km",
+  "card": { "view": "Voir la fiche de {{title}}" },
+  "types": {
+    "restaurant": "Restaurant", "bar": "Bar", "cafe": "Café",
+    "fast_food": "Restauration rapide", "food_truck": "Food-truck", "other_food": "Autre restauration"
+  },
+  "status": { "open": "Ouvert", "closed": "Fermé", "unknown": "Horaires non renseignés" },
+  "price": {
+    "range": "{{min}}–{{max}} {{currency}}", "from": "Dès {{min}} {{currency}}",
+    "to": "Jusqu’à {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Prix non renseigné"
+  },
+  "filters": {
+    "title": "Filtrer les adresses", "type": "Type de lieu", "cuisine": "Cuisine",
+    "openNow": "Ouvert maintenant", "openOnly": "Afficher uniquement les lieux ouverts",
+    "distance": "Rayon de recherche", "reset": "Réinitialiser", "apply": "Appliquer",
+    "show": "Afficher", "hide": "Masquer", "cuisineUnavailable": "Les cuisines ne sont pas disponibles pour le moment.",
+    "loadingCuisines": "Chargement des cuisines…", "retry": "Réessayer"
+  },
+  "list": {
+    "results": "Adresses", "loadMore": "Charger plus", "empty": "Aucune adresse trouvée",
+    "emptyDescription": "Essayez d’élargir vos filtres.", "error": "Erreur de chargement", "end": "Toutes les adresses ont été affichées."
+  },
+  "cuisines": {
+    "TraditionalCuisine": "Cuisine traditionnelle", "ForeignCuisine": "Cuisine du monde",
+    "EuropeanCuisine": "Cuisine européenne", "GourmetCuisine": "Cuisine gastronomique", "Pizzeria": "Pizzeria"
+  }
+}
