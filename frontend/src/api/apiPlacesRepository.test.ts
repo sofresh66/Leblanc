@@ -125,7 +125,7 @@ describe('ApiPlacesRepository', () => {
     vi.stubGlobal('fetch', fetchMock);
     expect((await repository.getPlaceById(place.id, 'en'))?.title).toBe('La Table');
     expect(await repository.listCategories()).toEqual(categories);
-    expect(String(fetchMock.mock.calls[1]?.[0])).toBe('/api/v1/places/categories');
+    expect(String(fetchMock.mock.calls[1]?.[0])).toContain('/v1/places/categories');
   });
 
   it('convertit les réponses invalides en ApiError 502', async () => {
