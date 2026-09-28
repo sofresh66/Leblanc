@@ -66,6 +66,12 @@ export function CreditsPage() {
         <a className={linkStyle} href="https://unsplash.com/license">{t('credits.categories.license')}</a>
       </section>
 
+      <section className={sectionStyle} aria-labelledby="data-sources-title">
+        <h2 id="data-sources-title" className="font-display text-[28px] text-brenne-950">{t('credits.dataSources.title')}</h2>
+        <p className="text-gray-700 leading-relaxed">{t('credits.dataSources.osm')}</p>
+        <a className={linkStyle} href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors — ODbL ↗</a>
+      </section>
+
       <section className="rounded-2xl bg-sable-100 border border-sable-200 p-6 sm:p-8 space-y-4">
         <h2 className="font-display text-[28px] text-brenne-950">{t('credits.footer.title')}</h2>
         <p className="text-gray-700 leading-relaxed">{t('credits.footer.note')}</p>

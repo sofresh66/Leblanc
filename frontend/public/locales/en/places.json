@@ -37,7 +37,8 @@
       "unknown": "Hours unavailable", "closedToday": "Closed today", "closed": "Closed", "today": "Today",
       "noSchedule": "No schedule available", "currentWeek": "Hours for the current week (Paris time).",
       "partialNotice": "These hours are incomplete. Please confirm them with the venue before visiting.",
-      "day": "Day", "times": "Hours", "nextDay": "(next day)"
+      "day": "Day", "times": "Hours", "nextDay": "(next day)",
+      "sourceOsm": "Hours (OpenStreetMap source)", "osmDisclaimer": "These hours are provided by OpenStreetMap and may be incomplete."
     },
     "actions": {
       "getDirections": "Get directions", "call": "Call", "visitWebsite": "Website", "share": "Share",

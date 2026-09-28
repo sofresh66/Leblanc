@@ -149,6 +149,9 @@ export function Layout() {
           <p>&copy; {new Date().getFullYear()} {t('common:app.name')} — {t('common:footer.rights')}</p>
           <div className="flex flex-col items-center gap-1 text-center sm:items-end sm:text-right">
             <span>{t('common:footer.sources')}</span>
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="text-xs text-creuse-800 underline underline-offset-4 hover:text-creuse-900">
+              {t('common:footer.osmAttribution')}
+            </a>
             <Link to={getLocalizedPath('privacy')} className="inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900">{t('nav:privacy')}</Link>
             <Link to={getLocalizedPath('credits')} className="inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900">{t('nav:credits')}</Link>
             <span className="text-xs text-gray-500">

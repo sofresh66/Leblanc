@@ -128,7 +128,7 @@ export async function getPlaceByIdFromDb(
   now = new Date(),
 ): Promise<PlaceApi | null> {
   const sql = `
-    SELECT ${PLACE_COLUMNS},
+    SELECT ${PLACE_COLUMNS}, p.opening_hours_raw,
       ST_Distance(p.location, ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography) AS distance_m,
       ${RELATED_COLUMNS}
     FROM places p

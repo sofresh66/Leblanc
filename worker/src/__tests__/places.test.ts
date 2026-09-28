@@ -76,6 +76,13 @@ describe('horaires Europe/Paris', () => {
 });
 
 describe('mapping et SQL des lieux', () => {
+  it('expose les horaires OSM bruts uniquement quand la colonne détail est présente', () => {
+    const list = mapDbRowToPlace({ ...row, opening_hours: [] }, 'fr', now);
+    expect(list).not.toHaveProperty('openingHoursRaw');
+    const detail = mapDbRowToPlace({ ...row, opening_hours: [], opening_hours_raw: 'Mo-Fr 09:00-18:00' }, 'fr', now);
+    expect(detail.openingHoursRaw).toBe('Mo-Fr 09:00-18:00');
+    expect(detail.isOpenNow).toBeNull();
+  });
   it('résout les traductions, les prix, les horaires et le fallback', () => {
     const place = mapDbRowToPlace(row, 'en', now);
     expect(PlaceApiSchema.parse(place)).toEqual(place);

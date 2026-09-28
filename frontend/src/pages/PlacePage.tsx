@@ -162,7 +162,13 @@ export function PlacePage() {
 
       <section className="rounded-2xl border border-brenne-900/5 bg-white p-6 shadow-md sm:p-8" aria-labelledby="place-hours">
         <h2 id="place-hours" className="mb-5 font-display text-[28px] font-bold text-brenne-950">{t('places:detail.sections.hours')}</h2>
-        <OpeningHoursTable rules={place.openingHours} status={place.openingHoursStatus} />
+        {place.openingHoursRaw && place.openingHours.length === 0 ? (
+          <div className="space-y-3 text-gray-700">
+            <h3 className="font-semibold text-brenne-950">{t('places:detail.hours.sourceOsm')}</h3>
+            <p className="whitespace-pre-wrap [overflow-wrap:break-word]">{place.openingHoursRaw}</p>
+            <p className="text-sm text-gray-600">{t('places:detail.hours.osmDisclaimer')}</p>
+          </div>
+        ) : <OpeningHoursTable rules={place.openingHours} status={place.openingHoursStatus} />}
       </section>
 
       {hasCoordinates && (

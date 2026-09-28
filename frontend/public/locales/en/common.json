@@ -12,6 +12,7 @@
   "footer": {
     "rights": "All rights reserved",
     "sources": "Data sources",
+    "osmAttribution": "© OpenStreetMap contributors",
     "heroPhotoCredit": "Photo: {{author}}, {{license}}",
     "madeBy": "Made with ❤️ by {{author}}"
   }

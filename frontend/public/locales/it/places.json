@@ -37,7 +37,8 @@
       "unknown": "Orari non disponibili", "closedToday": "Chiuso oggi", "closed": "Chiuso", "today": "Oggi",
       "noSchedule": "Nessun orario disponibile", "currentWeek": "Orari della settimana in corso (ora di Parigi).",
       "partialNotice": "Questi orari sono incompleti. Verificali con il locale prima di recarti lì.",
-      "day": "Giorno", "times": "Orari", "nextDay": "(giorno successivo)"
+      "day": "Giorno", "times": "Orari", "nextDay": "(giorno successivo)",
+      "sourceOsm": "Orari (fonte OpenStreetMap)", "osmDisclaimer": "Questi orari provengono da OpenStreetMap e potrebbero essere incompleti."
     },
     "actions": {
       "getDirections": "Indicazioni", "call": "Chiama", "visitWebsite": "Sito web", "share": "Condividi",

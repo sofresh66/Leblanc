@@ -83,6 +83,7 @@
         "autre": "Vijver en waterlelies"
       }
     },
+    "dataSources": { "title": "Gegevensbronnen", "osm": "De plaatsgegevens van OpenStreetMap zijn beschikbaar gesteld door bijdragers onder de Open Database License (ODbL)." },
     "footer": {
       "title": "Opmerkingen en licenties",
       "note": "Deze fotocredits kunnen op elk moment worden gewijzigd.",

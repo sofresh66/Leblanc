@@ -37,7 +37,8 @@
       "unknown": "Horaires non renseignés", "closedToday": "Fermé aujourd’hui", "closed": "Fermé", "today": "Aujourd’hui",
       "noSchedule": "Aucun horaire disponible", "currentWeek": "Horaires pour la semaine en cours (heure de Paris).",
       "partialNotice": "Ces horaires sont partiels. Confirmez-les auprès du lieu avant de vous déplacer.",
-      "day": "Jour", "times": "Horaires", "nextDay": "(le lendemain)"
+      "day": "Jour", "times": "Horaires", "nextDay": "(le lendemain)",
+      "sourceOsm": "Horaires (source OpenStreetMap)", "osmDisclaimer": "Ces horaires sont fournis par OpenStreetMap et peuvent être incomplets."
     },
     "actions": {
       "getDirections": "Y aller", "call": "Appeler", "visitWebsite": "Site web", "share": "Partager",

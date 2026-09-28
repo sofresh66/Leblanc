@@ -355,3 +355,10 @@ WHERE status = 'published' AND id IN (
 GROUP BY is_free, price_null
 ORDER BY is_free, price_null;
 ```
+## Lieux OpenStreetMap
+
+Le script `npm run db:ingest:osm-places` collecte les restaurants, bars, cafés et lieux de restauration rapide nommés dans un rayon de 20 km autour du Blanc. Il interroge plusieurs serveurs Overpass en cascade. Une réponse vide ou un échec de tous les serveurs provoque un arrêt avec code 1 avant toute connexion à la base ; aucun snapshot local n'est utilisé en repli.
+
+Appliquer d'abord `npm run db:migrate` pour installer la migration 007. L'ingestion utilise `DATABASE_URL_DIRECT`, met à jour les fiches OSM par `source + external_id` et conserve les horaires `opening_hours` bruts. La déduplication avec DATAtourisme masque les rapprochements fiables (niveaux 1 et 2) et laisse les cas ambigus publiés (niveau 3, décision `pending`). Une relance met à jour les mêmes fiches sans créer de nouveaux doublons.
+
+Les données de lieux OpenStreetMap sont créditées dans [CREDITS.md](CREDITS.md) et sur le site ; elles sont fournies sous licence ODbL.

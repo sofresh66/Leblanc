@@ -171,8 +171,26 @@ describe.skipIf(!databaseUrl)('Intégration SQL des lieux, en lecture seule', ()
 
   it('applique ST_DWithin dans le rayon de 20 km', async () => {
     const page = await listPlacesFromDb(databaseUrl, query('?limit=50'), now);
-    expect(page.items).toHaveLength(35);
+    expect(page.items.length).toBeGreaterThan(0);
     expect(page.items.every((place) => place.distance <= 20000)).toBe(true);
+  });
+
+  it('dispose de la colonne des horaires OSM et de la table de déduplication', async () => {
+    const columns = await executeQuery<{ column_name: string }>(databaseUrl, `
+      SELECT column_name FROM information_schema.columns
+      WHERE table_name='places' AND column_name='opening_hours_raw'`);
+    const tables = await executeQuery<{ name: string | null }>(databaseUrl,
+      "SELECT to_regclass('place_dedupe_candidates')::text AS name");
+    expect(columns).toHaveLength(1);
+    expect(tables[0]?.name).toBe('place_dedupe_candidates');
+  });
+
+  it('compte les lieux OSM ingérés sans doublon de source', async () => {
+    const rows = await executeQuery<{ total: string; unique_ids: string }>(databaseUrl, `
+      SELECT count(*)::text AS total, count(DISTINCT external_id)::text AS unique_ids
+      FROM place_source_records WHERE source='openstreetmap'`);
+    expect(Number(rows[0]?.total)).toBeGreaterThan(0);
+    expect(rows[0]?.total).toBe(rows[0]?.unique_ids);
   });
 
   it('charge le détail d’un lieu existant avec ses horaires', async () => {

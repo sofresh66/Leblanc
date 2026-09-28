@@ -52,3 +52,7 @@ Icon?
 
 # Artefacts de travail des agents (captures, rapports)
 /artifacts/
+
+# Diagnostics Overpass locaux
+/overpass-probe.json
+/overpass-test.json

@@ -37,7 +37,8 @@
       "unknown": "Öffnungszeiten unbekannt", "closedToday": "Heute geschlossen", "closed": "Geschlossen", "today": "Heute",
       "noSchedule": "Keine Öffnungszeiten verfügbar", "currentWeek": "Öffnungszeiten für diese Woche (Pariser Zeit).",
       "partialNotice": "Diese Öffnungszeiten sind unvollständig. Bitte erkundigen Sie sich vor Ihrem Besuch beim Lokal.",
-      "day": "Tag", "times": "Zeiten", "nextDay": "(am nächsten Tag)"
+      "day": "Tag", "times": "Zeiten", "nextDay": "(am nächsten Tag)",
+      "sourceOsm": "Öffnungszeiten (Quelle: OpenStreetMap)", "osmDisclaimer": "Diese Öffnungszeiten stammen von OpenStreetMap und können unvollständig sein."
     },
     "actions": {
       "getDirections": "Route planen", "call": "Anrufen", "visitWebsite": "Website", "share": "Teilen",

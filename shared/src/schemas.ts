@@ -261,6 +261,7 @@ export const PlaceApiListParamsSchema = PlaceListParamsSchema.safeExtend({
 
 export const PlaceApiSchema = PlaceDetailSchema.safeExtend({
   isOpenNow: z.boolean().nullable(),
+  openingHoursRaw: z.string().nullable().optional(),
 });
 
 export const PlaceApiListResponseSchema = z.object({

@@ -83,6 +83,7 @@
         "autre": "Pond and water lilies"
       }
     },
+    "dataSources": { "title": "Data sources", "osm": "OpenStreetMap place data is provided by its contributors under the Open Database License (ODbL)." },
     "footer": {
       "title": "Notices and licences",
       "note": "These credits may be updated at any time.",

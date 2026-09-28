@@ -28,6 +28,8 @@
     "db:ingest:datatourisme": "node scripts/ingest-datatourisme.mjs",
     "predb:ingest:places": "npm run build --workspace=@leblanc/shared",
     "db:ingest:places": "node scripts/ingest-places.mjs",
+    "predb:ingest:osm-places": "npm run build --workspace=@leblanc/shared",
+    "db:ingest:osm-places": "node scripts/ingest-osm-places.mjs",
     "db:ingest:openagenda": "node scripts/ingest-openagenda.mjs",
     "db:mocks": "node scripts/hide-mocks.mjs",
     "db:openagenda": "node scripts/hide-openagenda.mjs",

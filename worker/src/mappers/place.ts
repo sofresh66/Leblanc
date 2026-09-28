@@ -37,6 +37,7 @@ export interface PlaceDbRow {
   source: string | null;
   distance_m: number | string;
   opening_hours: unknown;
+  opening_hours_raw?: string | null;
 }
 
 function jsonValue(value: unknown): unknown {
@@ -161,5 +162,6 @@ export function mapDbRowToPlace(row: PlaceDbRow, lang: SupportedLanguage, now: D
     source: row.source || 'unknown',
     openingHours,
     isOpenNow: computeIsOpenNow(openingHours, now),
+    ...(row.opening_hours_raw !== undefined ? { openingHoursRaw: row.opening_hours_raw } : {}),
   });
 }

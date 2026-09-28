@@ -83,6 +83,7 @@
         "autre": "Estanque y nenúfares"
       }
     },
+    "dataSources": { "title": "Fuentes de datos", "osm": "Los datos de lugares de OpenStreetMap son aportados por sus colaboradores bajo la licencia Open Database License (ODbL)." },
     "footer": {
       "title": "Avisos y licencias",
       "note": "Estos créditos pueden modificarse en cualquier momento.",

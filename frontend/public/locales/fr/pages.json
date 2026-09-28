@@ -83,6 +83,7 @@
         "autre": "Étang et nénuphars"
       }
     },
+    "dataSources": { "title": "Sources de données", "osm": "Les données des lieux OpenStreetMap sont fournies par ses contributeurs sous licence Open Database License (ODbL)." },
     "footer": {
       "title": "Mentions et licences",
       "note": "Ces crédits peuvent être modifiés à tout moment.",

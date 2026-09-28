@@ -83,6 +83,7 @@
         "autre": "Stagno e ninfee"
       }
     },
+    "dataSources": { "title": "Fonti dei dati", "osm": "I dati dei luoghi di OpenStreetMap sono forniti dai suoi contributori con licenza Open Database License (ODbL)." },
     "footer": {
       "title": "Note e licenze",
       "note": "Questi crediti possono essere modificati in qualsiasi momento.",

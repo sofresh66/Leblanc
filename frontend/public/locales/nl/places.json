@@ -37,7 +37,8 @@
       "unknown": "Openingstijden onbekend", "closedToday": "Vandaag gesloten", "closed": "Gesloten", "today": "Vandaag",
       "noSchedule": "Geen openingstijden beschikbaar", "currentWeek": "Openingstijden voor deze week (Parijse tijd).",
       "partialNotice": "Deze openingstijden zijn onvolledig. Controleer ze bij de locatie voordat u vertrekt.",
-      "day": "Dag", "times": "Tijden", "nextDay": "(volgende dag)"
+      "day": "Dag", "times": "Tijden", "nextDay": "(volgende dag)",
+      "sourceOsm": "Openingstijden (bron: OpenStreetMap)", "osmDisclaimer": "Deze openingstijden komen van OpenStreetMap en kunnen onvolledig zijn."
     },
     "actions": {
       "getDirections": "Routebeschrijving", "call": "Bellen", "visitWebsite": "Website", "share": "Delen",

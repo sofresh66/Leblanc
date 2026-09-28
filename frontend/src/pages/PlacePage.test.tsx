@@ -29,6 +29,15 @@ function renderPage(id = placeFixture.id) {
 afterEach(async () => { cleanup(); await testI18n.changeLanguage('fr'); });
 
 describe('PlacePage', () => {
+  it('affiche les horaires OSM bruts avec la note de source', () => {
+    mockUsePlace.mockReturnValue({ isLoading: false, isError: false, data: {
+      ...placeFixture, openingHours: [], openingHoursRaw: 'Mo-Fr 09:00-18:00', source: 'openstreetmap',
+    } });
+    renderPage();
+    expect(screen.getByText('Horaires (source OpenStreetMap)')).toBeTruthy();
+    expect(screen.getByText('Mo-Fr 09:00-18:00')).toBeTruthy();
+    expect(screen.getByText('Ces horaires sont fournis par OpenStreetMap et peuvent être incomplets.')).toBeTruthy();
+  });
   it('affiche la fiche, les contacts, les badges, la carte et le SEO indexable', async () => {
     mockUsePlace.mockReturnValue({
       data: {

@@ -83,6 +83,7 @@
         "autre": "Teich und Seerosen"
       }
     },
+    "dataSources": { "title": "Datenquellen", "osm": "Die Ortsdaten von OpenStreetMap stammen von dessen Mitwirkenden und stehen unter der Open Database License (ODbL)." },
     "footer": {
       "title": "Hinweise und Lizenzen",
       "note": "Diese Bildnachweise können jederzeit aktualisiert werden.",
