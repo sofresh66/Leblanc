@@ -61,7 +61,7 @@ describe('Vérification du build de production', () => {
     await expect(verifyProductionBuild(dist)).rejects.toThrow('Sitemap trop petit');
   });
 
-  it.each([MIN_SITEMAP_URLS, 900, 1100, MAX_SITEMAP_URLS])(
+  it.each([MIN_SITEMAP_URLS, 900, 1_300, MAX_SITEMAP_URLS])(
     'accepte un sitemap correct de %i URLs, bornes incluses',
     async (count) => {
       const xml = sitemapWithUrls(catalogueUrls(count));
@@ -75,7 +75,7 @@ describe('Vérification du build de production', () => {
     },
   );
 
-  it.each([MIN_SITEMAP_URLS - 1, MAX_SITEMAP_URLS + 1])(
+  it.each([MIN_SITEMAP_URLS - 1, 2_001, 2_100])(
     'refuse %i URLs même avec les pages requises et une taille suffisante',
     async (count) => {
       const xml = sitemapWithUrls(catalogueUrls(count));

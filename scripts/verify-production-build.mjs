@@ -5,7 +5,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 // kB décimaux : le seuil demandé est strictement supérieur à 50 000 octets.
 export const MIN_SITEMAP_BYTES = 50_000;
 export const MIN_SITEMAP_URLS = 800;
-export const MAX_SITEMAP_URLS = 1_200;
+// Marge pour les nouvelles fiches de lieux et les futures catégories.
+export const MAX_SITEMAP_URLS = 2_000;
 const PRODUCTION_ORIGIN = 'https://leblanc-et-moi.pages.dev';
 const DEFAULT_DIST = fileURLToPath(new URL('../frontend/dist/', import.meta.url));
 const EVENT_PATH =
