@@ -1,5 +1,7 @@
 import { ApiEventsRepository } from './apiEventsRepository';
 import { MockEventsRepository, type EventsRepository } from './eventsRepository';
+import { ApiPlacesRepository } from './apiPlacesRepository';
+import type { PlacesRepository } from './placesRepository';
 
 /** `VITE_USE_MOCK=true` force l'usage des données locales (mock) au lieu de l'API réelle. */
 const useMock = import.meta.env.VITE_USE_MOCK === 'true';
@@ -15,3 +17,8 @@ export const eventsRepository: EventsRepository = useMock
   : new ApiEventsRepository();
 
 export type { EventsRepository };
+
+/** Les lieux utilisent toujours l'API réelle : aucun mock n'est prévu dans ce sous-lot. */
+export const placesRepository: PlacesRepository = new ApiPlacesRepository();
+
+export type { PlacesRepository };

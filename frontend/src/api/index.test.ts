@@ -25,4 +25,14 @@ describe('eventsRepository (point de bascule)', () => {
 
     expect(eventsRepository).toBeInstanceOf(ApiEventsRepository);
   });
+
+  it('utilise toujours l’API Worker pour les lieux, y compris en mode mock des événements', async () => {
+    vi.stubEnv('VITE_USE_MOCK', 'true');
+    vi.resetModules();
+
+    const { placesRepository } = await import('./index');
+    const { ApiPlacesRepository } = await import('./apiPlacesRepository');
+
+    expect(placesRepository).toBeInstanceOf(ApiPlacesRepository);
+  });
 });
