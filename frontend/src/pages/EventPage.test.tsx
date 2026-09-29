@@ -1,11 +1,14 @@
 import { HelmetProvider } from 'react-helmet-async';
 // @vitest-environment jsdom
 import { randomUUID } from 'node:crypto';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MockEventsRepository } from '../api/eventsRepository';
 import { EventPage } from './EventPage';
+import { resolveEventContent } from '@leblanc/shared';
+
+afterEach(cleanup);
 
 const { mockedUseEvent } = vi.hoisted(() => ({ mockedUseEvent: vi.fn() }));
 vi.mock('../hooks/useEvent', () => ({ useEvent: mockedUseEvent }));
@@ -14,6 +17,23 @@ vi.mock('react-i18next', () => ({
 }));
 
 describe('Historique des séances sur la fiche événement', () => {
+  it('affiche la description anglaise et déclare les langues de chaque champ', async () => {
+    const repository = new MockEventsRepository();
+    const first = (await repository.listEvents({ lang: 'fr', limit: 1 })).items[0]!;
+    const detail = (await repository.getEventById(first.id, 'fr'))!;
+    const translations = {
+      title_i18n: { fr: 'Titre uniquement français' },
+      description_i18n: { fr: 'Texte français', en: 'English description displayed' },
+    };
+    mockedUseEvent.mockReturnValue({
+      data: { ...detail, ...translations, ...resolveEventContent(translations, 'en') },
+      isLoading: false, isError: false, error: null, refetch: vi.fn(),
+    });
+    render(<HelmetProvider><MemoryRouter><EventPage /></MemoryRouter></HelmetProvider>);
+    expect(screen.getByRole('heading', { level: 1 }).getAttribute('lang')).toBe('fr');
+    expect(screen.getByText('English description displayed').getAttribute('lang')).toBe('en');
+    expect(screen.queryByText('Texte français')).toBeNull();
+  });
   it('affiche les dates passées et futures avec les horaires et le lieu', async () => {
     const repository = new MockEventsRepository();
     const first = (await repository.listEvents({ lang: 'fr', limit: 1 })).items[0];

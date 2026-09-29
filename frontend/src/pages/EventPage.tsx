@@ -190,12 +190,12 @@ export const EventPage: React.FC = () => {
             <PriceBadge event={event} />
             {event.isFallback && (
               <span className="px-3 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-950 backdrop-blur-sm tracking-wide">
-                {t('details.fallbackNotice', { ns: 'events' })}
+                {t('details.fallbackNotice', { ns: 'events', language: event.contentLanguage.toUpperCase() })}
               </span>
             )}
           </div>
 
-          <h1 className="max-w-4xl font-display text-3xl sm:text-[40px] font-bold text-white leading-[1.3] break-words [overflow-wrap:anywhere]">
+          <h1 lang={event.contentLanguage} className="max-w-4xl font-display text-3xl sm:text-[40px] font-bold text-white leading-[1.3] break-words [overflow-wrap:anywhere]">
             {event.title}
           </h1>
 
@@ -275,7 +275,7 @@ export const EventPage: React.FC = () => {
               {t('event.title', { ns: 'pages' })}
             </h2>
 
-            <div className="text-gray-700 whitespace-pre-line leading-loose text-base break-words [overflow-wrap:anywhere]">
+            <div lang={event.descriptionLanguage} className="text-gray-700 whitespace-pre-line leading-loose text-base break-words [overflow-wrap:anywhere]">
               {event.description}
             </div>
 

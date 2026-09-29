@@ -108,10 +108,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
           </span>
           {event.isFallback && (
             <span
-              title={t('details.fallbackNotice', { ns: 'events' })}
+              title={t('details.fallbackNotice', { ns: 'events', language: event.contentLanguage.toUpperCase() })}
               className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-gray-900/70 text-white backdrop-blur-sm tracking-wider uppercase"
             >
-              FR
+              {event.contentLanguage.toUpperCase()}
             </span>
           )}
           <div className="ml-auto"><PriceBadge event={event} /></div>
@@ -121,14 +121,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
       {/* Content body */}
       <div className="p-5 sm:p-6 flex flex-col flex-grow">
         {/* Title */}
-        <h3 className="font-display text-xl leading-snug font-bold text-brenne-950 group-hover:text-brenne-800 transition-colors line-clamp-2 mb-2 min-h-[3.4rem]">
+        <h3 lang={event.contentLanguage} className="font-display text-xl leading-snug font-bold text-brenne-950 group-hover:text-brenne-800 transition-colors line-clamp-2 mb-2 min-h-[3.4rem]">
           <Link to={detailUrl} className="focus-visible:underline">
             {event.title}
           </Link>
         </h3>
 
         {/* Description preview */}
-        <p className="text-sm leading-relaxed text-gray-600 line-clamp-2 mb-5 flex-grow">
+        <p lang={event.descriptionLanguage} className="text-sm leading-relaxed text-gray-600 line-clamp-2 mb-5 flex-grow">
           {event.description}
         </p>
 

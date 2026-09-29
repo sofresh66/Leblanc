@@ -5,6 +5,7 @@ import {
   EventListParamsSchema,
   EventListResponseSchema,
   SEARCH_RADIUS_METERS,
+  resolveEventContent,
   type EventCategory,
   type EventDetail,
   type EventListParams,
@@ -214,7 +215,14 @@ export class ApiEventsRepository implements EventsRepository {
       throw invalidResponseError('/v1/events', response.error);
     }
 
-    return response.data;
+    // Résoudre aussi côté client pour fonctionner avec le Worker déjà en production.
+    return {
+      ...response.data,
+      items: response.data.items.map((event) => ({
+        ...event,
+        ...resolveEventContent(event, parsed.lang),
+      })),
+    };
   }
 
   /**
@@ -236,7 +244,7 @@ export class ApiEventsRepository implements EventsRepository {
         throw invalidResponseError(`/v1/events/${id}`, parsed.error);
       }
 
-      return parsed.data;
+      return { ...parsed.data, ...resolveEventContent(parsed.data, lang) };
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) return null;
       throw error;

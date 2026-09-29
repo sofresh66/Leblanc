@@ -56,6 +56,21 @@ describe.skipIf(!databaseUrl)('Intégration SQL sur Neon réel, en lecture seule
     expect(page).not.toHaveProperty('total');
   });
 
+  it('résout une description anglaise réelle sans titre anglais', async () => {
+    const rows = await executeQuery<{ id: string; description_en: string }>(databaseUrl, `
+      SELECT id, description_i18n->>'en' AS description_en FROM events
+      WHERE status='published' AND coalesce(title_i18n->>'en','')=''
+        AND coalesce(description_i18n->>'en','')<>''
+        AND ST_DWithin(location, ST_SetSRID(ST_MakePoint($1,$2),4326)::geography,20000)
+      ORDER BY id LIMIT 1`, [LE_BLANC_CENTER.lng, LE_BLANC_CENTER.lat]);
+    const row = rows[0];
+    if (!row) throw new Error('Fixture bilingue absente');
+    const event = await getEventByIdFromDb(databaseUrl, row.id, 'en', nowIso);
+    expect(event).toMatchObject({
+      description: row.description_en, contentLanguage: 'fr', descriptionLanguage: 'en',
+    });
+  });
+
   it('retourne cinq événements et un curseur', async () => {
     const page = await listEventsFromDb(databaseUrl, { lang: 'fr', limit: 5 }, nowIso);
     expect(page.items).toHaveLength(5);
@@ -146,6 +161,25 @@ describe.skipIf(!databaseUrl)('Intégration SQL des lieux, en lecture seule', ()
 
   beforeAll(async () => {
     await executeQuery(databaseUrl, 'SELECT 1 AS ready', [], 30000);
+  });
+
+  it('ne publie aucune note interne des lieux manuels et conserve leur trace privée', async () => {
+    // Les fiches déjà masquées ne font pas partie du nettoyage public approuvé.
+    const suspicious = await executeQuery<{ id: string }>(databaseUrl, `
+      SELECT p.id FROM places p
+      WHERE p.status='published'
+        AND EXISTS (SELECT 1 FROM place_source_records sr WHERE sr.place_id=p.id AND sr.source='manuel')
+        AND p.description_i18n::text ~* '(doublon|vérifier|à confirmer|incertain|suspect|à revoir|non confirm)'`);
+    expect(suspicious).toEqual([]);
+    const manual = await executeQuery<{ id: string; description_i18n: Record<string, string>; precision: string }>(databaseUrl, `
+      SELECT p.id,p.description_i18n,sr.raw_excerpt->>'precision' AS precision
+      FROM places p JOIN place_source_records sr ON sr.place_id=p.id AND sr.source='manuel'
+      WHERE p.status='published' AND coalesce(sr.raw_excerpt->>'precision','')<>''`);
+    expect(manual.length).toBeGreaterThan(0);
+    for (const place of manual) {
+      expect(place.description_i18n).toEqual({});
+      expect(place.precision.length).toBeGreaterThan(0);
+    }
   });
 
   it('récupère trois lieux publiés', async () => {

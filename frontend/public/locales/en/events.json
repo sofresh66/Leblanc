@@ -26,7 +26,7 @@
     "occurrencesTitle": "All dates",
     "occurrencePast": "Past",
     "occurrenceFuture": "Upcoming",
-    "fallbackNotice": "This event details are presented in French."
+    "fallbackNotice": "Title available in {{language}}."
   },
   "list": {
     "loadMore": "Load more events",

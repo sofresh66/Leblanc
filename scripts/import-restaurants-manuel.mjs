@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { comparableName, nameSimilarity } from './lib/osm-dedupe.mjs';
+import { manualPlaceContent } from './lib/manual-place-content.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceFile = path.join(root, 'data/restaurants-manuel.json');
@@ -160,6 +161,7 @@ async function main() {
     const counts = { osmHidden: hiddenOsm.rowCount, manualCreated: 0, manualUpdated: 0,
       manualDuplicatesHidden: 0, geocoded: 0, ungeocoded: 0, examples: [] };
     for (const item of items) {
+      const content = manualPlaceContent(item);
       const point = points.get(item.externalId);
       if (point) counts.geocoded++; else counts.ungeocoded++;
       const existing = await client.query(`SELECT place_id FROM place_source_records
@@ -191,7 +193,7 @@ async function main() {
         opening_hours_raw=EXCLUDED.opening_hours_raw,normalized_title=EXCLUDED.normalized_title,
         status=EXCLUDED.status,last_seen_at=now()`,
       [placeId,item.mappedType,[item.type],JSON.stringify({ fr: item.nom }),
-        JSON.stringify(item.precision ? { fr: item.precision } : {}),
+        JSON.stringify(content.description_i18n),
         item.adresse || null,item.codePostal || null,item.commune,
         point?.latitude ?? null,point?.longitude ?? null,
         item.source,item.horairesPublies || null,normalizedTitle(item.nom),status]);
@@ -200,7 +202,7 @@ async function main() {
         VALUES (gen_random_uuid(),$1,$2,$3,$4,$5::jsonb)
         ON CONFLICT (source,external_id) DO UPDATE SET
           source_url=EXCLUDED.source_url,raw_excerpt=EXCLUDED.raw_excerpt,last_seen_at=now()`,
-        [SOURCE,item.externalId,placeId,item.source,JSON.stringify(item)]);
+        [SOURCE,item.externalId,placeId,item.source,JSON.stringify(content.raw_excerpt)]);
       if (status === 'hidden') counts.manualDuplicatesHidden++;
       if (duplicate) {
         await client.query(`INSERT INTO place_dedupe_candidates

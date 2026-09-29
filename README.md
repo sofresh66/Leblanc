@@ -367,6 +367,8 @@ Les données de lieux OpenStreetMap sont créditées dans [CREDITS.md](CREDITS.m
 
 `data/restaurants-manuel.json` est la source versionnée des 56 restaurants vérifiés. Après `npm run db:migrate`, `npm run db:import:restaurants-manuel` masque les lieux OSM publiés, importe la liste et masque les doublons avec DATAtourisme. Le géocodage Nominatim est séquentiel (au plus une requête par seconde) ; ses résultats sont conservés dans `data/restaurants-manuel-geocodage.json` pour éviter de répéter les appels.
 
+Le champ `precision` contient des notes internes de modération : il est conservé dans `place_source_records.raw_excerpt.precision`, jamais publié dans `description_i18n`. L'importeur laisse les descriptions manuelles vides (`{}`) en attendant une V2 avec des descriptions rédigées. Voir [le nettoyage validé du 30 septembre 2026](docs/audit-descriptions-manuelles-2026-09-30.md).
+
 La baisse du sitemap de 1 332 à 1 212 URLs lors du déploiement du 29 septembre 2026 est attendue : 55 fiches OSM masquées retirent 330 URLs (six langues), et 35 fiches manuelles ajoutent 210 URLs. Le solde est donc de −120 URLs. Ces nombres ont été vérifiés en comparant les sitemaps des deux déploiements et les sources des fiches en base.
 
 **Limite V1 :** 5 lieux publiés de la liste manuelle n'ont pas de coordonnées GPS (adresses incomplètes ou géocodage échoué). Ils apparaissent en fin de liste, mais pas sur la carte. Leur fiche affiche « Adresse non localisée sur la carte » et le bouton « Y aller » recherche l'adresse textuelle. Leurs coordonnées restent à compléter manuellement dans une V2.

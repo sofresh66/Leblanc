@@ -81,7 +81,7 @@ export function calculateHaversineDistance(
 }
 
 /**
- * Résout le titre et la description selon la règle de repli en cascade :
+ * Résout chaque champ indépendamment selon la règle de repli en cascade :
  * 1. Langue demandée
  * 2. Français (langue de référence)
  * 3. Première langue disponible
@@ -93,40 +93,28 @@ export function resolveEventContent(
   title: string;
   description: string;
   contentLanguage: SupportedContentLanguage;
+  descriptionLanguage: SupportedContentLanguage;
+  // Compatibilité : isFallback décrit le repli du titre, comme contentLanguage.
   isFallback: boolean;
 } {
-  const normLang = requestedLang.toLowerCase() as SupportedContentLanguage;
-
-  // 1. Langue demandée si disponible
-  if (event.title_i18n[normLang]) {
-    return {
-      title: event.title_i18n[normLang] ?? event.title_i18n.fr,
-      description: event.description_i18n[normLang] ?? event.description_i18n.fr,
-      contentLanguage: normLang,
-      isFallback: false,
-    };
-  }
-
-  // 2. Français (langue de référence)
-  if (event.title_i18n.fr) {
-    return {
-      title: event.title_i18n.fr,
-      description: event.description_i18n.fr,
-      contentLanguage: 'fr',
-      isFallback: true,
-    };
-  }
-
-  // 3. Première langue disponible
-  const availableLangs = (Object.keys(event.title_i18n) as SupportedContentLanguage[]).filter(
-    (l) => Boolean(event.title_i18n[l]),
-  );
-  const fallbackLang = availableLangs[0] ?? 'fr';
+  const normLang = requestedLang.toLowerCase();
+  const parsedLang = SupportedLanguageSchema.safeParse(normLang);
+  const resolveField = (translations: EventI18nDescription) => {
+    const language =
+      (parsedLang.success && translations[parsedLang.data]?.trim() ? parsedLang.data : undefined) ??
+      (translations.fr.trim() ? 'fr' : undefined) ??
+      SupportedLanguageSchema.options.find((lang) => translations[lang]?.trim()) ??
+      'fr';
+    return { value: translations[language] ?? '', language };
+  };
+  const title = resolveField(event.title_i18n);
+  const description = resolveField(event.description_i18n);
 
   return {
-    title: event.title_i18n[fallbackLang] ?? '',
-    description: event.description_i18n[fallbackLang] ?? '',
-    contentLanguage: fallbackLang,
-    isFallback: true,
+    title: title.value,
+    description: description.value,
+    contentLanguage: title.language,
+    descriptionLanguage: description.language,
+    isFallback: title.language !== normLang,
   };
 }

@@ -105,7 +105,7 @@ export class MockEventsRepository implements EventsRepository {
 
     // 1. Résolution des champs multilingues et calcul de la distance
     let resolvedEvents: Event[] = this.rawEvents.map((raw) => {
-      const { title, description, contentLanguage, isFallback } = resolveEventContent(raw, lang);
+      const content = resolveEventContent(raw, lang);
       const distance = calculateHaversineDistance(
         LE_BLANC_CENTER.lat,
         LE_BLANC_CENTER.lng,
@@ -115,10 +115,7 @@ export class MockEventsRepository implements EventsRepository {
 
       return {
         ...raw,
-        title,
-        description,
-        contentLanguage,
-        isFallback,
+        ...content,
         distance,
       };
     });
@@ -204,7 +201,7 @@ export class MockEventsRepository implements EventsRepository {
     const raw = this.rawEvents.find((e) => e.id === id);
     if (!raw) return null;
 
-    const { title, description, contentLanguage, isFallback } = resolveEventContent(raw, lang);
+    const content = resolveEventContent(raw, lang);
     const distance = calculateHaversineDistance(
       LE_BLANC_CENTER.lat,
       LE_BLANC_CENTER.lng,
@@ -214,10 +211,7 @@ export class MockEventsRepository implements EventsRepository {
 
     return {
       ...raw,
-      title,
-      description,
-      contentLanguage,
-      isFallback,
+      ...content,
       distance,
       // Le mock ne stocke qu'une programmation par événement : elle reprend ses propres dates.
       occurrences: [

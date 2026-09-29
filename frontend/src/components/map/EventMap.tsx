@@ -133,12 +133,12 @@ export const EventMap: React.FC<EventMapProps> = ({
                     </span>
                     {event.isFallback && (
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-800 text-white">
-                        FR
+                        {event.contentLanguage.toUpperCase()}
                       </span>
                     )}
                   </div>
 
-                  <h4 className="font-bold text-sm text-gray-900 leading-snug line-clamp-2">
+                  <h4 lang={event.contentLanguage} className="font-bold text-sm text-gray-900 leading-snug line-clamp-2">
                     {event.title}
                   </h4>
 

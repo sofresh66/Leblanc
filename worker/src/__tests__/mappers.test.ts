@@ -88,6 +88,16 @@ describe('Mappers de données DB (worker/src/mappers/event.ts)', () => {
     expect(event.endDate).toBeNull();
   });
 
+  it('conserve les langues indépendantes dans la liste et la fiche API', () => {
+    const row = { ...sampleRow, title_i18n: { fr: 'Titre FR' } };
+    for (const event of [mapDbRowToEvent(row, 'en'), mapDbRowToEventDetail(row, [], 'en')]) {
+      expect(event).toMatchObject({
+        title: 'Titre FR', description: 'Description in English',
+        contentLanguage: 'fr', descriptionLanguage: 'en', isFallback: true,
+      });
+    }
+  });
+
   it('convertit les chaînes numériques issues de PostgreSQL (types NUMERIC et DOUBLE)', () => {
     const stringNumbersRow: EventDbRow = {
       ...sampleRow,

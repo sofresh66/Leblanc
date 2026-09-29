@@ -61,6 +61,9 @@ export const EventSchema = RawEventSchema.extend({
   title: z.string().min(1),
   description: z.string(),
   contentLanguage: SupportedContentLanguageSchema,
+  // Optionnel sur le contrat HTTP pendant la transition des anciens Workers.
+  // Les repositories résolvent toujours cette langue depuis description_i18n.
+  descriptionLanguage: SupportedContentLanguageSchema.optional(),
   isFallback: z.boolean(),
   distance: z.number().nonnegative(), // en mètres calculés depuis LE_BLANC_CENTER
 });

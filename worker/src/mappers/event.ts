@@ -65,7 +65,7 @@ export function mapDbRowToEvent(row: EventDbRow, lang: SupportedLanguage): Event
   const title_i18n = ensureObject<EventI18nTitle>(row.title_i18n);
   const description_i18n = ensureObject<EventI18nDescription>(row.description_i18n);
 
-  const { title, description, contentLanguage, isFallback } = resolveEventContent(
+  const content = resolveEventContent(
     { title_i18n, description_i18n },
     lang
   );
@@ -95,10 +95,7 @@ export function mapDbRowToEvent(row: EventDbRow, lang: SupportedLanguage): Event
     currency: (row.currency || DEFAULT_CURRENCY).trim(),
     publicUrl: row.public_url,
     source: row.source || 'unknown',
-    title,
-    description,
-    contentLanguage,
-    isFallback,
+    ...content,
     distance: typeof row.distance === 'string' ? Math.round(parseFloat(row.distance)) : Math.round(row.distance),
   };
 

@@ -86,6 +86,62 @@ describe('Shared Schemas & Utils', () => {
   });
 
   describe('resolveEventContent (repli en cascade)', () => {
+    it.each(['en', 'es', 'de', 'it', 'nl'])('préserve la description %s sans titre traduit', (lang) => {
+      expect(resolveEventContent({
+        title_i18n: { fr: 'Titre FR' },
+        description_i18n: { fr: 'Desc FR', [lang]: 'Translated description' },
+      }, lang)).toEqual({
+        title: 'Titre FR', description: 'Translated description',
+        contentLanguage: 'fr', descriptionLanguage: lang, isFallback: true,
+      });
+    });
+
+    it('garde le titre anglais et se replie uniquement pour la description', () => {
+      expect(resolveEventContent({
+        title_i18n: { fr: 'Titre FR', en: 'Title EN' },
+        description_i18n: { fr: 'Desc FR' },
+      }, 'en')).toEqual({
+        title: 'Title EN', description: 'Desc FR',
+        contentLanguage: 'en', descriptionLanguage: 'fr', isFallback: false,
+      });
+    });
+
+    it('se replie entièrement sur le français sans aucune traduction', () => {
+      expect(resolveEventContent({
+        title_i18n: { fr: 'Titre FR' }, description_i18n: { fr: 'Desc FR' },
+      }, 'en')).toEqual({
+        title: 'Titre FR', description: 'Desc FR',
+        contentLanguage: 'fr', descriptionLanguage: 'fr', isFallback: true,
+      });
+    });
+
+    it('ignore les traductions vides et résout chaque première langue disponible', () => {
+      expect(resolveEventContent({
+        title_i18n: { fr: '', en: ' ', nl: 'Titel NL' },
+        description_i18n: { fr: '', en: '', de: 'Beschreibung DE' },
+      }, 'EN')).toEqual({
+        title: 'Titel NL', description: 'Beschreibung DE',
+        contentLanguage: 'nl', descriptionLanguage: 'de', isFallback: true,
+      });
+    });
+
+    it('normalise la langue et retourne une description vide sans en inventer', () => {
+      expect(resolveEventContent({
+        title_i18n: { fr: 'Titre FR', en: 'Title EN' }, description_i18n: { fr: '' },
+      }, 'EN')).toEqual({
+        title: 'Title EN', description: '',
+        contentLanguage: 'en', descriptionLanguage: 'fr', isFallback: false,
+      });
+    });
+
+    it('se replie sur le français pour une langue non prise en charge', () => {
+      const result = resolveEventContent({
+        title_i18n: { fr: 'Titre FR' }, description_i18n: { fr: 'Desc FR' },
+      }, 'constructor');
+      expect(result.descriptionLanguage).toBe('fr');
+      expect(result.title).toBe('Titre FR');
+    });
+
     const multiLang = {
       title_i18n: {
         fr: 'Titre FR',
