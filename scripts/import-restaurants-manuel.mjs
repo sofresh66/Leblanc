@@ -167,7 +167,15 @@ async function main() {
       const placeId = existing.rows[0]?.place_id ?? randomUUID();
       counts[existing.rows.length ? 'manualUpdated' : 'manualCreated']++;
       const duplicate = bestDuplicate(item, point, dt.rows);
-      const status = duplicate ? 'hidden' : 'published';
+      const reviewedDuplicate = existing.rows.length
+        ? await client.query(`SELECT EXISTS (
+          SELECT 1 FROM place_dedupe_candidates candidate
+          JOIN places official ON official.id=candidate.left_place_id
+          JOIN place_source_records source ON source.place_id=official.id
+          WHERE candidate.right_place_id=$1 AND candidate.decision='merge'
+            AND source.source='datatourisme_places' AND official.status='published'
+        ) AS merged`, [placeId]) : null;
+      const status = duplicate || reviewedDuplicate?.rows[0]?.merged ? 'hidden' : 'published';
       await client.query(`INSERT INTO places (
         id,type,subtypes,title_i18n,description_i18n,source_language,address,postal_code,city,
         latitude,longitude,location,public_url,opening_hours_raw,normalized_title,status
@@ -193,8 +201,8 @@ async function main() {
         ON CONFLICT (source,external_id) DO UPDATE SET
           source_url=EXCLUDED.source_url,raw_excerpt=EXCLUDED.raw_excerpt,last_seen_at=now()`,
         [SOURCE,item.externalId,placeId,item.source,JSON.stringify(item)]);
+      if (status === 'hidden') counts.manualDuplicatesHidden++;
       if (duplicate) {
-        counts.manualDuplicatesHidden++;
         await client.query(`INSERT INTO place_dedupe_candidates
           (left_place_id,right_place_id,score,level,distance_meters,reason,decision)
           VALUES ($1,$2,$3,1,$4,$5::jsonb,'merge')

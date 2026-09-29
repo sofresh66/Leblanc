@@ -45,9 +45,15 @@ describe('PlaceCard et PlaceBadges', () => {
     expect(container.querySelector('[aria-hidden="true"][style]')?.getAttribute('style')).toContain('rgb(250, 240, 224)');
   });
 
-  it('n’affiche pas de distance inventée sans coordonnées', () => {
+  it.each([
+    ['fr', 'Distance inconnue'], ['en', 'Distance unknown'],
+    ['es', 'Distancia desconocida'], ['de', 'Entfernung unbekannt'],
+    ['it', 'Distanza sconosciuta'], ['nl', 'Afstand onbekend'],
+  ])('signale une distance inconnue en %s sans inventer de kilométrage', async (language, label) => {
+    await testI18n.changeLanguage(language);
     renderCard({ ...placeFixture, latitude: null, longitude: null, distance: null });
-    expect(screen.getByText('La Table')).toBeTruthy();
+    const distance = screen.getByText(label);
+    expect(distance.className).toContain('italic');
     expect(screen.queryByText(/km/)).toBeNull();
   });
 

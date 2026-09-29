@@ -4,7 +4,7 @@
   "count_one": "{{count}} adres",
   "count_other": "{{count}} adressen",
   "distanceKm": "{{distance}} km",
-  "card": { "view": "Bekijk de details van {{title}}" },
+  "card": { "view": "Bekijk de details van {{title}}", "distanceUnknown": "Afstand onbekend" },
   "types": {
     "restaurant": "Restaurant", "bar": "Bar", "cafe": "Café",
     "fast_food": "Snelle hap", "food_truck": "Foodtruck", "other_food": "Andere eetgelegenheid"

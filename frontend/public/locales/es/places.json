@@ -4,7 +4,7 @@
   "count_one": "{{count}} lugar",
   "count_other": "{{count}} lugares",
   "distanceKm": "{{distance}} km",
-  "card": { "view": "Ver la ficha de {{title}}" },
+  "card": { "view": "Ver la ficha de {{title}}", "distanceUnknown": "Distancia desconocida" },
   "types": {
     "restaurant": "Restaurante", "bar": "Bar", "cafe": "Cafetería",
     "fast_food": "Comida rápida", "food_truck": "Puesto ambulante", "other_food": "Otra opción gastronómica"

@@ -4,7 +4,7 @@
   "count_one": "{{count}} Adresse",
   "count_other": "{{count}} Adressen",
   "distanceKm": "{{distance}} km",
-  "card": { "view": "Details zu {{title}} ansehen" },
+  "card": { "view": "Details zu {{title}} ansehen", "distanceUnknown": "Entfernung unbekannt" },
   "types": {
     "restaurant": "Restaurant", "bar": "Bar", "cafe": "Café",
     "fast_food": "Schnellrestaurant", "food_truck": "Foodtruck", "other_food": "Weitere Gastronomie"

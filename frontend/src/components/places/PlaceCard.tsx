@@ -36,7 +36,9 @@ export function PlaceCard({ place }: { place: PlaceApi }) {
           </div>
           <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-brenne-900/10 pt-4">
             <PlacePriceBadge place={place} />
-            {distance !== null && <span className="text-sm font-semibold text-brenne-800">{t('distanceKm', { distance })}</span>}
+            <span className={distance === null ? 'text-sm italic text-gray-500' : 'text-sm font-semibold text-brenne-800'}>
+              {distance === null ? t('card.distanceUnknown') : t('distanceKm', { distance })}
+            </span>
           </div>
         </div>
       </Link>
