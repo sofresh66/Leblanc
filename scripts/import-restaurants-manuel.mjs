@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { comparableName, nameSimilarity } from './lib/osm-dedupe.mjs';
 import { manualPlaceContent } from './lib/manual-place-content.mjs';
+import { planManualGeocoding } from './lib/manual-place-geocoding.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceFile = path.join(root, 'data/restaurants-manuel.json');
@@ -138,7 +139,6 @@ function bestDuplicate(item, point, datatourisme) {
 async function main() {
   if (!process.env.DATABASE_URL_DIRECT) throw new Error('DATABASE_URL_DIRECT_MISSING');
   const items = validate(JSON.parse(await fs.readFile(sourceFile, 'utf8')));
-  const points = await geocode(items);
   const client = new pg.Client({ connectionString: process.env.DATABASE_URL_DIRECT,
     connectionTimeoutMillis: 30000, query_timeout: 30000 });
   let locked = false;
@@ -150,6 +150,14 @@ async function main() {
     const lock = await client.query('SELECT pg_try_advisory_lock($1) AS acquired', [LOCK_ID]);
     if (!lock.rows[0]?.acquired) throw new Error('MANUAL_IMPORT_ALREADY_RUNNING');
     locked = true;
+    const stored = await client.query(`SELECT p.id,sr.external_id,p.address,p.postal_code,p.city,
+      p.latitude,p.longitude FROM places p JOIN place_source_records sr ON sr.place_id=p.id
+      WHERE sr.source=$1`, [SOURCE]);
+    const plan = planManualGeocoding(items, stored.rows);
+    console.log(JSON.stringify({ step: 'geocoding_plan', reused: plan.points.size,
+      required: plan.pending.length }));
+    const freshPoints = plan.pending.length ? await geocode(plan.pending) : new Map();
+    const points = new Map([...plan.points, ...freshPoints]);
     await client.query('BEGIN');
     transaction = true;
     const hiddenOsm = await client.query(`UPDATE places SET status='hidden'
@@ -159,7 +167,8 @@ async function main() {
       FROM places p JOIN place_source_records sr ON sr.place_id=p.id
       WHERE sr.source='datatourisme_places' AND p.status='published'`);
     const counts = { osmHidden: hiddenOsm.rowCount, manualCreated: 0, manualUpdated: 0,
-      manualDuplicatesHidden: 0, geocoded: 0, ungeocoded: 0, examples: [] };
+      manualDuplicatesHidden: 0, geocoded: 0, ungeocoded: 0,
+      coordinatesReused: plan.points.size, geocodingRequired: plan.pending.length, examples: [] };
     for (const item of items) {
       const content = manualPlaceContent(item);
       const point = points.get(item.externalId);
