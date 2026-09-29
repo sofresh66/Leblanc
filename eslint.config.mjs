@@ -12,6 +12,7 @@ export default tseslint.config(
       '**/*.tsbuildinfo',
       'coverage/**',
       'artifacts/**',
+      'data/**',
     ],
   },
   js.configs.recommended,

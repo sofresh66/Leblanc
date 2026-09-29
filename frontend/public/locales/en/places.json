@@ -38,7 +38,8 @@
       "noSchedule": "No schedule available", "currentWeek": "Hours for the current week (Paris time).",
       "partialNotice": "These hours are incomplete. Please confirm them with the venue before visiting.",
       "day": "Day", "times": "Hours", "nextDay": "(next day)",
-      "sourceOsm": "Hours (OpenStreetMap source)", "osmDisclaimer": "These hours are provided by OpenStreetMap and may be incomplete."
+      "sourceOsm": "Hours (OpenStreetMap source)", "osmDisclaimer": "These hours are provided by OpenStreetMap and may be incomplete.",
+      "sourceManual": "Published opening hours", "manualDisclaimer": "These hours are indicative; check with the venue before visiting."
     },
     "actions": {
       "getDirections": "Get directions", "call": "Call", "visitWebsite": "Website", "share": "Share",
@@ -46,7 +47,7 @@
     },
     "notFound": { "title": "Place not found", "description": "This place does not exist or is no longer available." },
     "source": "Source: DATAtourisme", "sourceOther": "Source: {{source}}",
-    "noDescription": "Description unavailable", "addressUnknown": "Address unavailable",
+    "noDescription": "Description unavailable", "addressUnknown": "Address unavailable", "addressNotMapped": "Address not located on the map",
     "fallbackNotice": "Content available in {{language}}.", "mapLoading": "Loading map…"
   }
 }

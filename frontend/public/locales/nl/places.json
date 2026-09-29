@@ -38,7 +38,8 @@
       "noSchedule": "Geen openingstijden beschikbaar", "currentWeek": "Openingstijden voor deze week (Parijse tijd).",
       "partialNotice": "Deze openingstijden zijn onvolledig. Controleer ze bij de locatie voordat u vertrekt.",
       "day": "Dag", "times": "Tijden", "nextDay": "(volgende dag)",
-      "sourceOsm": "Openingstijden (bron: OpenStreetMap)", "osmDisclaimer": "Deze openingstijden komen van OpenStreetMap en kunnen onvolledig zijn."
+      "sourceOsm": "Openingstijden (bron: OpenStreetMap)", "osmDisclaimer": "Deze openingstijden komen van OpenStreetMap en kunnen onvolledig zijn.",
+      "sourceManual": "Gepubliceerde openingstijden", "manualDisclaimer": "Deze tijden zijn indicatief; controleer ze bij de zaak voordat u op bezoek gaat."
     },
     "actions": {
       "getDirections": "Routebeschrijving", "call": "Bellen", "visitWebsite": "Website", "share": "Delen",
@@ -46,7 +47,7 @@
     },
     "notFound": { "title": "Locatie niet gevonden", "description": "Deze locatie bestaat niet of is niet meer beschikbaar." },
     "source": "Bron: DATAtourisme", "sourceOther": "Bron: {{source}}",
-    "noDescription": "Beschrijving niet beschikbaar", "addressUnknown": "Adres onbekend",
+    "noDescription": "Beschrijving niet beschikbaar", "addressUnknown": "Adres onbekend", "addressNotMapped": "Adres niet op de kaart gevonden",
     "fallbackNotice": "Inhoud beschikbaar in {{language}}.", "mapLoading": "Kaart wordt geladen…"
   }
 }

@@ -38,7 +38,8 @@
       "noSchedule": "Aucun horaire disponible", "currentWeek": "Horaires pour la semaine en cours (heure de Paris).",
       "partialNotice": "Ces horaires sont partiels. Confirmez-les auprès du lieu avant de vous déplacer.",
       "day": "Jour", "times": "Horaires", "nextDay": "(le lendemain)",
-      "sourceOsm": "Horaires (source OpenStreetMap)", "osmDisclaimer": "Ces horaires sont fournis par OpenStreetMap et peuvent être incomplets."
+      "sourceOsm": "Horaires (source OpenStreetMap)", "osmDisclaimer": "Ces horaires sont fournis par OpenStreetMap et peuvent être incomplets.",
+      "sourceManual": "Horaires publiés par l’établissement ou un annuaire", "manualDisclaimer": "Ces horaires sont indicatifs ; vérifiez-les auprès de l’établissement avant votre visite."
     },
     "actions": {
       "getDirections": "Y aller", "call": "Appeler", "visitWebsite": "Site web", "share": "Partager",
@@ -46,7 +47,7 @@
     },
     "notFound": { "title": "Lieu introuvable", "description": "Ce lieu n’existe pas ou n’est plus disponible." },
     "source": "Source : DATAtourisme", "sourceOther": "Source : {{source}}",
-    "noDescription": "Description non disponible", "addressUnknown": "Adresse non renseignée",
+    "noDescription": "Description non disponible", "addressUnknown": "Adresse non renseignée", "addressNotMapped": "Adresse non localisée sur la carte",
     "fallbackNotice": "Contenu disponible en {{language}}.", "mapLoading": "Chargement de la carte…"
   }
 }

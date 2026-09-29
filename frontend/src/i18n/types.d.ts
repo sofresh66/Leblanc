@@ -204,6 +204,10 @@ export interface PlacesResource {
       day: string;
       times: string;
       nextDay: string;
+      sourceOsm: string;
+      osmDisclaimer: string;
+      sourceManual: string;
+      manualDisclaimer: string;
     };
     actions: {
       getDirections: string;
@@ -219,6 +223,7 @@ export interface PlacesResource {
     sourceOther: string;
     noDescription: string;
     addressUnknown: string;
+    addressNotMapped: string;
     fallbackNotice: string;
     mapLoading: string;
   };

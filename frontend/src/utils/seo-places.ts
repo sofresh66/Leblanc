@@ -34,7 +34,9 @@ export function getRestaurantJsonLd(place: PlaceApi): Record<string, unknown> {
     name: place.title,
     ...(place.description.trim() ? { description: place.description.trim() } : {}),
     ...(Object.keys(address).length > 1 ? { address } : {}),
-    ...(Number.isFinite(place.latitude) && Number.isFinite(place.longitude) && !(place.latitude === 0 && place.longitude === 0)
+    ...(place.latitude !== null && place.longitude !== null
+      && Number.isFinite(place.latitude) && Number.isFinite(place.longitude)
+      && !(place.latitude === 0 && place.longitude === 0)
       ? { geo: { '@type': 'GeoCoordinates', latitude: place.latitude, longitude: place.longitude } } : {}),
     ...(place.phone ? { telephone: place.phone } : {}),
     ...(place.website ? { url: place.website } : {}),

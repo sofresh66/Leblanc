@@ -38,7 +38,8 @@
       "noSchedule": "Keine Öffnungszeiten verfügbar", "currentWeek": "Öffnungszeiten für diese Woche (Pariser Zeit).",
       "partialNotice": "Diese Öffnungszeiten sind unvollständig. Bitte erkundigen Sie sich vor Ihrem Besuch beim Lokal.",
       "day": "Tag", "times": "Zeiten", "nextDay": "(am nächsten Tag)",
-      "sourceOsm": "Öffnungszeiten (Quelle: OpenStreetMap)", "osmDisclaimer": "Diese Öffnungszeiten stammen von OpenStreetMap und können unvollständig sein."
+      "sourceOsm": "Öffnungszeiten (Quelle: OpenStreetMap)", "osmDisclaimer": "Diese Öffnungszeiten stammen von OpenStreetMap und können unvollständig sein.",
+      "sourceManual": "Veröffentlichte Öffnungszeiten", "manualDisclaimer": "Diese Zeiten sind Richtwerte; bitte vor dem Besuch beim Betrieb prüfen."
     },
     "actions": {
       "getDirections": "Route planen", "call": "Anrufen", "visitWebsite": "Website", "share": "Teilen",
@@ -46,7 +47,7 @@
     },
     "notFound": { "title": "Lokal nicht gefunden", "description": "Dieses Lokal existiert nicht oder ist nicht mehr verfügbar." },
     "source": "Quelle: DATAtourisme", "sourceOther": "Quelle: {{source}}",
-    "noDescription": "Beschreibung nicht verfügbar", "addressUnknown": "Adresse unbekannt",
+    "noDescription": "Beschreibung nicht verfügbar", "addressUnknown": "Adresse unbekannt", "addressNotMapped": "Adresse nicht auf der Karte lokalisiert",
     "fallbackNotice": "Inhalt auf {{language}} verfügbar.", "mapLoading": "Karte wird geladen…"
   }
 }

@@ -5,6 +5,7 @@ describe('PlaceMap', () => {
   it('n’accepte que des coordonnées géographiques exploitables', () => {
     expect(hasValidPlaceCoordinates(46.6333, 1.0833)).toBe(true);
     expect(hasValidPlaceCoordinates(0, 0)).toBe(false);
+    expect(hasValidPlaceCoordinates(null, null)).toBe(false);
     expect(hasValidPlaceCoordinates(Number.NaN, 1)).toBe(false);
     expect(hasValidPlaceCoordinates(91, 1)).toBe(false);
   });

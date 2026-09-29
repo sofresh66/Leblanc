@@ -30,6 +30,7 @@
     "db:ingest:places": "node scripts/ingest-places.mjs",
     "predb:ingest:osm-places": "npm run build --workspace=@leblanc/shared",
     "db:ingest:osm-places": "node scripts/ingest-osm-places.mjs",
+    "db:import:restaurants-manuel": "node scripts/import-restaurants-manuel.mjs",
     "db:ingest:openagenda": "node scripts/ingest-openagenda.mjs",
     "db:mocks": "node scripts/hide-mocks.mjs",
     "db:openagenda": "node scripts/hide-openagenda.mjs",

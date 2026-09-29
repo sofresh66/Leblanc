@@ -18,8 +18,8 @@ export interface PlaceDbRow {
   address: string | null;
   postal_code: string | null;
   city: string | null;
-  latitude: number | string;
-  longitude: number | string;
+  latitude: number | string | null;
+  longitude: number | string | null;
   phone: string | null;
   email: string | null;
   website: string | null;
@@ -35,7 +35,7 @@ export interface PlaceDbRow {
   status: string;
   normalized_title: string;
   source: string | null;
-  distance_m: number | string;
+  distance_m: number | string | null;
   opening_hours: unknown;
   opening_hours_raw?: string | null;
 }
@@ -130,8 +130,8 @@ export function mapDbRowToPlace(row: PlaceDbRow, lang: SupportedLanguage, now: D
     address: row.address,
     postalCode: row.postal_code,
     city: row.city,
-    latitude: numberValue(row.latitude),
-    longitude: numberValue(row.longitude),
+    latitude: nullableNumber(row.latitude),
+    longitude: nullableNumber(row.longitude),
     phone: row.phone,
     email: row.email,
     website: row.website,
@@ -158,7 +158,7 @@ export function mapDbRowToPlace(row: PlaceDbRow, lang: SupportedLanguage, now: D
     description: raw.description_i18n[availableLanguage] ?? raw.description_i18n[lang] ?? raw.description_i18n.fr ?? '',
     contentLanguage: availableLanguage,
     isFallback: availableLanguage !== lang,
-    distance: Math.round(numberValue(row.distance_m)),
+    distance: row.distance_m === null ? null : Math.round(numberValue(row.distance_m)),
     source: row.source || 'unknown',
     openingHours,
     isOpenNow: computeIsOpenNow(openingHours, now),

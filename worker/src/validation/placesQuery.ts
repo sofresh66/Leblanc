@@ -5,7 +5,7 @@ import {
 import { z } from 'zod';
 
 const PlaceCursorSchema = z.strictObject({
-  d: z.number().finite().nonnegative(),
+  d: z.number().finite().nonnegative().nullable(),
   i: z.string().uuid(),
 });
 

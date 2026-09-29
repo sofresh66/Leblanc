@@ -172,7 +172,26 @@ describe.skipIf(!databaseUrl)('Intégration SQL des lieux, en lecture seule', ()
   it('applique ST_DWithin dans le rayon de 20 km', async () => {
     const page = await listPlacesFromDb(databaseUrl, query('?limit=50'), now);
     expect(page.items.length).toBeGreaterThan(0);
-    expect(page.items.every((place) => place.distance <= 20000)).toBe(true);
+    expect(page.items.every((place) => place.distance === null || place.distance <= 20000)).toBe(true);
+  });
+
+  it('retourne les lieux sans GPS après les lieux géocodés, jusque dans la pagination', async () => {
+    const rows = await executeQuery<{ id: string }>(databaseUrl, `
+      SELECT id FROM places WHERE status='published' AND location IS NULL ORDER BY id`);
+    const items: { id: string; distance: number | null }[] = [];
+    let cursor: string | null = null;
+    for (let pageNumber = 0; pageNumber < 10; pageNumber++) {
+      const page = await listPlacesFromDb(databaseUrl,
+        query(`?limit=50${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`), now);
+      items.push(...page.items.map(({ id, distance }) => ({ id, distance })));
+      cursor = page.nextCursor;
+      if (!cursor) break;
+    }
+    expect(cursor).toBeNull();
+    expect(items.filter((place) => place.distance === null).map((place) => place.id))
+      .toEqual(rows.map(({ id }) => id));
+    const firstMissing = items.findIndex((place) => place.distance === null);
+    if (firstMissing >= 0) expect(items.slice(firstMissing).every((place) => place.distance === null)).toBe(true);
   });
 
   it('dispose de la colonne des horaires OSM et de la table de déduplication', async () => {

@@ -38,6 +38,15 @@ describe('PlacePage', () => {
     expect(screen.getByText('Mo-Fr 09:00-18:00')).toBeTruthy();
     expect(screen.getByText('Ces horaires sont fournis par OpenStreetMap et peuvent être incomplets.')).toBeTruthy();
   });
+  it('attribue les horaires manuels à leur source sans mentionner OpenStreetMap', () => {
+    mockUsePlace.mockReturnValue({ isLoading: false, isError: false, data: {
+      ...placeFixture, openingHours: [], openingHoursRaw: 'mardi-samedi 12:00-14:00', source: 'manuel',
+    } });
+    renderPage();
+    expect(screen.getByText('Horaires publiés par l’établissement ou un annuaire')).toBeTruthy();
+    expect(screen.getByText('Ces horaires sont indicatifs ; vérifiez-les auprès de l’établissement avant votre visite.')).toBeTruthy();
+    expect(screen.queryByText('Horaires (source OpenStreetMap)')).toBeNull();
+  });
   it('affiche la fiche, les contacts, les badges, la carte et le SEO indexable', async () => {
     mockUsePlace.mockReturnValue({
       data: {
@@ -99,10 +108,15 @@ describe('PlacePage', () => {
   it('masque la carte sans coordonnées valides et indique les données manquantes', () => {
     mockUsePlace.mockReturnValue({
       isLoading: false, isError: false,
-      data: { ...placeFixture, latitude: 0, longitude: 0, description: '', priceRangeMin: null, priceRangeMax: null },
+      data: { ...placeFixture, latitude: null, longitude: null, distance: null,
+        description: '', priceRangeMin: null, priceRangeMax: null },
     });
     renderPage();
     expect(screen.queryByText('mini-map')).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Localisation' })).toBeNull();
+    expect(screen.getByText('Adresse non localisée sur la carte')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Y aller' }).getAttribute('href'))
+      .toContain('destination=1%20rue%20du%20Centre');
     expect(screen.getByText('Description non disponible')).toBeTruthy();
     expect(screen.getByText('Prix non renseigné')).toBeTruthy();
   });

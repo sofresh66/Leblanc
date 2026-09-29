@@ -38,7 +38,8 @@
       "noSchedule": "No hay horarios disponibles", "currentWeek": "Horario de la semana actual (hora de París).",
       "partialNotice": "Estos horarios están incompletos. Confírmalos con el establecimiento antes de ir.",
       "day": "Día", "times": "Horario", "nextDay": "(día siguiente)",
-      "sourceOsm": "Horario (fuente: OpenStreetMap)", "osmDisclaimer": "Estos horarios proceden de OpenStreetMap y pueden estar incompletos."
+      "sourceOsm": "Horario (fuente: OpenStreetMap)", "osmDisclaimer": "Estos horarios proceden de OpenStreetMap y pueden estar incompletos.",
+      "sourceManual": "Horario publicado", "manualDisclaimer": "Estos horarios son orientativos; consúltelos con el establecimiento antes de visitarlo."
     },
     "actions": {
       "getDirections": "Cómo llegar", "call": "Llamar", "visitWebsite": "Sitio web", "share": "Compartir",
@@ -46,7 +47,7 @@
     },
     "notFound": { "title": "Lugar no encontrado", "description": "Este lugar no existe o ya no está disponible." },
     "source": "Fuente: DATAtourisme", "sourceOther": "Fuente: {{source}}",
-    "noDescription": "Descripción no disponible", "addressUnknown": "Dirección no disponible",
+    "noDescription": "Descripción no disponible", "addressUnknown": "Dirección no disponible", "addressNotMapped": "Dirección no localizada en el mapa",
     "fallbackNotice": "Contenido disponible en {{language}}.", "mapLoading": "Cargando mapa…"
   }
 }

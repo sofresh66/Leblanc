@@ -1,0 +1,507 @@
+[
+  {
+    "nom": "Au Délice / Délice Kébab",
+    "type": "kebab-snack",
+    "commune": "Le Blanc",
+    "adresse": "4 rue Saint-Honoré",
+    "horairesPublies": "lundi-samedi 11:30-14:00, 18:00-22:00",
+    "precision": "",
+    "source": "https://www.pagesjaunes.fr/pros/56438732"
+  },
+  {
+    "nom": "Au Pti Creu",
+    "type": "restauration-rapide",
+    "commune": "Le Blanc",
+    "adresse": "rue du Marchais",
+    "horairesPublies": "mardi-samedi 12:00-14:00, 18:30-22:00; dimanche 18:30-22:00",
+    "precision": "Absent de la liste Destination Brenne d’août 2026 : activité à confirmer.",
+    "source": "https://www.118712.fr/annuaire/ville/le-blanc-36/restaurants"
+  },
+  {
+    "nom": "Berry Bar Team",
+    "type": "bar-restaurant",
+    "commune": "Le Blanc",
+    "adresse": "125 rue de la République",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Boulangerie Leroux",
+    "type": "boulangerie-sandwicherie",
+    "commune": "Le Blanc",
+    "adresse": "5 rue du Général Leclerc",
+    "horairesPublies": "mardi-vendredi 07:00-13:00, 16:00-19:00; samedi-dimanche 07:00-13:00",
+    "precision": "Sandwichs annoncés dans un annuaire ; disponibilité à vérifier.",
+    "source": "https://www.boulangerieleroux.fr/"
+  },
+  {
+    "nom": "Café du Centre",
+    "commune": "Le Blanc",
+    "adresse": "25 place de la Libération",
+    "horairesPublies": "lundi-mercredi 07:00-00:00; jeudi 07:00-01:00; vendredi-samedi 07:00-02:00",
+    "precision": "Horaires de l’établissement, service repas à confirmer; sources en ligne divergentes.",
+    "source": "https://www.pagesjaunes.fr/pros/06490711",
+    "type": "bar-brasserie"
+  },
+  {
+    "nom": "Café du Théâtre",
+    "commune": "Le Blanc",
+    "adresse": "32 place de la Libération",
+    "horairesPublies": "mardi-jeudi 08:00-20:00; vendredi 08:00-22:00; samedi 08:00-23:00; dimanche 09:00-20:00",
+    "precision": "Le site présente deux horaires contradictoires pour lundi, samedi et dimanche ; vérifier.",
+    "source": "https://www.cafe-du-theatre-restaurant-le-blanc.fr/adresse-horaires-telephone-cafe-du-theatre-restaurant-le-blanc",
+    "type": "café-restaurant"
+  },
+  {
+    "nom": "Dublineau David",
+    "type": "boulangerie",
+    "commune": "Le Blanc",
+    "adresse": "7 rue de Ruffec",
+    "horairesPublies": "",
+    "precision": "Doublon possible avec La Dublancoise à proximité ; vérifier enseigne et offre salée.",
+    "source": "https://uneboulangerie.fr/36/le-blanc/dublineau-david-dl1"
+  },
+  {
+    "nom": "La Chaumière",
+    "type": "bar-snack-glacier",
+    "commune": "Le Blanc",
+    "adresse": "2 place du Bateau",
+    "horairesPublies": "lundi-jeudi 10:00-01:00; vendredi-samedi 10:00-02:00; dimanche 14:00-01:00",
+    "precision": "Horaires du bar ; service des plats à vérifier.",
+    "source": "https://www.lachaumiere-leblanc.fr/contact.html"
+  },
+  {
+    "nom": "La Dublancoise",
+    "type": "boulangerie",
+    "commune": "Le Blanc",
+    "adresse": "5 ter rue de Ruffec",
+    "horairesPublies": "lundi-mardi,jeudi-vendredi 06:30-13:00, 15:30-19:00; samedi-dimanche 06:30-13:00",
+    "precision": "Adresse et horaires d’annuaire ; offre salée à confirmer.",
+    "source": "https://boulangerie.contact/f/la-dublancoise-5766098/"
+  },
+  {
+    "nom": "Le Gambetta",
+    "type": "restaurant",
+    "commune": "Le Blanc",
+    "adresse": "97 avenue Gambetta",
+    "horairesPublies": "lundi-vendredi 07:00-19:30",
+    "precision": "Horaires d’annuaire ; vérifier le service repas.",
+    "source": "https://www.118712.fr/annuaire/ville/le-blanc-36/restaurants"
+  },
+  {
+    "nom": "Le Prety",
+    "type": "bar-brasserie",
+    "commune": "Le Blanc",
+    "adresse": "22 rue des Gaudières",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "L’Aristide",
+    "commune": "Le Blanc",
+    "adresse": "19 rue Aristide Briand",
+    "horairesPublies": "mardi-jeudi 12:00-14:30,19:00-21:00; vendredi-samedi 12:00-14:30,19:00-21:30",
+    "precision": "",
+    "source": "https://www.berryprovince.com/restaurant/laristide/",
+    "type": "restaurant"
+  },
+  {
+    "nom": "L’Orchidée",
+    "commune": "Le Blanc",
+    "adresse": "48 rue de Poitiers",
+    "horairesPublies": "mardi-jeudi 10:00-14:00, 18:00-20:30; vendredi-samedi 10:00-14:00, 18:00-21:00",
+    "precision": "Horaires d’annuaire à confirmer.",
+    "source": "https://www.118712.fr/annuaire/ville/le-blanc-36/restaurants",
+    "type": "restaurant-pizzeria"
+  },
+  {
+    "nom": "Ma Boulangerie Café",
+    "commune": "Le Blanc",
+    "adresse": "88 rue de la République",
+    "horairesPublies": "lundi-samedi 06:30-20:00",
+    "precision": "",
+    "source": "https://www.ma-boulangerie-cafe.fr/le-blanc-36-artisan-boulanger-patissier-gateau-traiteur/",
+    "type": "boulangerie-sandwicherie"
+  },
+  {
+    "nom": "McDonald’s",
+    "type": "restauration-rapide",
+    "commune": "Le Blanc",
+    "adresse": "5 rue de l’Europe",
+    "horairesPublies": "tous les jours 10:00-23:00",
+    "precision": "",
+    "source": "https://www.mcdonalds.fr/restaurants/mcdonalds-le-blanc/1796"
+  },
+  {
+    "nom": "Perle d’Asie",
+    "commune": "Le Blanc",
+    "adresse": "13 rue Pierre Colin de Souvigny",
+    "horairesPublies": "lundi,mercredi-vendredi,dimanche 11:30-14:05, 18:05-22:05",
+    "precision": "Fiche absente de la liste Destination Brenne d’août 2026 : activité et horaires à confirmer.",
+    "source": "https://www.118712.fr/annuaire/ville/le-blanc-36/restaurants",
+    "type": "restaurant"
+  },
+  {
+    "nom": "Pizza Bella",
+    "commune": "Le Blanc",
+    "adresse": "5 place du Bateau",
+    "horairesPublies": "mardi-jeudi,dimanche 12:00-14:00,19:00-21:30; vendredi-samedi 12:00-14:00,19:00-22:00",
+    "precision": "",
+    "source": "https://www.pizzabella-leblanc.fr/",
+    "type": "pizzeria"
+  },
+  {
+    "nom": "Planet Tacos",
+    "type": "restauration-rapide",
+    "commune": "Le Blanc",
+    "adresse": "16 place de la Libération",
+    "horairesPublies": "lundi-samedi 11:30-14:30, 17:30-23:00; dimanche 12:00-14:30, 17:30-23:00",
+    "precision": "Horaires d’annuaire à confirmer auprès de l’établissement.",
+    "source": "https://fr.restaurantguru.com/Planet-Tacos-Le-Blanc"
+  },
+  {
+    "nom": "Viet Thaï",
+    "type": "plats-a-emporter",
+    "commune": "Le Blanc",
+    "adresse": "21 rue Pierre Colin de Souvigny",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Le Cardinal",
+    "type": "restaurant",
+    "commune": "Angles-sur-l’Anglin",
+    "adresse": "20 place Aimé Octobre",
+    "horairesPublies": "",
+    "precision": "Fiche saisonnière ; ouverture actuelle à confirmer.",
+    "source": "https://www.cirkwi.com/fr/point-interet/5072997-le-cardinal"
+  },
+  {
+    "nom": "Le Commerce",
+    "type": "restaurant",
+    "commune": "Angles-sur-l’Anglin",
+    "adresse": "",
+    "horairesPublies": "",
+    "precision": "Adresse et horaires à confirmer.",
+    "source": "https://fr.restaurantguru.com/restaurant-Angles-sur-lAnglin-t1"
+  },
+  {
+    "nom": "Le Goût des Mets",
+    "type": "restaurant",
+    "commune": "Angles-sur-l’Anglin",
+    "adresse": "15 rue du Pont",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.lefrenchguide.com/restaurants/le-blanc-36300?page=2"
+  },
+  {
+    "nom": "Les Petites Sardines",
+    "type": "restaurant",
+    "commune": "Antigny",
+    "adresse": "rue du Huit-Mai",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.lefrenchguide.com/restaurants/le-blanc-36300?page=2"
+  },
+  {
+    "nom": "Le P’tit Berry",
+    "type": "restaurant",
+    "commune": "Bélâbre",
+    "adresse": "4 rue Jules Ferry",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Les Saveurs de Brenne",
+    "commune": "Bélâbre",
+    "adresse": "10 rue de l’Abbé Pigeaud",
+    "horairesPublies": "mercredi-dimanche",
+    "precision": "Heures précises non publiées ; certains annuaires donnent une autre numérotation de rue.",
+    "source": "https://www.berryprovince.com/restaurant/les-saveurs-de-brenne/",
+    "type": "restaurant"
+  },
+  {
+    "nom": "Chez Annette",
+    "type": "restaurant",
+    "commune": "Béthines",
+    "adresse": "22 place Charles de Gaulle",
+    "horairesPublies": "",
+    "precision": "Adresse relevée dans un annuaire ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "La Calèche",
+    "type": "restaurant",
+    "commune": "Ciron",
+    "adresse": "D951",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Les Rives de la Creuse",
+    "type": "restaurant",
+    "commune": "Ciron",
+    "adresse": "28 route de Châteauroux, Scoury",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Le Relais de l’Anglin",
+    "type": "restaurant",
+    "commune": "Concremiers",
+    "adresse": "18 rue de la Rivière",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Le Relais de la Brenne",
+    "type": "restaurant-multiservices",
+    "commune": "Douadic",
+    "adresse": "4 rue Principale",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Les Mûriers",
+    "commune": "Ingrandes",
+    "adresse": "19/21 route nationale",
+    "horairesPublies": "lundi-samedi midi",
+    "precision": "Heures précises non publiées.",
+    "source": "https://www.berryprovince.com/restaurant/les-muriers/",
+    "type": "restaurant-multiservices"
+  },
+  {
+    "nom": "Le Petit Bussiérois",
+    "type": "restaurant",
+    "commune": "La Bussière",
+    "adresse": "3 place Gilbert Bécaud",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.lefrenchguide.com/restaurants/le-blanc-36300?page=2"
+  },
+  {
+    "nom": "Café du Centre La Trimouille",
+    "type": "café-restaurant",
+    "commune": "La Trimouille",
+    "adresse": "1 place de la Mairie",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://cafeducentre.weebly.com/"
+  },
+  {
+    "nom": "Auberge de la Gabrière",
+    "type": "restaurant",
+    "commune": "Lingé",
+    "adresse": "2 La Gabrière",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Le Gab",
+    "type": "bar-restaurant",
+    "commune": "Lingé",
+    "adresse": "La Gabrière",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Les Mille Saveurs",
+    "type": "restaurant",
+    "commune": "Lingé",
+    "adresse": "2 route de Martizay",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Le Totem",
+    "type": "bar-snack",
+    "commune": "Lurais",
+    "adresse": "1 place des Tilleuls",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Auberge du Grèbe",
+    "type": "restaurant",
+    "commune": "Lureuil",
+    "adresse": "6 place de l’Église",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Le Temps d’Aime",
+    "type": "restaurant",
+    "commune": "Martizay",
+    "adresse": "3 rue de Verdun",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Au Val d’Anglin",
+    "type": "restaurant",
+    "commune": "Mauvières",
+    "adresse": "2 route de Bélâbre",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "La Petite Auberge",
+    "commune": "Pouligny-Saint-Pierre",
+    "adresse": "7 rue de la Fosse Bourdeau",
+    "horairesPublies": "mardi-samedi midi et soir",
+    "precision": "Heures précises non publiées.",
+    "source": "https://www.berryprovince.com/restaurant/la-petite-auberge/",
+    "type": "restaurant"
+  },
+  {
+    "nom": "Espace restauration de la Maison du Parc",
+    "commune": "Rosnay",
+    "adresse": "Le Bouchet",
+    "horairesPublies": "tous les jours 10:00-17:30",
+    "precision": "Vérifier la période saisonnière sur la fiche source.",
+    "source": "https://www.berryprovince.com/restaurant/espace-restauration-de-la-maison-du-parc/",
+    "type": "restauration-legere"
+  },
+  {
+    "nom": "Ferme des Buttons",
+    "commune": "Rosnay",
+    "adresse": "",
+    "horairesPublies": "tous les jours sur réservation",
+    "precision": "Groupes uniquement, dès 15 personnes selon la fiche.",
+    "source": "https://www.berryprovince.com/restaurant/ferme-des-buttons/",
+    "type": "restaurant-groupes"
+  },
+  {
+    "nom": "Le Cendrille chez Tof",
+    "commune": "Rosnay",
+    "adresse": "1 place de la Mairie",
+    "horairesPublies": "mardi-samedi 07:00-20:00; dimanche 07:00-14:00",
+    "precision": "Plage d’ouverture de l’établissement; heures du service repas à confirmer.",
+    "source": "https://www.berryprovince.com/restaurant/le-cendrille-chez-tof/",
+    "type": "restaurant-bar-épicerie"
+  },
+  {
+    "nom": "Chez P’tit Jean",
+    "type": "restaurant",
+    "commune": "Ruffec",
+    "adresse": "74 route Nationale",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "La Source",
+    "type": "bar-restaurant",
+    "commune": "Saint-Aigny",
+    "adresse": "2 rue des Anciens Combattants",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Au fil de la Benaize",
+    "commune": "Saint-Hilaire-sur-Benaize",
+    "adresse": "5 route du Blanc",
+    "horairesPublies": "lundi-vendredi midi sur place; tous les soirs plats à emporter",
+    "precision": "Heures précises non publiées; vérifier jours des plats à emporter.",
+    "source": "https://www.berryprovince.com/restaurant/au-fil-de-la-benaize/",
+    "type": "restaurant-plats-a-emporter"
+  },
+  {
+    "nom": "La Table Mailloise",
+    "type": "restaurant",
+    "commune": "Saint-Pierre-de-Maillé",
+    "adresse": "8 place de l’Étoile",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://latablemailloise.fr/"
+  },
+  {
+    "nom": "Fa Si la Manger",
+    "type": "snack",
+    "commune": "Saint-Savin",
+    "adresse": "32 place de la Libération",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.eat-list.fr/saint-savin-86310/snack-12/fa-si-la-manger-163389"
+  },
+  {
+    "nom": "Le Cerasus",
+    "type": "restaurant",
+    "commune": "Saint-Savin",
+    "codePostal": "86310",
+    "adresse": "52 bis place de la Libération",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.pagesjaunes.fr/annuaire/saint-savin-86/restaurants"
+  },
+  {
+    "nom": "Le Pâtisson",
+    "type": "restaurant",
+    "commune": "Saint-Savin",
+    "adresse": "52 place de la République",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.lefrenchguide.com/restaurants/le-blanc-36300?page=2"
+  },
+  {
+    "nom": "Le Saint-Savin",
+    "type": "restaurant",
+    "commune": "Saint-Savin",
+    "adresse": "22 place de la Libération",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.lesaintsavin.fr/contact-2/"
+  },
+  {
+    "nom": "L’Improbable !",
+    "type": "pizzeria",
+    "commune": "Saint-Savin",
+    "adresse": "40 place de la République",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.tripadvisor.fr/Restaurant_Review-g1850904-d23099528-Reviews-L_Improbable-Saint_Savin_Vienne_Nouvelle_Aquitaine.html"
+  },
+  {
+    "nom": "Restaurant La Pierre Levée",
+    "commune": "Tournon-Saint-Martin",
+    "adresse": "Pierre Levée",
+    "horairesPublies": "tous les jours",
+    "precision": "Heures précises non publiées; réservation conseillée.",
+    "source": "https://www.berryprovince.com/restaurant/restaurant-la-pierre-levee/",
+    "type": "restaurant"
+  },
+  {
+    "nom": "Tongasoa",
+    "type": "restaurant",
+    "commune": "Tournon-Saint-Martin",
+    "adresse": "1 place de l’Église",
+    "horairesPublies": "",
+    "precision": "Adresse recensée par Destination Brenne (août 2026) ; horaires précis non confirmés.",
+    "source": "https://www.parc-naturel-brenne.fr/telechargements/category/66-restaurants?download=471:restaurants-brenne"
+  },
+  {
+    "nom": "Ô Bouchon Vicquois",
+    "type": "restaurant",
+    "commune": "Vicq-sur-Gartempe",
+    "adresse": "3 place du Bourg",
+    "horairesPublies": "",
+    "precision": "",
+    "source": "https://www.lefrenchguide.com/restaurants/le-blanc-36300?page=2"
+  }
+]

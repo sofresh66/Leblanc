@@ -56,3 +56,9 @@ Icon?
 # Diagnostics Overpass locaux
 /overpass-probe.json
 /overpass-test.json
+
+# Sources de travail locales pour la sélection manuelle
+/data/extract-json.mjs
+/data/restauration_le_blanc_20km.html
+/data/geocode-cache.json
+/data/restaurants-manuel-geocodage.json

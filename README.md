@@ -362,3 +362,9 @@ Le script `npm run db:ingest:osm-places` collecte les restaurants, bars, cafés 
 Appliquer d'abord `npm run db:migrate` pour installer la migration 007. L'ingestion utilise `DATABASE_URL_DIRECT`, met à jour les fiches OSM par `source + external_id` et conserve les horaires `opening_hours` bruts. La déduplication avec DATAtourisme masque les rapprochements fiables (niveaux 1 et 2) et laisse les cas ambigus publiés (niveau 3, décision `pending`). Une relance met à jour les mêmes fiches sans créer de nouveaux doublons.
 
 Les données de lieux OpenStreetMap sont créditées dans [CREDITS.md](CREDITS.md) et sur le site ; elles sont fournies sous licence ODbL.
+
+## Restaurants de la liste manuelle
+
+`data/restaurants-manuel.json` est la source versionnée des 56 restaurants vérifiés. Après `npm run db:migrate`, `npm run db:import:restaurants-manuel` masque les lieux OSM publiés, importe la liste et masque les doublons avec DATAtourisme. Le géocodage Nominatim est séquentiel (au plus une requête par seconde) ; ses résultats sont conservés dans `data/restaurants-manuel-geocodage.json` pour éviter de répéter les appels.
+
+**Limite V1 :** 5 lieux publiés de la liste manuelle n'ont pas de coordonnées GPS (adresses incomplètes ou géocodage échoué). Ils apparaissent en fin de liste, mais pas sur la carte. Leur fiche affiche « Adresse non localisée sur la carte » et le bouton « Y aller » recherche l'adresse textuelle. Leurs coordonnées restent à compléter manuellement dans une V2.

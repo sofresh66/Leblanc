@@ -190,8 +190,8 @@ export const RawPlaceSchema = z
     address: z.string().nullable(),
     postalCode: z.string().nullable(),
     city: z.string().nullable(),
-    latitude: z.number().min(-90).max(90),
-    longitude: z.number().min(-180).max(180),
+    latitude: z.number().min(-90).max(90).nullable(),
+    longitude: z.number().min(-180).max(180).nullable(),
     phone: z.string().nullable(),
     email: z.string().email().nullable(),
     website: PlaceUrlSchema.nullable(),
@@ -217,7 +217,7 @@ export const PlaceSchema = RawPlaceSchema.safeExtend({
   description: z.string(),
   contentLanguage: SupportedContentLanguageSchema,
   isFallback: z.boolean(),
-  distance: z.number().nonnegative(),
+  distance: z.number().nonnegative().nullable(),
   source: z.string().min(1),
 });
 

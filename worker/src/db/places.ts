@@ -56,9 +56,14 @@ async function fetchPlaceBatch(
     cuisineFilter = `AND p.cuisines && $${params.length}::text[]`;
   }
   if (cursor) {
-    params.push(cursor.d, cursor.i);
-    cursorFilter = `WHERE (distance_m > $${params.length - 1}::double precision
-      OR (distance_m = $${params.length - 1}::double precision AND id > $${params.length}::uuid))`;
+    if (cursor.d === null) {
+      params.push(cursor.i);
+      cursorFilter = `WHERE distance_m IS NULL AND id > $${params.length}::uuid`;
+    } else {
+      params.push(cursor.d, cursor.i);
+      cursorFilter = `WHERE (distance_m IS NULL OR distance_m > $${params.length - 1}::double precision
+        OR (distance_m = $${params.length - 1}::double precision AND id > $${params.length}::uuid))`;
+    }
   }
   params.push(limit);
   const sql = `
@@ -70,13 +75,13 @@ async function fetchPlaceBatch(
         ${RELATED_COLUMNS}
       FROM places p CROSS JOIN centre
       WHERE p.status = 'published'
-        AND ST_DWithin(p.location, centre.point, $3::double precision)
+        AND (p.location IS NULL OR ST_DWithin(p.location, centre.point, $3::double precision))
         ${typeFilter}
         ${cuisineFilter}
     )
     SELECT * FROM candidates
     ${cursorFilter}
-    ORDER BY distance_m ASC, id ASC
+    ORDER BY distance_m ASC NULLS LAST, id ASC
     LIMIT $${params.length};
   `;
   return executeQuery<PlaceDbRow>(databaseUrl, sql, params);
@@ -99,7 +104,7 @@ export async function listPlacesFromDb(
     const rows = await fetchPlaceBatch(databaseUrl, query, scanCursor, batchSize);
     if (rows.length < batchSize) exhausted = true;
     for (const row of rows) {
-      const point = { d: Number(row.distance_m), i: row.id };
+      const point = { d: row.distance_m === null ? null : Number(row.distance_m), i: row.id };
       lastScanned = point;
       const place = mapDbRowToPlace(row, query.lang, now);
       if (query.isOpenNow === undefined || place.isOpenNow === query.isOpenNow) {
@@ -133,7 +138,8 @@ export async function getPlaceByIdFromDb(
       ${RELATED_COLUMNS}
     FROM places p
     WHERE p.id = $1::uuid AND p.status = 'published'
-      AND ST_DWithin(p.location, ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography, 20000);
+      AND (p.location IS NULL OR ST_DWithin(p.location,
+        ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography, 20000));
   `;
   const rows = await executeQuery<PlaceDbRow>(databaseUrl, sql, [id, LE_BLANC_CENTER.lng, LE_BLANC_CENTER.lat]);
   const row = rows[0];
@@ -150,8 +156,8 @@ export async function listPlaceCategoriesFromDb(databaseUrl: string): Promise<Pl
     WITH eligible AS (
       SELECT p.id, p.type, p.cuisines FROM places p
       WHERE p.status = 'published'
-        AND ST_DWithin(p.location,
-          ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, 20000)
+        AND (p.location IS NULL OR ST_DWithin(p.location,
+          ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, 20000))
     )
     SELECT
       (SELECT COALESCE(jsonb_agg(jsonb_build_object('value', value, 'count', count) ORDER BY value), '[]'::jsonb)

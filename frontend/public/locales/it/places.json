@@ -38,7 +38,8 @@
       "noSchedule": "Nessun orario disponibile", "currentWeek": "Orari della settimana in corso (ora di Parigi).",
       "partialNotice": "Questi orari sono incompleti. Verificali con il locale prima di recarti lì.",
       "day": "Giorno", "times": "Orari", "nextDay": "(giorno successivo)",
-      "sourceOsm": "Orari (fonte OpenStreetMap)", "osmDisclaimer": "Questi orari provengono da OpenStreetMap e potrebbero essere incompleti."
+      "sourceOsm": "Orari (fonte OpenStreetMap)", "osmDisclaimer": "Questi orari provengono da OpenStreetMap e potrebbero essere incompleti.",
+      "sourceManual": "Orari pubblicati", "manualDisclaimer": "Questi orari sono indicativi; verificarli con il locale prima della visita."
     },
     "actions": {
       "getDirections": "Indicazioni", "call": "Chiama", "visitWebsite": "Sito web", "share": "Condividi",
@@ -46,7 +47,7 @@
     },
     "notFound": { "title": "Locale non trovato", "description": "Questo locale non esiste o non è più disponibile." },
     "source": "Fonte: DATAtourisme", "sourceOther": "Fonte: {{source}}",
-    "noDescription": "Descrizione non disponibile", "addressUnknown": "Indirizzo non disponibile",
+    "noDescription": "Descrizione non disponibile", "addressUnknown": "Indirizzo non disponibile", "addressNotMapped": "Indirizzo non localizzato sulla mappa",
     "fallbackNotice": "Contenuto disponibile in {{language}}.", "mapLoading": "Caricamento mappa…"
   }
 }

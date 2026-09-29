@@ -8,6 +8,7 @@ import { NotFoundPage } from './NotFoundPage';
 import { OpeningHoursTable } from '../components/places/OpeningHoursTable';
 import { PlaceMap, googleMapsDirectionsUrl, hasValidPlaceCoordinates } from '../components/places/PlaceMap';
 import { PlacePriceBadge, PlaceStatusBadge, PlaceTypeBadge } from '../components/places/PlaceBadges';
+import { PlacePlaceholder } from '../components/places/PlacePlaceholder';
 import { usePlace } from '../hooks/usePlace';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, LANGUAGES_META } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
@@ -56,9 +57,10 @@ export function PlacePage() {
 
   const address = [place.address, [place.postalCode, place.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   const locale = LANGUAGES_META[lang].locale;
-  const distance = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(place.distance / 1000);
+  const distance = place.distance === null ? null
+    : new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(place.distance / 1000);
   const hasCoordinates = hasValidPlaceCoordinates(place.latitude, place.longitude);
-  const directionsUrl = hasCoordinates
+  const directionsUrl = hasCoordinates && place.latitude !== null && place.longitude !== null
     ? googleMapsDirectionsUrl(place.latitude, place.longitude)
     : address
       ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`
@@ -107,6 +109,12 @@ export function PlacePage() {
 
       <header className="relative isolate overflow-hidden rounded-2xl bg-brenne-900 text-white shadow-md">
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-br from-brenne-700 via-brenne-900 to-brenne-950" />
+        {(!place.imageUrl || failedImageUrl === place.imageUrl) && (
+          <div className="absolute inset-0 -z-10">
+            <PlacePlaceholder type={place.type} />
+            <div className="absolute inset-0 bg-gradient-to-t from-brenne-950/90 via-brenne-950/65 to-brenne-950/30" />
+          </div>
+        )}
         {place.imageUrl && failedImageUrl !== place.imageUrl && (
           <div className="absolute inset-0 -z-10">
             <img src={place.imageUrl} alt="" onError={() => setFailedImageUrl(place.imageUrl)} className="h-full w-full object-cover" />
@@ -145,8 +153,8 @@ export function PlacePage() {
           <section className="rounded-2xl border border-brenne-900/5 bg-white p-6 shadow-md" aria-labelledby="place-practical">
             <h2 id="place-practical" className="mb-5 font-display text-2xl font-bold text-brenne-950">{t('places:detail.sections.practicalInfo')}</h2>
             <dl className="space-y-4 text-sm">
-              <div><dt className="font-semibold text-gray-600">{t('places:detail.fields.address')}</dt><dd className="mt-1 break-words text-brenne-950">{address || t('places:detail.addressUnknown')}</dd></div>
-              <div><dt className="font-semibold text-gray-600">{t('places:detail.fields.distance')}</dt><dd className="mt-1 text-brenne-950">{t('places:distanceKm', { distance })}</dd></div>
+              <div><dt className="font-semibold text-gray-600">{t('places:detail.fields.address')}</dt><dd className="mt-1 break-words text-brenne-950">{address || t('places:detail.addressUnknown')}{!hasCoordinates && <p className="mt-2 text-xs text-gray-500">{t('places:detail.addressNotMapped')}</p>}</dd></div>
+              {distance !== null && <div><dt className="font-semibold text-gray-600">{t('places:detail.fields.distance')}</dt><dd className="mt-1 text-brenne-950">{t('places:distanceKm', { distance })}</dd></div>}
               {phoneHref && <div><dt className="font-semibold text-gray-600">{t('places:detail.fields.phone')}</dt><dd className="mt-1"><a href={phoneHref} className="break-all font-semibold text-creuse-800 underline-offset-2 hover:underline">{place.phone}</a></dd></div>}
               {place.website && <div><dt className="font-semibold text-gray-600">{t('places:detail.fields.website')}</dt><dd className="mt-1"><a href={place.website} target="_blank" rel="noopener noreferrer" className="break-all font-semibold text-creuse-800 underline-offset-2 hover:underline">{t('places:detail.actions.visitWebsite')}</a></dd></div>}
               {place.email && <div><dt className="font-semibold text-gray-600">{t('places:detail.fields.email')}</dt><dd className="mt-1"><a href={`mailto:${place.email}`} className="break-all font-semibold text-creuse-800 underline-offset-2 hover:underline">{place.email}</a></dd></div>}
@@ -164,9 +172,9 @@ export function PlacePage() {
         <h2 id="place-hours" className="mb-5 font-display text-[28px] font-bold text-brenne-950">{t('places:detail.sections.hours')}</h2>
         {place.openingHoursRaw && place.openingHours.length === 0 ? (
           <div className="space-y-3 text-gray-700">
-            <h3 className="font-semibold text-brenne-950">{t('places:detail.hours.sourceOsm')}</h3>
+            <h3 className="font-semibold text-brenne-950">{t(place.source === 'manuel' ? 'places:detail.hours.sourceManual' : 'places:detail.hours.sourceOsm')}</h3>
             <p className="whitespace-pre-wrap [overflow-wrap:break-word]">{place.openingHoursRaw}</p>
-            <p className="text-sm text-gray-600">{t('places:detail.hours.osmDisclaimer')}</p>
+            <p className="text-sm text-gray-600">{t(place.source === 'manuel' ? 'places:detail.hours.manualDisclaimer' : 'places:detail.hours.osmDisclaimer')}</p>
           </div>
         ) : <OpeningHoursTable rules={place.openingHours} status={place.openingHoursStatus} />}
       </section>

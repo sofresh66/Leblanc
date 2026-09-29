@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PlaceApiSchema, PlaceApiListResponseSchema } from '@leblanc/shared';
 import { handleRequest } from '../index.js';
-import { listPlacesFromDb } from '../db/places.js';
+import { getPlaceByIdFromDb, listPlacesFromDb } from '../db/places.js';
 import { computeIsOpenNow, mapDbRowToPlace, type PlaceDbRow } from '../mappers/place.js';
 import { decodePlaceCursor, parsePlaceListQuery } from '../validation/placesQuery.js';
 
@@ -93,6 +93,17 @@ describe('mapping et SQL des lieux', () => {
     expect(fallback).toMatchObject({ title: 'La Table', contentLanguage: 'fr', isFallback: true });
   });
 
+  it('préserve les coordonnées et la distance nulles dans le mapper et le détail', async () => {
+    const withoutGps: PlaceDbRow = { ...row, latitude: null, longitude: null, distance_m: null };
+    expect(mapDbRowToPlace(withoutGps, 'fr', now)).toMatchObject({
+      latitude: null, longitude: null, distance: null,
+    });
+    executeQuery.mockResolvedValue([withoutGps]);
+    const detail = await getPlaceByIdFromDb('db', id, 'fr', now);
+    expect(detail?.distance).toBeNull();
+    expect(executeQuery.mock.calls[0]?.[1]).toContain('p.location IS NULL OR ST_DWithin');
+  });
+
   it('construit un curseur avec distance non arrondie et id', async () => {
     const second = { ...row, id: 'a1000000-0000-4000-8000-000000000002', distance_m: 123.789 };
     executeQuery.mockResolvedValue([row, second]);
@@ -102,7 +113,30 @@ describe('mapping et SQL des lieux', () => {
     const sql = executeQuery.mock.calls[0]?.[1] as string;
     expect(sql).toContain('ST_DWithin');
     expect(sql).toContain("p.status = 'published'");
-    expect(sql).toContain('ORDER BY distance_m ASC, id ASC');
+    expect(sql).toContain('ORDER BY distance_m ASC NULLS LAST, id ASC');
+    expect(sql).toContain('p.location IS NULL OR ST_DWithin');
+  });
+
+  it('place les lieux sans GPS après les lieux géocodés et pagine avec distance nulle', async () => {
+    const noGps = { ...row, id: 'a1000000-0000-4000-8000-000000000002',
+      latitude: null, longitude: null, distance_m: null };
+    const anotherNoGps = { ...noGps, id: 'a1000000-0000-4000-8000-000000000003' };
+    executeQuery.mockResolvedValueOnce([row, noGps])
+      .mockResolvedValueOnce([noGps, anotherNoGps])
+      .mockResolvedValueOnce([anotherNoGps]);
+    const first = await listPlacesFromDb('db', query('?limit=1'), now);
+    expect(first.items.map((place) => place.id)).toEqual([id]);
+    const second = await listPlacesFromDb('db', query(`?limit=1&cursor=${first.nextCursor}`), now);
+    expect(second.items.map((place) => place.id)).toEqual([noGps.id]);
+    expect(second.items[0]?.distance).toBeNull();
+    expect(decodePlaceCursor(second.nextCursor ?? '')).toEqual({ d: null, i: noGps.id });
+    const third = await listPlacesFromDb('db', query(`?limit=1&cursor=${second.nextCursor}`), now);
+    expect(third.items.map((place) => place.id)).toEqual([anotherNoGps.id]);
+    expect(third.nextCursor).toBeNull();
+    const secondSql = executeQuery.mock.calls[1]?.[1] as string;
+    const thirdSql = executeQuery.mock.calls[2]?.[1] as string;
+    expect(secondSql).toContain('distance_m IS NULL OR distance_m >');
+    expect(thirdSql).toContain('distance_m IS NULL AND id >');
   });
 
   it('filtre les types et cuisines avec des paramètres SQL', async () => {

@@ -36,6 +36,21 @@ describe('PlaceCard et PlaceBadges', () => {
     expect(container.querySelector('img')).toBeNull();
   });
 
+  it('choisit le visuel et la couleur selon le type de lieu', () => {
+    const { container, rerender } = renderCard({ ...placeFixture, type: 'bar', imageUrl: null });
+    expect(container.querySelector('[aria-hidden="true"][style]')?.getAttribute('style')).toContain('rgb(232, 240, 224)');
+    rerender(<I18nextProvider i18n={testI18n}><MemoryRouter>
+      <PlaceCard place={{ ...placeFixture, type: 'fast_food', imageUrl: null }} />
+    </MemoryRouter></I18nextProvider>);
+    expect(container.querySelector('[aria-hidden="true"][style]')?.getAttribute('style')).toContain('rgb(250, 240, 224)');
+  });
+
+  it('n’affiche pas de distance inventée sans coordonnées', () => {
+    renderCard({ ...placeFixture, latitude: null, longitude: null, distance: null });
+    expect(screen.getByText('La Table')).toBeTruthy();
+    expect(screen.queryByText(/km/)).toBeNull();
+  });
+
   it('affiche un prix à partir du minimum et traduit le lien anglais', async () => {
     await testI18n.changeLanguage('en');
     renderCard({ ...placeFixture, priceRangeMax: null, isOpenNow: true });
