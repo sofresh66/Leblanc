@@ -219,6 +219,8 @@ export const PlaceSchema = RawPlaceSchema.safeExtend({
   title: z.string().min(1),
   description: z.string(),
   contentLanguage: SupportedContentLanguageSchema,
+  // Optionnel pour accepter les réponses d'un Worker antérieur.
+  descriptionLanguage: SupportedContentLanguageSchema.optional(),
   isFallback: z.boolean(),
   distance: z.number().nonnegative().nullable(),
   source: z.string().min(1),

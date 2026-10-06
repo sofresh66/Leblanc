@@ -4,6 +4,7 @@ import {
   EventSchema,
   calculateHaversineDistance,
   resolveEventContent,
+  resolveI18nField,
   LE_BLANC_CENTER,
   type RawEvent,
 } from './index';
@@ -85,24 +86,48 @@ describe('Shared Schemas & Utils', () => {
     });
   });
 
+  describe('resolveI18nField', () => {
+    it('renvoie la valeur nettoyée des espaces de bord', () => {
+      expect(resolveI18nField({ fr: '  Titre FR \n', de: ' Titel DE  ' }, 'de'))
+        .toEqual({ value: 'Titel DE', language: 'de' });
+      expect(resolveI18nField({ fr: '  Titre FR ' }, 'it'))
+        .toEqual({ value: 'Titre FR', language: 'fr' });
+    });
+
+    it('normalise une langue régionale avant le tiret', () => {
+      expect(resolveI18nField({ fr: 'Titre FR', de: 'Titel DE' }, 'de-DE'))
+        .toEqual({ value: 'Titel DE', language: 'de' });
+      expect(resolveI18nField({ fr: 'Titre FR', en: 'Title EN' }, 'EN-gb'))
+        .toEqual({ value: 'Title EN', language: 'en' });
+      expect(resolveEventContent({ title_i18n: { fr: 'Titre FR', de: 'Titel DE' }, description_i18n: { fr: '' } }, 'de-DE'))
+        .toMatchObject({ title: 'Titel DE', contentLanguage: 'de', isFallback: false });
+    });
+
+    it('suit l’ordre de repli fourni puis renvoie une chaîne vide en français', () => {
+      expect(resolveI18nField({ en: 'Name', de: 'Name DE' }, 'nl', ['fr', 'de', 'en']))
+        .toEqual({ value: 'Name DE', language: 'de' });
+      expect(resolveI18nField({ fr: ' ' }, 'fr')).toEqual({ value: '', language: 'fr' });
+    });
+  });
+
   describe('resolveEventContent (repli en cascade)', () => {
-    it.each(['en', 'es', 'de', 'it', 'nl'])('préserve la description %s sans titre traduit', (lang) => {
+    it.each(['en', 'es', 'de', 'it', 'nl'])('préserve la description %s sans titre traduit, sans signaler de repli', (lang) => {
       expect(resolveEventContent({
         title_i18n: { fr: 'Titre FR' },
         description_i18n: { fr: 'Desc FR', [lang]: 'Translated description' },
       }, lang)).toEqual({
         title: 'Titre FR', description: 'Translated description',
-        contentLanguage: 'fr', descriptionLanguage: lang, isFallback: true,
+        contentLanguage: 'fr', descriptionLanguage: lang, isFallback: false,
       });
     });
 
-    it('garde le titre anglais et se replie uniquement pour la description', () => {
+    it('garde le titre anglais et signale le repli de la description', () => {
       expect(resolveEventContent({
         title_i18n: { fr: 'Titre FR', en: 'Title EN' },
         description_i18n: { fr: 'Desc FR' },
       }, 'en')).toEqual({
         title: 'Title EN', description: 'Desc FR',
-        contentLanguage: 'en', descriptionLanguage: 'fr', isFallback: false,
+        contentLanguage: 'en', descriptionLanguage: 'fr', isFallback: true,
       });
     });
 

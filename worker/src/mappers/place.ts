@@ -2,6 +2,9 @@ import {
   OpeningHoursRuleSchema,
   PlaceApiSchema,
   RawPlaceSchema,
+  SupportedLanguageSchema,
+  resolveI18nField,
+  type I18nTranslations,
   type OpeningHoursRule,
   type PlaceApi,
   type SupportedLanguage,
@@ -40,8 +43,14 @@ export interface PlaceDbRow {
   opening_hours_raw?: string | null;
 }
 
+// Un JSON mal formé donne undefined : la validation zod qui suit le rejette.
 function jsonValue(value: unknown): unknown {
-  return typeof value === 'string' ? JSON.parse(value) as unknown : value;
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value) as unknown;
+  } catch {
+    return undefined;
+  }
 }
 
 function numberValue(value: number | string): number {
@@ -118,14 +127,39 @@ export function computeIsOpenNow(openingHours: OpeningHoursRule[], now: Date): b
   return indeterminate ? null : false;
 }
 
-export function mapDbRowToPlace(row: PlaceDbRow, lang: SupportedLanguage, now: Date): PlaceApi {
-  const raw = RawPlaceSchema.parse({
+/** Garde uniquement les textes non vides des langues prises en charge. */
+function cleanTranslations(value: unknown): I18nTranslations {
+  const parsed = jsonValue(value);
+  if (!parsed || typeof parsed !== 'object') return {};
+  const translations: I18nTranslations = {};
+  for (const [key, text] of Object.entries(parsed)) {
+    const language = SupportedLanguageSchema.safeParse(key);
+    if (language.success && typeof text === 'string' && text.trim()) translations[language.data] = text.trim();
+  }
+  return translations;
+}
+
+/**
+ * Renvoie null pour un lieu sans titre exploitable ou aux données invalides :
+ * la liste l'écarte et le détail répond 404, au lieu de faire échouer toute la
+ * requête. Des horaires mal formés sont remplacés par une liste vide.
+ */
+export function mapDbRowToPlace(row: PlaceDbRow, lang: SupportedLanguage, now: Date): PlaceApi | null {
+  const titleI18n = cleanTranslations(row.title_i18n);
+  if (Object.keys(titleI18n).length === 0) {
+    console.warn('Lieu écarté : titre absent', row.id);
+    return null;
+  }
+  // Une langue source nulle ou inattendue retombe sur le français.
+  const parsedSourceLanguage = SupportedLanguageSchema.safeParse(row.source_language);
+  const sourceLanguage: SupportedLanguage = parsedSourceLanguage.success ? parsedSourceLanguage.data : 'fr';
+  const parsedRaw = RawPlaceSchema.safeParse({
     id: row.id,
     type: row.type,
     subtypes: row.subtypes,
-    title_i18n: jsonValue(row.title_i18n),
-    description_i18n: jsonValue(row.description_i18n),
-    sourceLanguage: row.source_language,
+    title_i18n: titleI18n,
+    description_i18n: cleanTranslations(row.description_i18n),
+    sourceLanguage,
     venueName: row.venue_name,
     address: row.address,
     postalCode: row.postal_code,
@@ -147,17 +181,27 @@ export function mapDbRowToPlace(row: PlaceDbRow, lang: SupportedLanguage, now: D
     status: row.status,
     normalizedTitle: row.normalized_title,
   });
-  const availableLanguage = ([lang, 'fr', raw.sourceLanguage, 'en', 'es', 'de', 'it', 'nl'] as const)
-    .find((candidate) => raw.title_i18n[candidate]);
-  if (!availableLanguage) throw new Error('Titre du lieu absent');
-  const openingHours = OpeningHoursRuleSchema.array().parse(jsonValue(row.opening_hours));
+  if (!parsedRaw.success) {
+    console.warn('Lieu écarté : données invalides', row.id, parsedRaw.error.issues.map((issue) => issue.path.join('.')));
+    return null;
+  }
+  const raw = parsedRaw.data;
+  // Titre et description sont résolus indépendamment, avec le même ordre de repli.
+  const fallbackOrder: readonly SupportedLanguage[] = ['fr', raw.sourceLanguage, 'en', 'es', 'de', 'it', 'nl'];
+  const title = resolveI18nField(raw.title_i18n, lang, fallbackOrder);
+  const description = resolveI18nField(raw.description_i18n, lang, fallbackOrder);
+  const parsedHours = OpeningHoursRuleSchema.array().safeParse(jsonValue(row.opening_hours));
+  if (!parsedHours.success) console.warn('Horaires du lieu ignorés : format invalide', row.id);
+  const openingHours = parsedHours.success ? parsedHours.data : [];
 
   return PlaceApiSchema.parse({
     ...raw,
-    title: raw.title_i18n[availableLanguage],
-    description: raw.description_i18n[availableLanguage] ?? raw.description_i18n[lang] ?? raw.description_i18n.fr ?? '',
-    contentLanguage: availableLanguage,
-    isFallback: availableLanguage !== lang,
+    title: title.value,
+    description: description.value,
+    contentLanguage: title.language,
+    descriptionLanguage: description.language,
+    // Le nom d'un lieu est un nom propre : seul le repli de la description compte.
+    isFallback: description.value !== '' && description.language !== lang,
     distance: row.distance_m === null ? null : Math.round(numberValue(row.distance_m)),
     source: row.source || 'unknown',
     openingHours,

@@ -107,6 +107,7 @@ export async function listPlacesFromDb(
       const point = { d: row.distance_m === null ? null : Number(row.distance_m), i: row.id };
       lastScanned = point;
       const place = mapDbRowToPlace(row, query.lang, now);
+      if (!place) continue;
       if (query.isOpenNow === undefined || place.isOpenNow === query.isOpenNow) {
         matches.push({ place, cursor: point });
         if (matches.length > query.limit) break;

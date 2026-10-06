@@ -80,6 +80,27 @@ export function calculateHaversineDistance(
   return Math.round(R * c);
 }
 
+export type I18nTranslations = { [Lang in SupportedContentLanguage]?: string | undefined };
+
+const DEFAULT_FALLBACK_ORDER: readonly SupportedContentLanguage[] = ['fr', ...SupportedLanguageSchema.options];
+
+/**
+ * Résout un champ traduit : langue demandée (`de-DE` → `de`), puis l'ordre de
+ * repli (par défaut français puis première langue disponible). Les textes vides
+ * sont ignorés et la valeur renvoyée est nettoyée. Sans aucun texte, renvoie une
+ * chaîne vide déclarée en français.
+ */
+export function resolveI18nField(
+  translations: I18nTranslations,
+  requestedLang: string,
+  fallbackOrder: readonly SupportedContentLanguage[] = DEFAULT_FALLBACK_ORDER,
+): { value: string; language: SupportedContentLanguage } {
+  const parsedLang = SupportedLanguageSchema.safeParse(requestedLang.split('-')[0]?.toLowerCase());
+  const candidates = parsedLang.success ? [parsedLang.data, ...fallbackOrder] : fallbackOrder;
+  const language = candidates.find((lang) => translations[lang]?.trim()) ?? 'fr';
+  return { value: translations[language]?.trim() ?? '', language };
+}
+
 /**
  * Résout chaque champ indépendamment selon la règle de repli en cascade :
  * 1. Langue demandée
@@ -94,27 +115,18 @@ export function resolveEventContent(
   description: string;
   contentLanguage: SupportedContentLanguage;
   descriptionLanguage: SupportedContentLanguage;
-  // Compatibilité : isFallback décrit le repli du titre, comme contentLanguage.
+  // Repli de la description : le titre est souvent un nom propre resté en français.
   isFallback: boolean;
 } {
-  const normLang = requestedLang.toLowerCase();
-  const parsedLang = SupportedLanguageSchema.safeParse(normLang);
-  const resolveField = (translations: EventI18nDescription) => {
-    const language =
-      (parsedLang.success && translations[parsedLang.data]?.trim() ? parsedLang.data : undefined) ??
-      (translations.fr.trim() ? 'fr' : undefined) ??
-      SupportedLanguageSchema.options.find((lang) => translations[lang]?.trim()) ??
-      'fr';
-    return { value: translations[language] ?? '', language };
-  };
-  const title = resolveField(event.title_i18n);
-  const description = resolveField(event.description_i18n);
+  const normLang = requestedLang.split('-')[0]?.toLowerCase() ?? '';
+  const title = resolveI18nField(event.title_i18n, normLang);
+  const description = resolveI18nField(event.description_i18n, normLang);
 
   return {
     title: title.value,
     description: description.value,
     contentLanguage: title.language,
     descriptionLanguage: description.language,
-    isFallback: title.language !== normLang,
+    isFallback: description.value !== '' && description.language !== normLang,
   };
 }

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Event } from '@leblanc/shared';
+import { useLanguageDisplayName } from '../../hooks/useLanguageDisplayName';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../../i18n/languages';
 import { buildLocalizedPath } from '../../routes/routeMapping';
 import { formatVenueCity } from '../../utils/eventLocation';
@@ -14,6 +15,8 @@ export interface EventCardProps {
 
 export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true }) => {
   const { t, i18n } = useTranslation(['events', 'common']);
+  const languageName = useLanguageDisplayName();
+  const descriptionLanguage = event.descriptionLanguage ?? event.contentLanguage;
   const [imageError, setImageError] = useState(false);
 
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
@@ -108,10 +111,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
           </span>
           {event.isFallback && (
             <span
-              title={t('details.fallbackNotice', { ns: 'events', language: event.contentLanguage.toUpperCase() })}
+              title={t('details.fallbackNotice', { ns: 'events', language: languageName(descriptionLanguage) })}
               className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-gray-900/70 text-white backdrop-blur-sm tracking-wider uppercase"
             >
-              {event.contentLanguage.toUpperCase()}
+              {descriptionLanguage.toUpperCase()}
             </span>
           )}
           <div className="ml-auto"><PriceBadge event={event} /></div>

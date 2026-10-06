@@ -26,7 +26,7 @@
     "occurrencesTitle": "All dates",
     "occurrencePast": "Past",
     "occurrenceFuture": "Upcoming",
-    "fallbackNotice": "Title available in {{language}}."
+    "fallbackNotice": "Description available in {{language}}."
   },
   "list": {
     "loadMore": "Load more events",

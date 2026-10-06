@@ -30,6 +30,11 @@ const row: PlaceDbRow = {
   status: 'published', normalized_title: 'la table', source: 'datatourisme_places',
   distance_m: 123.456, opening_hours: [rule],
 };
+function mapPlace(input: PlaceDbRow, lang: Parameters<typeof mapDbRowToPlace>[1]) {
+  const place = mapDbRowToPlace(input, lang, now);
+  if (!place) throw new Error('lieu attendu');
+  return place;
+}
 const query = (search: string) => parsePlaceListQuery(new URL(`https://example.test/api/v1/places${search}`));
 
 beforeEach(() => { executeQuery.mockReset(); });
@@ -77,20 +82,74 @@ describe('horaires Europe/Paris', () => {
 
 describe('mapping et SQL des lieux', () => {
   it('expose les horaires OSM bruts uniquement quand la colonne détail est présente', () => {
-    const list = mapDbRowToPlace({ ...row, opening_hours: [] }, 'fr', now);
+    const list = mapPlace({ ...row, opening_hours: [] }, 'fr');
     expect(list).not.toHaveProperty('openingHoursRaw');
-    const detail = mapDbRowToPlace({ ...row, opening_hours: [], opening_hours_raw: 'Mo-Fr 09:00-18:00' }, 'fr', now);
+    const detail = mapPlace({ ...row, opening_hours: [], opening_hours_raw: 'Mo-Fr 09:00-18:00' }, 'fr');
     expect(detail.openingHoursRaw).toBe('Mo-Fr 09:00-18:00');
     expect(detail.isOpenNow).toBeNull();
   });
   it('résout les traductions, les prix, les horaires et le fallback', () => {
-    const place = mapDbRowToPlace(row, 'en', now);
+    const place = mapPlace(row, 'en');
     expect(PlaceApiSchema.parse(place)).toEqual(place);
     expect(place).toMatchObject({ title: 'The Table', description: 'Cuisine locale',
-      contentLanguage: 'en', isFallback: false, distance: 123, priceRangeMin: 12.5, isOpenNow: true });
-    const fallback = mapDbRowToPlace({ ...row, title_i18n: JSON.stringify({ fr: 'La Table' }),
-      opening_hours: JSON.stringify([rule]) }, 'nl', now);
+      contentLanguage: 'en', descriptionLanguage: 'fr', isFallback: true, distance: 123, priceRangeMin: 12.5, isOpenNow: true });
+    const fallback = mapPlace({ ...row, title_i18n: JSON.stringify({ fr: 'La Table' }),
+      opening_hours: JSON.stringify([rule]) }, 'nl');
     expect(fallback).toMatchObject({ title: 'La Table', contentLanguage: 'fr', isFallback: true });
+  });
+
+  it('sert la description allemande sous un nom français sans signaler de repli', () => {
+    const place = mapPlace({ ...row, title_i18n: { fr: 'La Table' },
+      description_i18n: { fr: 'Cuisine locale', de: 'Regionale Küche' } }, 'de');
+    expect(place).toMatchObject({ title: 'La Table', contentLanguage: 'fr',
+      description: 'Regionale Küche', descriptionLanguage: 'de', isFallback: false });
+  });
+
+  it('ne signale pas de repli quand aucune description n’existe', () => {
+    expect(mapPlace({ ...row, description_i18n: {} }, 'de'))
+      .toMatchObject({ description: '', isFallback: false });
+  });
+
+  it('retombe sur le français pour une langue source nulle ou invalide', () => {
+    for (const sourceLanguage of [null, 'xx', 'constructor']) {
+      const place = mapPlace({ ...row, source_language: sourceLanguage as unknown as string,
+        title_i18n: { fr: 'La Table', de: 'Der Tisch' }, description_i18n: { fr: 'Cuisine locale' } }, 'nl');
+      expect(place).toMatchObject({ sourceLanguage: 'fr', title: 'La Table', descriptionLanguage: 'fr' });
+    }
+  });
+
+  it('ignore les traductions vides, faites d’espaces ou de langues inconnues', () => {
+    const place = mapPlace({ ...row,
+      title_i18n: { fr: '  La Table ', en: '   ', xx: 'Inconnu' },
+      description_i18n: { fr: ' Cuisine locale ', en: '', de: '  ' } }, 'en');
+    expect(place).toMatchObject({ title: 'La Table', contentLanguage: 'fr',
+      description: 'Cuisine locale', descriptionLanguage: 'fr', isFallback: true });
+    expect(place.title_i18n).toEqual({ fr: 'La Table' });
+    expect(place.description_i18n).toEqual({ fr: 'Cuisine locale' });
+  });
+
+  it('remplace des horaires mal formés par une liste vide avec un avertissement', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    for (const openingHours of ['{pas du json', [{ ...rule, opens: 'midi' }]]) {
+      const place = mapPlace({ ...row, opening_hours: openingHours }, 'fr');
+      expect(place.openingHours).toEqual([]);
+      expect(place.isOpenNow).toBeNull();
+    }
+    expect(warn).toHaveBeenCalledWith('Horaires du lieu ignorés : format invalide', id);
+    warn.mockRestore();
+  });
+
+  it('écarte de la liste un lieu sans titre ou au type invalide et renvoie les autres', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const untitled = { ...row, id: 'a1000000-0000-4000-8000-000000000002', title_i18n: { fr: '  ' }, distance_m: 200 };
+    const badType = { ...row, id: 'a1000000-0000-4000-8000-000000000003', type: 'spaceship', distance_m: 250 };
+    const last = { ...row, id: 'a1000000-0000-4000-8000-000000000004', distance_m: 300 };
+    executeQuery.mockResolvedValue([row, untitled, badType, last]);
+    const result = await listPlacesFromDb('db', query('?limit=5'), now);
+    expect(result.items.map((place) => place.id)).toEqual([id, last.id]);
+    expect(warn).toHaveBeenCalledWith('Lieu écarté : titre absent', untitled.id);
+    expect(warn).toHaveBeenCalledWith('Lieu écarté : données invalides', badType.id, ['type']);
+    warn.mockRestore();
   });
 
   it('préserve les coordonnées et la distance nulles dans le mapper et le détail', async () => {
@@ -209,6 +268,16 @@ describe('routes, CORS et cache', () => {
     expect(await categories.json()).toEqual({
       types: [{ value: 'restaurant', count: 28 }], cuisines: [{ value: 'French', count: 15 }],
     });
+  });
+
+  it('répond 404, et non 500, au détail d’un lieu sans titre ou invalide', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    for (const invalid of [{ ...row, title_i18n: { fr: ' ' } }, { ...row, type: 'spaceship' }]) {
+      executeQuery.mockResolvedValueOnce([invalid]);
+      const detail = await handleRequest(request(`/api/v1/places/${id}?lang=fr`), env);
+      expect(detail.status).toBe(404);
+    }
+    warn.mockRestore();
   });
 
   it('gère OPTIONS, 404, 405 et les paramètres invalides sans accès DB', async () => {

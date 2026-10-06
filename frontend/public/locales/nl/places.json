@@ -46,8 +46,9 @@
       "openInMaps": "Openen in Google Maps", "copied": "Link gekopieerd", "unavailable": "Link kopiëren mislukt"
     },
     "notFound": { "title": "Locatie niet gevonden", "description": "Deze locatie bestaat niet of is niet meer beschikbaar." },
-    "source": "Bron: DATAtourisme", "sourceOther": "Bron: {{source}}",
+    "sourceLine": "Bron: {{sources}}",
+    "sources": { "datatourisme_places": "DATAtourisme", "openstreetmap": "OpenStreetMap", "manuel": "Redactionele invoer", "other": "andere bron" },
     "noDescription": "Beschrijving niet beschikbaar", "addressUnknown": "Adres onbekend", "addressNotMapped": "Adres niet op de kaart gevonden",
-    "fallbackNotice": "Inhoud beschikbaar in {{language}}.", "mapLoading": "Kaart wordt geladen…"
+    "fallbackNotice": "Beschrijving beschikbaar in het {{language}}.", "mapLoading": "Kaart wordt geladen…"
   }
 }

@@ -93,7 +93,7 @@ describe('Mappers de données DB (worker/src/mappers/event.ts)', () => {
     for (const event of [mapDbRowToEvent(row, 'en'), mapDbRowToEventDetail(row, [], 'en')]) {
       expect(event).toMatchObject({
         title: 'Titre FR', description: 'Description in English',
-        contentLanguage: 'fr', descriptionLanguage: 'en', isFallback: true,
+        contentLanguage: 'fr', descriptionLanguage: 'en', isFallback: false,
       });
     }
   });

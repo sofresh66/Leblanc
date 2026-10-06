@@ -26,7 +26,7 @@
     "occurrencesTitle": "Alle Termine",
     "occurrencePast": "Vergangen",
     "occurrenceFuture": "Bevorstehend",
-    "fallbackNotice": "Titel auf {{language}} verfügbar."
+    "fallbackNotice": "Beschreibung auf {{language}} verfügbar."
   },
   "list": {
     "loadMore": "Weitere Veranstaltungen laden",

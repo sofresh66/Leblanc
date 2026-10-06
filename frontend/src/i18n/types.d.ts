@@ -219,8 +219,8 @@ export interface PlacesResource {
       unavailable: string;
     };
     notFound: { title: string; description: string };
-    source: string;
-    sourceOther: string;
+    sourceLine: string;
+    sources: { datatourisme_places: string; openstreetmap: string; manuel: string; other: string };
     noDescription: string;
     addressUnknown: string;
     addressNotMapped: string;

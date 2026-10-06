@@ -5,6 +5,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ErrorState } from '../components/common/ErrorState';
 import { useEvent } from '../hooks/useEvent';
+import { useLanguageDisplayName } from '../hooks/useLanguageDisplayName';
 import { useLocalizedDate } from '../hooks/useLocalizedDate';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
@@ -14,6 +15,7 @@ import { downloadIcsFile } from '../utils/ics';
 export const EventPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation(['events', 'pages', 'common', 'errors', 'filters']);
+  const languageName = useLanguageDisplayName();
   const [copied, setCopied] = useState(false);
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const { formatDate } = useLocalizedDate();
@@ -190,7 +192,7 @@ export const EventPage: React.FC = () => {
             <PriceBadge event={event} />
             {event.isFallback && (
               <span className="px-3 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-950 backdrop-blur-sm tracking-wide">
-                {t('details.fallbackNotice', { ns: 'events', language: event.contentLanguage.toUpperCase() })}
+                {t('details.fallbackNotice', { ns: 'events', language: languageName(event.descriptionLanguage ?? event.contentLanguage) })}
               </span>
             )}
           </div>

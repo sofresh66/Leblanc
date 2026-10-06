@@ -76,6 +76,39 @@ describe('PlacePage', () => {
     expect([...document.querySelectorAll('script[type="application/ld+json"]')].some((script) => script.textContent?.includes('"@type":"Restaurant"'))).toBe(true);
   });
 
+  it('attribue une fiche DATAtourisme dans la ligne source', () => {
+    mockUsePlace.mockReturnValue({ isLoading: false, isError: false, data: placeFixture });
+    renderPage();
+    expect(screen.getByText('Source : DATAtourisme')).toBeTruthy();
+  });
+
+  it('traduit les sources agrégées et inconnues sans afficher la clé brute', async () => {
+    await testI18n.changeLanguage('it');
+    mockUsePlace.mockReturnValue({ isLoading: false, isError: false,
+      data: { ...placeFixture, source: 'datatourisme_places, manuel, scraper_x' } });
+    renderPage();
+    expect(screen.getByText('Fonte: DATAtourisme, Inserimento redazionale, altra fonte')).toBeTruthy();
+    expect(screen.queryByText(/manuel|scraper_x/)).toBeNull();
+  });
+
+  it('nomme la langue de repli de la description dans la langue de l’interface', async () => {
+    await testI18n.changeLanguage('it');
+    mockUsePlace.mockReturnValue({ isLoading: false, isError: false,
+      data: { ...placeFixture, isFallback: true, contentLanguage: 'fr', descriptionLanguage: 'fr' } });
+    renderPage();
+    expect(screen.getByText('Descrizione disponibile in francese.')).toBeTruthy();
+  });
+
+  it('n’affiche aucune mention quand la description est dans la langue demandée', async () => {
+    await testI18n.changeLanguage('de');
+    mockUsePlace.mockReturnValue({ isLoading: false, isError: false,
+      data: { ...placeFixture, description: 'Regionale Küche', description_i18n: { fr: 'Cuisine locale', de: 'Regionale Küche' },
+        contentLanguage: 'fr', descriptionLanguage: 'de', isFallback: false } });
+    renderPage();
+    expect(screen.getByText('Regionale Küche')).toBeTruthy();
+    expect(screen.queryByText(/Beschreibung auf .* verfügbar/)).toBeNull();
+  });
+
   it('montre un skeleton pendant le chargement', () => {
     mockUsePlace.mockReturnValue({ isLoading: true, isError: false, data: undefined });
     renderPage();

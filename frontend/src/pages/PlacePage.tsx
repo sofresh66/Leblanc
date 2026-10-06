@@ -9,16 +9,31 @@ import { OpeningHoursTable } from '../components/places/OpeningHoursTable';
 import { PlaceMap, googleMapsDirectionsUrl, hasValidPlaceCoordinates } from '../components/places/PlaceMap';
 import { PlacePriceBadge, PlaceStatusBadge, PlaceTypeBadge } from '../components/places/PlaceBadges';
 import { PlacePlaceholder } from '../components/places/PlacePlaceholder';
+import { useLanguageDisplayName } from '../hooks/useLanguageDisplayName';
 import { usePlace } from '../hooks/usePlace';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, LANGUAGES_META } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
 import { getRestaurantJsonLd } from '../utils/seo-places';
 import { serializeJsonLd } from '../utils/seo';
 
+// Sources connues : leur libellé porte l'attribution exigée par les licences.
+const KNOWN_PLACE_SOURCES = ['datatourisme_places', 'openstreetmap', 'manuel'] as const;
+type KnownPlaceSource = (typeof KNOWN_PLACE_SOURCES)[number];
+
+function isKnownPlaceSource(source: string): source is KnownPlaceSource {
+  return (KNOWN_PLACE_SOURCES as readonly string[]).includes(source);
+}
+
+// L'API agrège les sources d'un lieu (« datatourisme_places, manuel »).
+function splitPlaceSources(source: string): string[] {
+  return source.split(',').map((item) => item.trim()).filter(Boolean);
+}
+
 export function PlacePage() {
   const { id } = useParams<{ id: string }>();
   const { pathname } = useLocation();
   const { t, i18n } = useTranslation(['places', 'common']);
+  const languageName = useLanguageDisplayName();
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const [shareStatus, setShareStatus] = useState<'copied' | 'unavailable' | null>(null);
   const lang = isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE;
@@ -65,6 +80,8 @@ export function PlacePage() {
     : address
       ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`
       : null;
+  const sources = splitPlaceSources(place.source);
+  const sourceLabels = sources.map((source) => t(`places:detail.sources.${isKnownPlaceSource(source) ? source : 'other'}`));
   const phoneHref = place.phone ? `tel:${place.phone.replace(/[^\d+]/g, '')}` : null;
 
   async function share() {
@@ -146,7 +163,7 @@ export function PlacePage() {
           {place.description.trim()
             ? <p className="whitespace-pre-line break-words text-base leading-loose text-gray-700">{place.description}</p>
             : <p className="text-gray-600">{t('places:detail.noDescription')}</p>}
-          {place.isFallback && <p className="mt-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-950">{t('places:detail.fallbackNotice', { language: LANGUAGES_META[place.contentLanguage].nativeName })}</p>}
+          {place.isFallback && <p className="mt-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-950">{t('places:detail.fallbackNotice', { language: languageName(place.descriptionLanguage ?? place.contentLanguage) })}</p>}
         </section>
 
         <div className="space-y-6">
@@ -172,9 +189,9 @@ export function PlacePage() {
         <h2 id="place-hours" className="mb-5 font-display text-[28px] font-bold text-brenne-950">{t('places:detail.sections.hours')}</h2>
         {place.openingHoursRaw && place.openingHours.length === 0 ? (
           <div className="space-y-3 text-gray-700">
-            <h3 className="font-semibold text-brenne-950">{t(place.source === 'manuel' ? 'places:detail.hours.sourceManual' : 'places:detail.hours.sourceOsm')}</h3>
+            <h3 className="font-semibold text-brenne-950">{t(sources.includes('manuel') ? 'places:detail.hours.sourceManual' : 'places:detail.hours.sourceOsm')}</h3>
             <p className="whitespace-pre-wrap [overflow-wrap:break-word]">{place.openingHoursRaw}</p>
-            <p className="text-sm text-gray-600">{t(place.source === 'manuel' ? 'places:detail.hours.manualDisclaimer' : 'places:detail.hours.osmDisclaimer')}</p>
+            <p className="text-sm text-gray-600">{t(sources.includes('manuel') ? 'places:detail.hours.manualDisclaimer' : 'places:detail.hours.osmDisclaimer')}</p>
           </div>
         ) : <OpeningHoursTable rules={place.openingHours} status={place.openingHoursStatus} />}
       </section>
@@ -186,7 +203,7 @@ export function PlacePage() {
         </section>
       )}
 
-      <p className="text-xs text-gray-500">{place.source === 'datatourisme_places' ? t('places:detail.source') : t('places:detail.sourceOther', { source: place.source })}</p>
+      <p className="text-xs text-gray-500">{t('places:detail.sourceLine', { sources: [...new Set(sourceLabels)].join(', ') })}</p>
     </article>
   );
 }

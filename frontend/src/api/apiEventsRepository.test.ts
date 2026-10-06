@@ -28,7 +28,7 @@ describe('ApiEventsRepository : traductions indépendantes', () => {
     for (const result of [list.items[0], event]) {
       expect(result).toMatchObject({
         title: 'Titre FR', description: 'English description',
-        contentLanguage: 'fr', descriptionLanguage: 'en', isFallback: true,
+        contentLanguage: 'fr', descriptionLanguage: 'en', isFallback: false,
       });
     }
   });

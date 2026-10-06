@@ -46,8 +46,9 @@
       "openInMaps": "In Google Maps öffnen", "copied": "Link kopiert", "unavailable": "Link konnte nicht kopiert werden"
     },
     "notFound": { "title": "Lokal nicht gefunden", "description": "Dieses Lokal existiert nicht oder ist nicht mehr verfügbar." },
-    "source": "Quelle: DATAtourisme", "sourceOther": "Quelle: {{source}}",
+    "sourceLine": "Quelle: {{sources}}",
+    "sources": { "datatourisme_places": "DATAtourisme", "openstreetmap": "OpenStreetMap", "manuel": "Redaktionelle Erfassung", "other": "andere Quelle" },
     "noDescription": "Beschreibung nicht verfügbar", "addressUnknown": "Adresse unbekannt", "addressNotMapped": "Adresse nicht auf der Karte lokalisiert",
-    "fallbackNotice": "Inhalt auf {{language}} verfügbar.", "mapLoading": "Karte wird geladen…"
+    "fallbackNotice": "Beschreibung auf {{language}} verfügbar.", "mapLoading": "Karte wird geladen…"
   }
 }
