@@ -1,8 +1,14 @@
 import 'dotenv/config';
 import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { createDatatourismeClient, DatatourismePageError } from './lib/datatourisme-client.mjs';
 import { normalizeDatatourismeEvent } from './lib/datatourisme-normalizer.mjs';
+import { validateTranslations } from './lib/translation-validator.mjs';
+import { loadTranslationOverrides, reportRows, writeTranslationReport } from './lib/translation-report.mjs';
+
+const OVERRIDES_FILE = new URL('../data/translation-overrides.json', import.meta.url);
+const REPORT_FILE = new URL('../artifacts/translation-report.csv', import.meta.url);
 
 const SOURCE = 'datatourisme';
 const CENTER = { latitude: 46.6333, longitude: 1.0833, radiusKm: 20 };
@@ -43,11 +49,11 @@ async function upsertEvent(client, item) {
       id, category, title_i18n, description_i18n, source_language,
       venue_name, address, postal_code, city, latitude, longitude, location,
       public_url, image_url, is_free, price_min, currency, status,
-      normalized_title, last_seen_at
+      normalized_title, translation_status, last_seen_at
     ) VALUES (
       $1, $2, $3::jsonb, $4::jsonb, $5,
       $6, $7, $8, $9, $10, $11, ST_SetSRID(ST_MakePoint($11, $10), 4326)::geography,
-      $12, $13, $14, $15, $16, 'published', $17, now()
+      $12, $13, $14, $15, $16, 'published', $17, $18::jsonb, now()
     )
     ON CONFLICT (id) DO UPDATE SET
       category = EXCLUDED.category, title_i18n = EXCLUDED.title_i18n,
@@ -59,7 +65,7 @@ async function upsertEvent(client, item) {
       image_url = EXCLUDED.image_url, is_free = EXCLUDED.is_free,
       price_min = EXCLUDED.price_min, currency = EXCLUDED.currency,
       status = EXCLUDED.status, normalized_title = EXCLUDED.normalized_title,
-      last_seen_at = now()
+      translation_status = EXCLUDED.translation_status, last_seen_at = now()
   `,
     [
       eventId,
@@ -79,6 +85,7 @@ async function upsertEvent(client, item) {
       e.priceMin,
       e.currency,
       e.normalizedTitle,
+      JSON.stringify(item.translationStatus ?? {}),
     ],
   );
 
@@ -169,6 +176,8 @@ async function main() {
   if (!databaseUrl || !apiKey)
     throw new Error('DATABASE_URL_DIRECT et DATATOURISME_API_KEY requis');
   const api = createDatatourismeClient({ apiKey });
+  const overrides = await loadTranslationOverrides(OVERRIDES_FILE);
+  const translationRows = [];
   const client = new pg.Client({
     connectionString: databaseUrl,
     connectionTimeoutMillis: 30_000,
@@ -241,6 +250,15 @@ async function main() {
       counts.fetched += objects.length;
       const accepted = objects.map(normalizeDatatourismeEvent);
       const valid = accepted.filter((item) => item.ok);
+      // Statut réévalué à chaque ingestion ; la donnée brute reste intacte.
+      for (const item of valid) {
+        item.translationStatus = validateTranslations(
+          { titleI18n: item.event.titleI18n, descriptionI18n: item.event.descriptionI18n },
+          { source: SOURCE, externalId: item.externalId, overrides },
+        );
+        translationRows.push(...reportRows({ externalId: item.externalId, titleFr: item.event.titleI18n.fr },
+          item.translationStatus));
+      }
       counts.rejected += accepted.length - valid.length;
       counts.allDay += valid.reduce(
         (sum, item) => sum + item.occurrences.filter((occurrence) => occurrence.allDay).length,
@@ -292,6 +310,8 @@ async function main() {
       });
       if (page < totalPages && (limit === null || counts.fetched < limit)) await delay(300);
     }
+    const translations = await writeTranslationReport(translationRows, fileURLToPath(REPORT_FILE));
+    log('translations', translations.rejected, 0, translations);
     const status = counts.pageErrors ? 'partial' : 'success';
     await client.query(
       `UPDATE ingestion_runs SET status=$2, finished_at=now(), fetched_count=$3,

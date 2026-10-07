@@ -3,6 +3,7 @@ import {
   DEFAULT_TIMEZONE,
   EventDetailSchema,
   EventSchema,
+  applyTranslationStatus,
   resolveEventContent,
   type Event,
   type EventCategory,
@@ -18,6 +19,7 @@ export interface EventDbRow {
   category: string;
   title_i18n: EventI18nTitle | string;
   description_i18n: EventI18nDescription | string;
+  translation_status?: unknown;
   source: string | null;
   cursor_date?: string | undefined;
   venue_name: string | null;
@@ -62,8 +64,11 @@ function toIsoString(val: string | Date): string {
  * Mappe une ligne SQL issue de la base Neon vers le schéma validé Event.
  */
 export function mapDbRowToEvent(row: EventDbRow, lang: SupportedLanguage): Event {
-  const title_i18n = ensureObject<EventI18nTitle>(row.title_i18n);
-  const description_i18n = ensureObject<EventI18nDescription>(row.description_i18n);
+  // Les traductions rejetées ou recopiées du français ne sont ni servies ni utilisées.
+  const { title_i18n, description_i18n } = applyTranslationStatus({
+    title_i18n: ensureObject<EventI18nTitle>(row.title_i18n),
+    description_i18n: ensureObject<EventI18nDescription>(row.description_i18n),
+  }, typeof row.translation_status === 'string' ? JSON.parse(row.translation_status) as unknown : row.translation_status);
 
   const content = resolveEventContent(
     { title_i18n, description_i18n },

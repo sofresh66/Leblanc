@@ -85,6 +85,7 @@ export async function listEventsFromDb(
       e.category,
       e.title_i18n,
       e.description_i18n,
+      e.translation_status,
       (SELECT string_agg(DISTINCT sr.source, ', ' ORDER BY sr.source)
        FROM source_records sr WHERE sr.event_id = e.id) AS source,
       e.venue_name,
@@ -169,6 +170,7 @@ export async function getEventByIdFromDb(
       e.category,
       e.title_i18n,
       e.description_i18n,
+      e.translation_status,
       (SELECT string_agg(DISTINCT sr.source, ', ' ORDER BY sr.source)
        FROM source_records sr WHERE sr.event_id = e.id) AS source,
       e.venue_name,
@@ -231,6 +233,7 @@ export async function getEventByIdFromDb(
     category: baseRow.category,
     title_i18n: baseRow.title_i18n,
     description_i18n: baseRow.description_i18n,
+    translation_status: baseRow.translation_status,
     source: baseRow.source,
     venue_name: baseRow.venue_name,
     address: baseRow.address,

@@ -98,6 +98,29 @@ describe('Mappers de données DB (worker/src/mappers/event.ts)', () => {
     }
   });
 
+  it('ne sert pas une langue rejetée ni un titre recopié du français', () => {
+    const row: EventDbRow = {
+      ...sampleRow,
+      title_i18n: { fr: 'Musique !', de: 'Die Pfade des Hundertjährigen Krieges', en: 'Musique !' },
+      description_i18n: { fr: 'Exposition musicale', de: 'Ausstellung über Bauernhöfe', en: 'Music exhibition' },
+      translation_status: {
+        de: { status: 'rejected', reason: 'override:cross_record_translation' },
+        en: { status: 'ok', titleStatus: 'ignored_identical', descriptionStatus: 'ok' },
+      },
+    };
+    const german = mapDbRowToEvent(row, 'de');
+    expect(german).toMatchObject({ title: 'Musique !', description: 'Exposition musicale',
+      contentLanguage: 'fr', descriptionLanguage: 'fr', isFallback: true });
+    expect(german.title_i18n).toEqual({ fr: 'Musique !' });
+    expect(german.description_i18n).not.toHaveProperty('de');
+    const english = mapDbRowToEvent(row, 'en');
+    expect(english).toMatchObject({ title: 'Musique !', contentLanguage: 'fr',
+      description: 'Music exhibition', descriptionLanguage: 'en', isFallback: false });
+    expect(mapDbRowToEvent({ ...row, translation_status: JSON.stringify(row.translation_status) }, 'de').description)
+      .toBe('Exposition musicale');
+    expect(mapDbRowToEvent({ ...row, translation_status: {} }, 'de').description).toBe('Ausstellung über Bauernhöfe');
+  });
+
   it('convertit les chaînes numériques issues de PostgreSQL (types NUMERIC et DOUBLE)', () => {
     const stringNumbersRow: EventDbRow = {
       ...sampleRow,
