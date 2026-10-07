@@ -5,7 +5,9 @@
 import 'dotenv/config';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { comparableStatus, validateTranslations } from './lib/translation-validator.mjs';
+import {
+  carryRecordMismatch, comparableStatus, contentFingerprint, validateTranslations,
+} from './lib/translation-validator.mjs';
 import { loadTranslationOverrides, reportRows, summarize, toCsv } from './lib/translation-report.mjs';
 import fs from 'node:fs/promises';
 
@@ -31,11 +33,11 @@ try {
   const changes = [];
   const report = [];
   for (const row of rows) {
-    const next = validateTranslations(
+    const { status: next, rescore } = carryRecordMismatch(validateTranslations(
       { titleI18n: row.title_i18n, descriptionI18n: row.description_i18n },
       { source: SOURCE, externalId: row.external_id, overrides, checkedAt },
-    );
-    report.push(...reportRows({ eventId: row.id, externalId: row.external_id, titleFr: row.title_i18n.fr }, next)
+    ), row.translation_status, contentFingerprint(row.title_i18n, row.description_i18n));
+    report.push(...reportRows({ eventId: row.id, externalId: row.external_id, titleFr: row.title_i18n.fr }, next, { rescore })
       .map((line) => ({ ...line, eventStatus: row.status })));
     if (comparableStatus(next) !== comparableStatus(row.translation_status)) changes.push({ id: row.id, next });
   }

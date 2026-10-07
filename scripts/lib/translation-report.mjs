@@ -13,8 +13,11 @@ export async function loadTranslationOverrides(file) {
 }
 
 /** Une ligne par langue rejetée, ignorée ou signalée. */
-export function reportRows({ eventId = '', externalId, titleFr }, status) {
-  return Object.entries(status).flatMap(([lang, entry]) => {
+export function reportRows({ eventId = '', externalId, titleFr }, status, { rescore = false } = {}) {
+  // Contenu source modifié depuis un rejet record_mismatch : à rescorer.
+  const rescoreRow = rescore ? [{ eventId, externalId, lang: '*', titleFr, status: 'ok', reason: 'rescore_needed',
+    titleStatus: '', descriptionStatus: '', warnings: '' }] : [];
+  return rescoreRow.concat(Object.entries(status).flatMap(([lang, entry]) => {
     const ignored = [entry.titleStatus, entry.descriptionStatus].includes('ignored_identical');
     if (entry.status === 'ok' && !ignored && !entry.warnings?.length) return [];
     return [{
@@ -25,7 +28,7 @@ export function reportRows({ eventId = '', externalId, titleFr }, status) {
       descriptionStatus: entry.descriptionStatus ?? '',
       warnings: (entry.warnings ?? []).join('|'),
     }];
-  });
+  }));
 }
 
 const COLUMNS = ['eventId', 'externalId', 'lang', 'status', 'reason', 'titleStatus', 'descriptionStatus', 'warnings', 'titleFr'];
@@ -45,6 +48,7 @@ export function summarize(rows) {
     ignoredTitles: rows.filter((row) => row.titleStatus === 'ignored_identical').length,
     ignoredDescriptions: rows.filter((row) => row.descriptionStatus === 'ignored_identical').length,
     warnings: rows.filter((row) => row.warnings).length,
+    rescoreNeeded: rows.filter((row) => row.reason === 'rescore_needed').length,
   };
 }
 
@@ -61,6 +65,7 @@ export async function writeTranslationReport(rows, csvFile) {
       `- Titres identiques au français ignorés : ${summary.ignoredTitles}`,
       `- Descriptions identiques au français ignorées : ${summary.ignoredDescriptions}`,
       `- Signalements (rapport seulement) : ${summary.warnings}`,
+      `- Fiches à rescorer (contenu source modifié) : ${summary.rescoreNeeded}`,
       reasons ? `\n| Raison | Langues |\n| --- | --- |\n${reasons}` : '',
       '',
     ].join('\n'), 'utf8');

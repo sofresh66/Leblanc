@@ -3,6 +3,8 @@
 // (ignorée, pas rejetée) et langue détectée différente de la langue annoncée
 // (rejet du titre et de la description de cette langue). Les autres signaux
 // (chiffres, noms propres) sont seulement rapportés.
+import { createHash } from 'node:crypto';
+
 export const TRANSLATED_LANGUAGES = ['en', 'es', 'de', 'it', 'nl'];
 export const MIN_WORDS_FOR_DETECTION = 15;
 
@@ -134,4 +136,68 @@ export function comparableStatus(status) {
       return [lang, rest];
     }));
   return JSON.stringify(sortKeys(withoutTime));
+}
+
+// --- Rejet au niveau de la fiche (record_mismatch) -------------------------
+// Posé uniquement par score-translations --apply (embeddings). Il n'est
+// conservé par l'ingestion que tant que le contenu source est inchangé.
+export const RECORD_MISMATCH = 'record_mismatch';
+
+/** Empreinte des textes fr + traductions (titres et descriptions), indépendante de l'ordre des clés. */
+export function contentFingerprint(titleI18n, descriptionI18n) {
+  const pick = (i18n) => Object.keys(i18n ?? {}).sort()
+    .map((lang) => [lang, String(i18n[lang] ?? '').trim()]).filter(([, text]) => text);
+  return createHash('sha256').update(JSON.stringify([pick(titleI18n), pick(descriptionI18n)])).digest('hex').slice(0, 32);
+}
+
+/** Index de la liste blanche (fiches relues, jamais rejetées en record_mismatch). */
+export function indexAllowlist(entries) {
+  const index = new Set();
+  for (const entry of entries) {
+    if (!entry?.source || !entry?.externalId || entry.status !== 'ok') {
+      throw new Error(`Entrée de liste blanche invalide : ${JSON.stringify(entry)}`);
+    }
+    index.add(`${entry.source}|${entry.externalId}`);
+  }
+  return index;
+}
+
+/**
+ * Reporte un rejet record_mismatch précédent sur le statut recalculé, si
+ * l'empreinte du contenu est identique. Sinon le rejet est levé et la fiche
+ * est signalée « à rescorer ». Les overrides restent prioritaires.
+ */
+export function carryRecordMismatch(next, previous, fingerprint) {
+  const previousMismatch = Object.entries(previous ?? {})
+    .filter(([lang, entry]) => TRANSLATED_LANGUAGES.includes(lang) && entry?.reason === RECORD_MISMATCH);
+  if (!previousMismatch.length) return { status: next, rescore: false };
+  const unchanged = previousMismatch.every(([, entry]) => entry.fingerprint === fingerprint);
+  if (!unchanged) return { status: next, rescore: true };
+  const status = { ...next };
+  for (const [lang, entry] of previousMismatch) {
+    if (status[lang]?.status === 'rejected') continue;
+    if (status[lang]) status[lang] = { ...status[lang], status: 'rejected', reason: RECORD_MISMATCH,
+      fingerprint, ...(entry.score !== undefined ? { score: entry.score } : {}) };
+  }
+  return { status, rescore: false };
+}
+
+/**
+ * Décide le rejet de fiche à partir des scores de description : toutes les
+ * descriptions traduites sous le seuil, fiche hors liste blanche. Renvoie le
+ * statut à écrire ; une fiche qui ne remplit plus la condition perd son rejet.
+ */
+export function applyRecordMismatch(baseStatus, { scores, fingerprint, allowlisted, threshold = 0.5, checkedAt }) {
+  const values = scores.filter((score) => typeof score === 'number');
+  const max = values.length ? Math.max(...values) : null;
+  const flagged = !allowlisted && max !== null && max < threshold;
+  if (!flagged) return { status: baseStatus, flagged: false, max };
+  const status = {};
+  for (const [lang, entry] of Object.entries(baseStatus)) {
+    status[lang] = entry.status === 'rejected'
+      ? entry
+      : { ...entry, status: 'rejected', reason: RECORD_MISMATCH, score: Number(max.toFixed(3)), fingerprint,
+        ...(checkedAt ? { checkedAt } : {}) };
+  }
+  return { status, flagged: true, max };
 }

@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { createDatatourismeClient, DatatourismePageError } from './lib/datatourisme-client.mjs';
 import { normalizeDatatourismeEvent } from './lib/datatourisme-normalizer.mjs';
-import { validateTranslations } from './lib/translation-validator.mjs';
+import { carryRecordMismatch, contentFingerprint, validateTranslations } from './lib/translation-validator.mjs';
 import { loadTranslationOverrides, reportRows, writeTranslationReport } from './lib/translation-report.mjs';
 
 const OVERRIDES_FILE = new URL('../data/translation-overrides.json', import.meta.url);
@@ -35,12 +35,23 @@ function parseLimit(args) {
   return value;
 }
 
-async function upsertEvent(client, item) {
+async function upsertEvent(client, item, translationRows = []) {
   const { rows } = await client.query(
     'SELECT event_id FROM source_records WHERE source = $1 AND external_id = $2 FOR UPDATE',
     [SOURCE, item.externalId],
   );
   const existingId = rows[0]?.event_id;
+  if (item.translationStatus) {
+    // Un rejet de fiche (embeddings) n'est conservé que si le contenu source est inchangé.
+    const previous = existingId
+      ? (await client.query('SELECT translation_status FROM events WHERE id = $1', [existingId])).rows[0]?.translation_status
+      : null;
+    const carried = carryRecordMismatch(item.translationStatus, previous,
+      contentFingerprint(item.event.titleI18n, item.event.descriptionI18n));
+    item.translationStatus = carried.status;
+    translationRows.push(...reportRows({ eventId: existingId ?? '', externalId: item.externalId,
+      titleFr: item.event.titleI18n.fr }, carried.status, { rescore: carried.rescore }));
+  }
   const eventId = existingId ?? crypto.randomUUID();
   const e = item.event;
   await client.query(
@@ -256,8 +267,6 @@ async function main() {
           { titleI18n: item.event.titleI18n, descriptionI18n: item.event.descriptionI18n },
           { source: SOURCE, externalId: item.externalId, overrides },
         );
-        translationRows.push(...reportRows({ externalId: item.externalId, titleFr: item.event.titleI18n.fr },
-          item.translationStatus));
       }
       counts.rejected += accepted.length - valid.length;
       counts.allDay += valid.reduce(
@@ -271,7 +280,7 @@ async function main() {
         await client.query('BEGIN');
         try {
           for (const item of batch) {
-            const result = await upsertEvent(client, item);
+            const result = await upsertEvent(client, item, translationRows);
             if (result === 'created') batchCreated++;
             else batchUpdated++;
           }

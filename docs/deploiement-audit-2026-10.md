@@ -11,10 +11,16 @@ Tout a été validé sur la branche Neon `audit-fixes-2026-10`. Aucune étape ci
 4. Migration `010_event_translation_status.sql` : à appliquer **avant** de déployer le Worker, qui lit la colonne `translation_status`.
 5. Après la migration 010, avec accord : `node scripts/revalidate-translations.mjs` (simulation), puis `--apply` pour calculer le statut des traductions déjà en base. Les ingestions suivantes le recalculent automatiquement.
 
-## Rapport d'embeddings (facultatif, avant d'activer un rejet sémantique)
+6. Après l'étape 5, avec accord : `node scripts/score-translations.mjs` (rapport), puis `--apply` pour rejeter les fiches dont toutes les descriptions traduites ont un score < 0,50 (`record_mismatch`, 43 fiches sur la branche). Variables locales : `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_AI_TOKEN`. Le rejet est conservé par l'ingestion tant que le contenu source est inchangé (empreinte) ; sinon il est levé et la fiche signalée « à rescorer ».
 
-- Ajouter `CLOUDFLARE_ACCOUNT_ID` et `CLOUDFLARE_AI_TOKEN` (permission Workers AI) au `.env` local, puis lancer `node scripts/score-translations.mjs`. Lecture seule ; résultats dans `artifacts/translation-scores.csv`.
+## Signalement au producteur
+
+- `artifacts/signalement-destination-brenne.csv` (42 fiches) et `artifacts/signalement-berry.csv` (1 fiche), régénérés par `score-translations`. Constat vérifié sur le JSON brut DATAtourisme : un seul bloc de description, `@fr` correct, traductions (description et résumé) d'un autre événement du même cycle.
+
+## Suites possibles
+
+- Planifier `node scripts/score-translations.mjs --apply` chaque semaine dans GitHub Actions (secrets `CLOUDFLARE_ACCOUNT_ID` et `CLOUDFLARE_AI_TOKEN`), pour contrôler les nouvelles fiches et rescorer celles dont le contenu a changé.
 
 ## Code
 
-- Lots livrés sur `main` en local, non poussés : `746dff5` (lot 1), `66d9044` (lot 4), `51b3af7` et `f576880` (lot 3).
+- Lots livrés sur `main` en local, non poussés : lot 1 (`746dff5`), lot 4 (`66d9044`), lot 3 (`51b3af7`, `f576880`), lot 2 (`761750d`, `3d23b6f`, `b3fa4c3` et le commit de la règle de fiche).

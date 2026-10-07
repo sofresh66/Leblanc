@@ -1,0 +1,16 @@
+[
+  {
+    "source": "datatourisme",
+    "externalId": "334a1475-e0ad-33fc-956f-2af5efaa4b94",
+    "status": "ok",
+    "reason": "manual_review_ok",
+    "note": "Le Berry au temps des gladiateurs : traductions relues, score bas dû à une traduction résumée"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "8b068340-34d8-3031-a2fb-32a939fd37ea",
+    "status": "ok",
+    "reason": "manual_review_ok",
+    "note": "Exposition « Histoire d’œufs, Histoire d’eux » : traductions relues, score bas dû à une traduction courte"
+  }
+]
