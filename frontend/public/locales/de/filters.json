@@ -13,7 +13,8 @@
     "label": "Eintritt",
     "all": "Alle",
     "free": "Kostenlos",
-    "paid": "Kostenpflichtig"
+    "paid": "Kostenpflichtig",
+    "unknown": "Preis nicht angegeben"
   },
   "distance": {
     "label": "Suchradius",
@@ -22,5 +23,10 @@
   "actions": {
     "reset": "Zurücksetzen",
     "apply": "Anwenden"
+  },
+  "search": {
+    "label": "Suchen",
+    "placeholder": "Titel, Ort oder Veranstaltungsort",
+    "clear": "Suche löschen"
   }
 }

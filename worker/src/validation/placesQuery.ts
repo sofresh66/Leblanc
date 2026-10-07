@@ -3,6 +3,7 @@ import {
   type PlaceApiListParams,
 } from '@leblanc/shared';
 import { z } from 'zod';
+import { parseSearchQuery } from './query.js';
 
 const PlaceCursorSchema = z.strictObject({
   d: z.number().finite().nonnegative().nullable(),
@@ -12,6 +13,7 @@ const PlaceCursorSchema = z.strictObject({
 export type PlaceCursor = z.infer<typeof PlaceCursorSchema>;
 export type ParsedPlaceListQuery = PlaceApiListParams & {
   decodedCursor?: PlaceCursor;
+  q?: string;
 };
 
 export function encodePlaceCursor(cursor: PlaceCursor): string {
@@ -59,7 +61,7 @@ function numberParam(params: URLSearchParams, key: string): number | undefined {
 
 export function parsePlaceListQuery(url: URL): ParsedPlaceListQuery {
   const params = url.searchParams;
-  const allowed = new Set(['lang', 'type', 'cuisine', 'isOpenNow', 'maxDistance', 'cursor', 'limit']);
+  const allowed = new Set(['lang', 'type', 'cuisine', 'isOpenNow', 'maxDistance', 'cursor', 'limit', 'q']);
   for (const key of params.keys()) {
     if (!allowed.has(key)) throw new Error(`Paramètre "${key}" inconnu`);
   }
@@ -79,5 +81,6 @@ export function parsePlaceListQuery(url: URL): ParsedPlaceListQuery {
     cursor,
     limit: numberParam(params, 'limit') ?? 20,
   });
-  return { ...parsed, ...(decodedCursor ? { decodedCursor } : {}) };
+  const q = parseSearchQuery(single(params, 'q') ?? null);
+  return { ...parsed, ...(decodedCursor ? { decodedCursor } : {}), ...(q ? { q } : {}) };
 }

@@ -204,6 +204,17 @@ describe('mapping et SQL des lieux', () => {
     expect(thirdSql).toContain('distance_m IS NULL AND id >');
   });
 
+  it('recherche q sur le nom, la ville et la cuisine, en paramètre échappé', async () => {
+    executeQuery.mockResolvedValue([]);
+    await listPlacesFromDb('db', query('?q=100%25_bio'), now);
+    const [, sql, params] = executeQuery.mock.calls[0] as [string, string, unknown[]];
+    expect(sql).toContain('jsonb_each_text(p.title_i18n)');
+    expect(sql).toContain('unnest(p.cuisines)');
+    expect(params).toContain('%100\\%\\_bio%');
+    expect(query('?q=%20%20').q).toBeUndefined();
+    expect(() => query('?q=a')).toThrow(/2 et 80/);
+  });
+
   it('filtre les types et cuisines avec des paramètres SQL', async () => {
     executeQuery.mockResolvedValue([]);
     await listPlacesFromDb('db', query('?type=restaurant&type=bar&cuisine=French&limit=3'), now);

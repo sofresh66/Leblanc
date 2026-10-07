@@ -15,6 +15,7 @@
     "to": "Bis {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Preis unbekannt"
   },
   "filters": {
+    "search": { "label": "Suchen", "placeholder": "Name, Ort oder Küche", "clear": "Suche löschen" },
     "title": "Adressen filtern", "type": "Art des Lokals", "cuisine": "Küche",
     "openNow": "Jetzt geöffnet", "openOnly": "Nur geöffnete Lokale anzeigen",
     "distance": "Suchradius", "reset": "Zurücksetzen", "apply": "Anwenden",

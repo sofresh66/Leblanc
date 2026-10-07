@@ -81,6 +81,7 @@ export class ApiPlacesRepository implements PlacesRepository {
     for (const cuisine of parsed.cuisines ?? []) searchParams.append('cuisine', cuisine);
     if (parsed.isOpenNow !== undefined) searchParams.set('isOpenNow', String(parsed.isOpenNow));
     if (parsed.maxDistance !== undefined) searchParams.set('maxDistance', String(parsed.maxDistance));
+    if (parsed.q) searchParams.set('q', parsed.q);
     if (parsed.cursor) searchParams.set('cursor', parsed.cursor);
 
     const payload = await getJson('/v1/places', searchParams);

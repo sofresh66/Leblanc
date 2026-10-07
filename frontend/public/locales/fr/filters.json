@@ -13,7 +13,8 @@
     "label": "Tarif",
     "all": "Tous",
     "free": "Gratuit",
-    "paid": "Payant"
+    "paid": "Payant",
+    "unknown": "Tarif non précisé"
   },
   "distance": {
     "label": "Rayon de recherche",
@@ -22,5 +23,10 @@
   "actions": {
     "reset": "Réinitialiser",
     "apply": "Appliquer"
+  },
+  "search": {
+    "label": "Rechercher",
+    "placeholder": "Titre, ville ou lieu",
+    "clear": "Effacer la recherche"
   }
 }

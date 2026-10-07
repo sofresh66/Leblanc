@@ -34,5 +34,9 @@
     "emptyTitle": "Keine Veranstaltungen gefunden",
     "emptyDescription": "Keine Veranstaltungen entsprechen Ihren Filterkriterien. Erweitern Sie Ihre Suche.",
     "resetFilters": "Filter zurücksetzen"
+  },
+  "dates": {
+    "allDay": "Ganztägig",
+    "until": "Bis {{date}}"
   }
 }

@@ -13,7 +13,8 @@
     "label": "Tarief",
     "all": "Alles",
     "free": "Gratis",
-    "paid": "Betaald"
+    "paid": "Betaald",
+    "unknown": "Prijs niet gespecificeerd"
   },
   "distance": {
     "label": "Zoekstraal",
@@ -22,5 +23,10 @@
   "actions": {
     "reset": "Resetten",
     "apply": "Toepassen"
+  },
+  "search": {
+    "label": "Zoeken",
+    "placeholder": "Titel, plaats of locatie",
+    "clear": "Zoekopdracht wissen"
   }
 }

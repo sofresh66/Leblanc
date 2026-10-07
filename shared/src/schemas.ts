@@ -33,6 +33,8 @@ export const RawEventSchema = z.object({
   startDate: z.string().datetime({ offset: true }),
   endDate: z.string().datetime({ offset: true }).nullable(),
   timezone: z.string().default(DEFAULT_TIMEZONE),
+  // Journée entière (aucune heure fournie par la source) ; optionnel pour les anciens Workers.
+  allDay: z.boolean().optional(),
   venueName: z.string().nullable(),
   address: z.string().nullable(),
   postalCode: z.string().nullable(),
@@ -73,7 +75,9 @@ export const EventListParamsSchema = z.object({
   from: z.string().optional(),
   to: z.string().optional(),
   categories: z.array(EventCategorySchema).optional(),
-  isFree: z.boolean().optional(),
+  // null : tarif non précisé.
+  isFree: z.boolean().nullable().optional(),
+  q: z.string().optional(),
   maxDistance: z.number().min(1).max(20000).optional(),
   distance: z.number().min(1).max(20000).optional(),
   city: z.string().trim().min(1).optional(),
@@ -85,6 +89,12 @@ export const EventListParamsSchema = z.object({
 export type EventListParamsInput = z.input<typeof EventListParamsSchema>;
 // Output = ce que le repository reçoit après parsing (limit garanti)
 export type EventListParams = z.output<typeof EventListParamsSchema>;
+
+// GET /v1/categories : nombre d'événements visibles par catégorie.
+export const CategoryCountSchema = z.object({
+  key: EventCategorySchema,
+  count: z.number().int().nonnegative(),
+});
 
 export const EventListResponseSchema = z.object({
   items: z.array(EventSchema),
@@ -98,6 +108,8 @@ export const EventOccurrenceSchema = z.object({
   startDate: z.string().datetime({ offset: true }),
   endDate: z.string().datetime({ offset: true }).nullable(),
   timezone: z.string().default(DEFAULT_TIMEZONE),
+  // Optionnel pour accepter les réponses d'un Worker antérieur.
+  allDay: z.boolean().optional(),
 });
 
 export const EventDetailSchema = EventSchema.extend({
@@ -112,12 +124,17 @@ export const ApiErrorSchema = z.object({
   }),
 });
 
+const CursorDateSchema = z.string().datetime({ offset: true, message: 'Invalid ISO date string' }).refine(
+  (value) => !value.startsWith('0000') && Number.isFinite(Date.parse(value)),
+  { message: 'Invalid ISO date string' },
+);
+
+// d : clé de tri de la dernière ligne, i : id, a : date de référence (asOf)
+// fixée à la première page et réutilisée par les suivantes.
 export const CursorPayloadSchema = z.object({
-  d: z.string().datetime({ offset: true, message: 'Invalid ISO date string' }).refine(
-    (value) => !value.startsWith('0000') && Number.isFinite(Date.parse(value)),
-    { message: 'Invalid ISO date string' },
-  ),
+  d: CursorDateSchema,
   i: z.string().uuid(),
+  a: CursorDateSchema,
 });
 
 // Contrats des lieux permanents, indépendants des événements.

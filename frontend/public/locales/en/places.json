@@ -15,6 +15,7 @@
     "to": "Up to {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Price unavailable"
   },
   "filters": {
+    "search": { "label": "Search", "placeholder": "Name, town or cuisine", "clear": "Clear search" },
     "title": "Filter places", "type": "Type of place", "cuisine": "Cuisine",
     "openNow": "Open now", "openOnly": "Show open places only",
     "distance": "Search radius", "reset": "Reset", "apply": "Apply",

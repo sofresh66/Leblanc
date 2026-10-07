@@ -1,12 +1,12 @@
 import {
   ApiErrorSchema,
-  EventCategorySchema,
+  CategoryCountSchema,
   EventDetailSchema,
   EventListParamsSchema,
   EventListResponseSchema,
   SEARCH_RADIUS_METERS,
   resolveEventContent,
-  type EventCategory,
+  type CategoryCount,
   type EventDetail,
   type EventListParams,
   type EventListParamsInput,
@@ -177,7 +177,8 @@ function serializeEventListParams(params: EventListParams): URLSearchParams {
   if (params.from) searchParams.set('from', params.from);
   if (params.to) searchParams.set('to', params.to);
   if (params.city) searchParams.set('city', params.city);
-  if (params.isFree !== undefined) searchParams.set('isFree', String(params.isFree));
+  if (params.isFree !== undefined) searchParams.set('isFree', params.isFree === null ? 'unknown' : String(params.isFree));
+  if (params.q?.trim()) searchParams.set('q', params.q.trim());
   if (params.cursor) searchParams.set('cursor', params.cursor);
   if (params.maxDistance !== undefined) {
     searchParams.set('maxDistance', String(Math.min(params.maxDistance, SEARCH_RADIUS_METERS)));
@@ -251,10 +252,10 @@ export class ApiEventsRepository implements EventsRepository {
     }
   }
 
-  /** GET /api/v1/categories : liste des catégories autorisées. */
-  async listCategories(): Promise<EventCategory[]> {
+  /** GET /api/v1/categories : catégories avec leur nombre d'événements visibles. */
+  async listCategories(): Promise<CategoryCount[]> {
     const payload = await getJson('/v1/categories');
-    const parsed = z.array(EventCategorySchema).safeParse(payload);
+    const parsed = z.array(CategoryCountSchema).safeParse(payload);
     if (!parsed.success) {
       throw invalidResponseError('/v1/categories', parsed.error);
     }

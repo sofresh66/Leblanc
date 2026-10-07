@@ -7,13 +7,14 @@ import {
   type EventCategory,
   type EventListParamsInput,
 } from '@leblanc/shared';
+import { SearchField } from '../components/common/SearchField';
 import { EventFilters } from '../components/events/EventFilters';
 import { EventList } from '../components/events/EventList';
 import { resolveMaxDistanceMeters } from '../hooks/useEvents';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 
 export const ListPage: React.FC = () => {
-  const { t, i18n } = useTranslation(['pages', 'events', 'common']);
+  const { t, i18n } = useTranslation(['pages', 'events', 'common', 'filters']);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
 
@@ -22,6 +23,7 @@ export const ListPage: React.FC = () => {
     const to = searchParams.get('to') || undefined;
     const category = searchParams.get('category');
     const isFreeParam = searchParams.get('isFree');
+    const q = searchParams.get('q')?.trim();
     const maxDistanceMeters = resolveMaxDistanceMeters(searchParams);
 
     return {
@@ -33,7 +35,10 @@ export const ListPage: React.FC = () => {
         ? { isFree: true }
         : isFreeParam === 'false'
           ? { isFree: false }
-          : {}),
+          : isFreeParam === 'unknown'
+            ? { isFree: null }
+            : {}),
+      ...(q && q.length >= 2 ? { q } : {}),
       ...(maxDistanceMeters !== undefined && maxDistanceMeters < SEARCH_RADIUS_METERS
         ? { maxDistance: maxDistanceMeters }
         : {}),
@@ -64,7 +69,12 @@ export const ListPage: React.FC = () => {
           <EventFilters />
         </aside>
 
-        <div className="min-w-0">
+        <div className="min-w-0 space-y-6">
+          <SearchField
+            label={t('search.label', { ns: 'filters' })}
+            placeholder={t('search.placeholder', { ns: 'filters' })}
+            clearLabel={t('search.clear', { ns: 'filters' })}
+          />
           <EventList
             filters={filters}
             onResetFilters={handleResetFilters}

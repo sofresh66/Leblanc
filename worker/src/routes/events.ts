@@ -6,11 +6,12 @@ import { z } from 'zod';
 import { getEventByIdFromDb, listEventsFromDb } from '../db/events.js';
 import type { Env } from '../env.js';
 import {
+  errorResponse,
   jsonResponse,
   notFoundResponse,
   validationErrorResponse,
 } from '../http/responses.js';
-import { parseEventListQuery } from '../validation/query.js';
+import { CursorExpiredError, parseEventListQuery } from '../validation/query.js';
 
 const UuidSchema = z.string().uuid();
 
@@ -24,8 +25,12 @@ export async function handleListEvents(
 
   let query;
   try {
-    query = parseEventListQuery(url);
+    query = parseEventListQuery(url, nowIso);
   } catch (err) {
+    if (err instanceof CursorExpiredError) {
+      // Code distinct : le frontend repart de la première page.
+      return errorResponse(request, env, { status: 400, code: 'CURSOR_EXPIRED', message: err.message, requestId });
+    }
     const message = err instanceof Error ? err.message : 'Paramètres de requête invalides';
     return validationErrorResponse(request, env, message, requestId);
   }

@@ -4,7 +4,7 @@ import {
   type PlaceApiListResponse,
   type PlaceCategoriesResponse,
 } from '@leblanc/shared';
-import type { z } from 'zod';
+import { z } from 'zod';
 
 /** Le Worker accepte ce sous-ensemble du schéma V2, sans city ni takeaway. */
 export const PlaceHttpListParamsSchema = PlaceApiListParamsSchema.pick({
@@ -15,6 +15,9 @@ export const PlaceHttpListParamsSchema = PlaceApiListParamsSchema.pick({
   maxDistance: true,
   cursor: true,
   limit: true,
+}).extend({
+  // Recherche texte (nom, ville, cuisine), validée par le Worker.
+  q: z.string().trim().min(2).max(80).optional(),
 }).strict();
 
 /** Paramètres publics du GET /v1/places, avant application des valeurs par défaut. */
@@ -41,6 +44,7 @@ export function normalizePlaceListParams(params: PlaceListParamsInput) {
     ...(parsed.cuisines?.length ? { cuisines: [...new Set(parsed.cuisines)].sort() } : {}),
     ...(parsed.isOpenNow !== undefined ? { isOpenNow: parsed.isOpenNow } : {}),
     ...(parsed.maxDistance !== undefined ? { maxDistance: parsed.maxDistance } : {}),
+    ...(parsed.q ? { q: parsed.q } : {}),
     ...(parsed.cursor ? { cursor: parsed.cursor } : {}),
   };
 }

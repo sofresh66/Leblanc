@@ -14,6 +14,7 @@ import {
   PlaceTypeSchema,
   RawPlaceSchema,
   ApiErrorSchema,
+  CategoryCountSchema,
   CursorPayloadSchema,
   EventCategorySchema,
   EventDetailSchema,
@@ -39,6 +40,7 @@ export type EventListResponse = z.infer<typeof EventListResponseSchema>;
 export type EventOccurrence = z.infer<typeof EventOccurrenceSchema>;
 export type EventDetail = z.infer<typeof EventDetailSchema>;
 export type ApiError = z.infer<typeof ApiErrorSchema>;
+export type CategoryCount = z.infer<typeof CategoryCountSchema>;
 export type CursorPayload = z.infer<typeof CursorPayloadSchema>;
 export { SupportedLanguageSchema };
 

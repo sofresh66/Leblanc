@@ -150,9 +150,8 @@ describe('MockEventsRepository', () => {
 
   it('expose les méthodes de listage listCategories et listCities (Correction 3a)', async () => {
     const categories = await repository.listCategories();
-    expect(categories).toContain('culture');
-    expect(categories).toContain('sport');
-    expect(categories.length).toBeGreaterThan(0);
+    expect(categories.map((category) => category.key)).toEqual(expect.arrayContaining(['culture', 'sport']));
+    expect(categories.every((category) => Number.isInteger(category.count))).toBe(true);
 
     const cities = await repository.listCities();
     expect(cities).toContain('Le Blanc');

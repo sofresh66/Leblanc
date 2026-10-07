@@ -25,6 +25,17 @@ const fixture = () => ({
   hasContact: [{ homepage: ['https://example.com/event'] }],
 });
 
+describe('site officiel des événements DATAtourisme', () => {
+  it('utilise la page web du contact et jamais l’URI technique data.datatourisme.fr', () => {
+    expect(normalizeDatatourismeEvent(fixture()).event.publicUrl).toBe('https://example.com/event');
+    const withoutHomepage = normalizeDatatourismeEvent({ ...fixture(), hasContact: [] });
+    expect(withoutHomepage.event.publicUrl).toBeNull();
+    expect(withoutHomepage.sourceUrl).toBe('https://data.datatourisme.fr/15/test');
+    const technicalOnly = normalizeDatatourismeEvent({ ...fixture(), hasContact: [{ homepage: ['https://data.datatourisme.fr/15/x'] }] });
+    expect(technicalOnly.event.publicUrl).toBeNull();
+  });
+});
+
 describe('normaliseur DATAtourisme', () => {
   it.each([{}, 'invalid', [null], [{ priceSpecification: [null] }],
     [{ priceSpecification: [{ price: -1 }] }],

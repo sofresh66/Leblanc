@@ -1,9 +1,15 @@
-import { CATEGORIES } from '@leblanc/shared';
 import type { Env } from '../env.js';
+import { listCategoryCountsFromDb } from '../db/referenceData.js';
 import { jsonResponse } from '../http/responses.js';
 
-export function handleCategories(request: Request, env: Env | undefined): Response {
-  return jsonResponse(request, env, CATEGORIES, {
+/** GET /api/v1/categories : [{ key, count }] pour toutes les catégories. */
+export async function handleCategories(
+  request: Request,
+  env: Env | undefined,
+  nowIso: string
+): Promise<Response> {
+  const categories = await listCategoryCountsFromDb(env?.DATABASE_URL ?? '', nowIso);
+  return jsonResponse(request, env, categories, {
     cacheProfile: 'categories',
   });
 }

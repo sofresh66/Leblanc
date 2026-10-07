@@ -13,7 +13,8 @@
     "label": "Precio",
     "all": "Todos",
     "free": "Gratis",
-    "paid": "De pago"
+    "paid": "De pago",
+    "unknown": "Precio no especificado"
   },
   "distance": {
     "label": "Radio de búsqueda",
@@ -22,5 +23,10 @@
   "actions": {
     "reset": "Restablecer",
     "apply": "Aplicar"
+  },
+  "search": {
+    "label": "Buscar",
+    "placeholder": "Título, ciudad o lugar",
+    "clear": "Borrar la búsqueda"
   }
 }

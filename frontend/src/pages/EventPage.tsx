@@ -9,6 +9,8 @@ import { useLanguageDisplayName } from '../hooks/useLanguageDisplayName';
 import { useLocalizedDate } from '../hooks/useLocalizedDate';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
+import { formatEventDate } from '../utils/eventDates';
+import { officialWebsite } from '../utils/officialWebsite';
 import { formatVenueCity } from '../utils/eventLocation';
 import { downloadIcsFile } from '../utils/ics';
 
@@ -106,27 +108,11 @@ export const EventPage: React.FC = () => {
     );
   }
 
-  // Format dates & times
-  const startDate = new Date(event.startDate);
-  const endDate = event.endDate ? new Date(event.endDate) : null;
-  const isSameDay = !endDate || startDate.toDateString() === endDate.toDateString();
-
-  const fullDateFormatter = new Intl.DateTimeFormat(currentLang, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: event.timezone || 'Europe/Paris',
+  const website = officialWebsite(event.publicUrl);
+  const formattedDate = formatEventDate(event, currentLang, 'long', {
+    allDay: t('dates.allDay', { ns: 'events' }),
+    until: (date) => t('dates.until', { ns: 'events', date }),
   });
-  const timeFormatter = new Intl.DateTimeFormat(currentLang, {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: event.timezone || 'Europe/Paris',
-  });
-
-  const formattedDate = isSameDay
-    ? `${fullDateFormatter.format(startDate)} • ${timeFormatter.format(startDate)}`
-    : `${fullDateFormatter.format(startDate)} - ${fullDateFormatter.format(endDate!)}`;
 
   // Format distance
   const distanceKm =
@@ -281,10 +267,10 @@ export const EventPage: React.FC = () => {
               {event.description}
             </div>
 
-            {event.publicUrl && (
+            {website && (
               <div className="pt-4 border-t border-gray-100">
                 <a
-                  href={event.publicUrl}
+                  href={website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-creuse-800 hover:text-creuse-900 font-semibold inline-flex items-center gap-1.5 text-sm"
@@ -314,16 +300,18 @@ export const EventPage: React.FC = () => {
                   timeZone: occurrence.timezone,
                 };
                 const startDay = formatDate(occurrence.startDate, dateOptions);
-                const startTime = formatDate(occurrence.startDate, timeOptions);
                 const endDay = occurrence.endDate ? formatDate(occurrence.endDate, dateOptions) : null;
-                const endTime = occurrence.endDate ? formatDate(occurrence.endDate, timeOptions) : null;
+                // Journée entière : pas d'heure inventée (00:00 – 23:59).
+                const startTime = occurrence.allDay ? t('dates.allDay', { ns: 'events' }) : formatDate(occurrence.startDate, timeOptions);
+                const endTime = occurrence.endDate && !occurrence.allDay ? formatDate(occurrence.endDate, timeOptions) : null;
+                const endDaySuffix = occurrence.allDay && endDay && endDay !== startDay ? ` – ${endDay}` : '';
 
                 return (
                   <li key={occurrence.id} data-testid="event-occurrence" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-l-4 border-brenne-200 bg-sable-50 px-4 py-4">
                     <div className="text-sm text-gray-800">
                       <time dateTime={occurrence.startDate} className="font-semibold capitalize">{startDay}</time>
                       <span className="block text-gray-600">
-                        {startTime}{endTime ? ` – ${endDay !== startDay ? `${endDay} ` : ''}${endTime}` : ''}
+                        {startTime}{endTime ? ` – ${endDay !== startDay ? `${endDay} ` : ''}${endTime}` : endDaySuffix}
                       </span>
                     </div>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-brenne-100 text-brenne-900'}`}>

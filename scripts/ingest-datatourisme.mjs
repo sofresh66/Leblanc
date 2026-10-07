@@ -121,13 +121,13 @@ async function upsertEvent(client, item, translationRows = []) {
   for (const occurrence of item.occurrences) {
     await client.query(
       `
-      INSERT INTO event_occurrences (id, event_id, starts_at, ends_at, timezone, status, source_fingerprint)
-      VALUES (gen_random_uuid(), $1, $2, $3, 'Europe/Paris', 'scheduled', $4)
+      INSERT INTO event_occurrences (id, event_id, starts_at, ends_at, timezone, status, source_fingerprint, all_day)
+      VALUES (gen_random_uuid(), $1, $2, $3, 'Europe/Paris', 'scheduled', $4, $5)
       ON CONFLICT (event_id, source_fingerprint) DO UPDATE SET
         starts_at = EXCLUDED.starts_at, ends_at = EXCLUDED.ends_at,
-        timezone = EXCLUDED.timezone, status = 'scheduled'
+        timezone = EXCLUDED.timezone, status = 'scheduled', all_day = EXCLUDED.all_day
     `,
-      [eventId, occurrence.startsAt, occurrence.endsAt, occurrence.fingerprint],
+      [eventId, occurrence.startsAt, occurrence.endsAt, occurrence.fingerprint, occurrence.allDay === true],
     );
   }
   await client.query(

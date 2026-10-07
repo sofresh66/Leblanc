@@ -12,7 +12,8 @@ export interface ParsedEventListQuery {
   lang: SupportedLanguage;
   categories?: EventCategory[] | undefined;
   city?: string | undefined;
-  isFree?: boolean | undefined;
+  isFree?: boolean | null | undefined;
+  q?: string | undefined;
   from?: string | undefined;
   to?: string | undefined;
   toExclusive?: boolean | undefined;
@@ -91,7 +92,35 @@ export function toParisMidnightNextDay(dateStr: string): string {
  * @returns Paramètres validés et typés
  * @throws {Error} En cas de paramètre invalide
  */
-export function parseEventListQuery(url: URL): ParsedEventListQuery {
+/** Curseur trop ancien ou daté du futur : le client doit repartir de la première page. */
+export class CursorExpiredError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CursorExpiredError';
+  }
+}
+
+export const CURSOR_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const CURSOR_CLOCK_SKEW_MS = 5 * 60 * 1000;
+
+/**
+ * Recherche texte : espaces normalisés, 2 à 80 caractères ; vide = ignorée.
+ * Les jokers LIKE (% _ \) sont échappés pour une comparaison littérale.
+ */
+export function parseSearchQuery(raw: string | null): string | undefined {
+  const q = raw?.replace(/\s+/g, ' ').trim() ?? '';
+  if (!q) return undefined;
+  if (q.length < 2 || q.length > 80) {
+    throw new Error('Paramètre "q" invalide : entre 2 et 80 caractères');
+  }
+  return q;
+}
+
+export function escapeLikePattern(value: string): string {
+  return value.replace(/[\\%_]/g, (char) => `\\${char}`);
+}
+
+export function parseEventListQuery(url: URL, nowIso = new Date().toISOString()): ParsedEventListQuery {
   const params = url.searchParams;
 
   // 1. Langue
@@ -126,18 +155,23 @@ export function parseEventListQuery(url: URL): ParsedEventListQuery {
   const rawCity = params.get('city');
   const city: string | undefined = rawCity ? rawCity.trim() : undefined;
 
-  // 4. isFree (CB4a : strict 'true'/'false')
+  // 4. isFree : 'true', 'false' ou 'unknown' (tarif non précisé)
   const rawIsFree = params.get('isFree');
-  let isFree: boolean | undefined = undefined;
+  let isFree: boolean | null | undefined = undefined;
   if (rawIsFree !== null) {
     if (rawIsFree === 'true') {
       isFree = true;
     } else if (rawIsFree === 'false') {
       isFree = false;
+    } else if (rawIsFree === 'unknown') {
+      isFree = null;
     } else {
-      throw new Error('Paramètre "isFree" invalide : doit être "true" ou "false"');
+      throw new Error('Paramètre "isFree" invalide : doit être "true", "false" ou "unknown"');
     }
   }
+
+  // 4b. Recherche texte
+  const q = parseSearchQuery(params.get('q'));
 
   // 5. from
   const rawFrom = params.get('from');
@@ -207,6 +241,10 @@ export function parseEventListQuery(url: URL): ParsedEventListQuery {
   if (rawCursor !== null) {
     decodedCursor = decodeCursor(rawCursor);
     cursor = rawCursor;
+    const age = Date.parse(nowIso) - Date.parse(decodedCursor.a);
+    if (age > CURSOR_MAX_AGE_MS || age < -CURSOR_CLOCK_SKEW_MS) {
+      throw new CursorExpiredError('Curseur expiré : reprenez depuis la première page');
+    }
   }
 
   return {
@@ -214,6 +252,7 @@ export function parseEventListQuery(url: URL): ParsedEventListQuery {
     categories,
     city,
     isFree,
+    q,
     from,
     to,
     toExclusive,

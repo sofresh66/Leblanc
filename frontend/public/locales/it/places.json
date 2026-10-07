@@ -15,6 +15,7 @@
     "to": "Fino a {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Prezzo non disponibile"
   },
   "filters": {
+    "search": { "label": "Cerca", "placeholder": "Nome, città o cucina", "clear": "Cancella la ricerca" },
     "title": "Filtra i locali", "type": "Tipo di locale", "cuisine": "Cucina",
     "openNow": "Aperto ora", "openOnly": "Mostra solo i locali aperti",
     "distance": "Raggio di ricerca", "reset": "Reimposta", "apply": "Applica",

@@ -13,7 +13,8 @@
     "label": "Price",
     "all": "All",
     "free": "Free",
-    "paid": "Paid"
+    "paid": "Paid",
+    "unknown": "Price not specified"
   },
   "distance": {
     "label": "Search Radius",
@@ -22,5 +23,10 @@
   "actions": {
     "reset": "Reset",
     "apply": "Apply"
+  },
+  "search": {
+    "label": "Search",
+    "placeholder": "Title, town or venue",
+    "clear": "Clear search"
   }
 }

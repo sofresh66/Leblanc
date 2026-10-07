@@ -6,9 +6,9 @@ import {
   LE_BLANC_CENTER,
   resolveEventContent,
   SEARCH_RADIUS_METERS,
+  type CategoryCount,
   type CursorPayload,
   type Event,
-  type EventCategory,
   type EventDetail,
   type EventListParamsInput,
   type EventListResponse,
@@ -19,14 +19,18 @@ import rawEventsData from './__mocks__/events.json';
 export interface EventsRepository {
   listEvents(params: EventListParamsInput): Promise<EventListResponse>;
   getEventById(id: string, lang: string): Promise<EventDetail | null>;
-  listCategories(): Promise<EventCategory[]>;
+  listCategories(): Promise<CategoryCount[]>;
   listCities(): Promise<string[]>;
 }
 
 export { CursorPayloadSchema, type CursorPayload };
 
-function encodeCursor(startDate: string, id: string): string {
-  const payload = JSON.stringify({ d: startDate, i: id });
+function foldText(text: string): string {
+  return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+}
+
+function encodeCursor(startDate: string, id: string, asOf: string): string {
+  const payload = JSON.stringify({ d: startDate, i: id, a: asOf });
   return typeof btoa === 'function' ? btoa(payload) : Buffer.from(payload).toString('base64');
 }
 
@@ -140,6 +144,12 @@ export class MockEventsRepository implements EventsRepository {
       resolvedEvents = resolvedEvents.filter((e) => e.isFree === parsed.isFree);
     }
 
+    const search = parsed.q ? foldText(parsed.q.trim()) : '';
+    if (search.length >= 2) {
+      resolvedEvents = resolvedEvents.filter((e) => [...Object.values(e.title_i18n), e.city ?? '', e.venueName ?? '']
+        .some((text) => typeof text === 'string' && foldText(text).includes(search)));
+    }
+
     if (parsed.from) {
       const fromTime = new Date(parsed.from).getTime();
       resolvedEvents = resolvedEvents.filter((e) => {
@@ -183,7 +193,7 @@ export class MockEventsRepository implements EventsRepository {
     if (resolvedEvents.length > limit) {
       const lastItem = items[items.length - 1];
       if (lastItem) {
-        nextCursor = encodeCursor(lastItem.startDate, lastItem.id);
+        nextCursor = encodeCursor(lastItem.startDate, lastItem.id, new Date().toISOString());
       }
     }
 
@@ -225,8 +235,10 @@ export class MockEventsRepository implements EventsRepository {
     };
   }
 
-  async listCategories(): Promise<EventCategory[]> {
-    return Promise.resolve([...CATEGORIES]);
+  async listCategories(): Promise<CategoryCount[]> {
+    return Promise.resolve(CATEGORIES.map((key) => ({
+      key, count: this.rawEvents.filter((event) => event.category === key).length,
+    })));
   }
 
   async listCities(): Promise<string[]> {
@@ -249,6 +261,7 @@ export function normalizeEventListParams(params: EventListParamsInput): Record<s
   if (params.from) normalized.from = params.from;
   if (params.to) normalized.to = params.to;
   if (params.isFree !== undefined) normalized.isFree = params.isFree;
+  if (params.q?.trim()) normalized.q = params.q.trim();
   if (params.maxDistance !== undefined) normalized.maxDistance = params.maxDistance;
   if (params.distance !== undefined) normalized.distance = params.distance;
   if (params.cursor) normalized.cursor = params.cursor;

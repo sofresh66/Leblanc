@@ -3,11 +3,12 @@ import { CursorPayloadSchema, type CursorPayload } from '@leblanc/shared';
 /**
  * Encode un curseur de pagination opaque en base64url.
  *
- * @param startsAt Date de début de l'occurrence (format ISO)
+ * @param sortAt Clé de tri de la dernière ligne (format ISO)
  * @param id Identifiant de l'événement (UUID)
+ * @param asOf Date de référence fixée à la première page
  */
-export function encodeCursor(startsAt: string, id: string): string {
-  const payload = JSON.stringify({ d: startsAt, i: id });
+export function encodeCursor(sortAt: string, id: string, asOf: string): string {
+  const payload = JSON.stringify({ d: sortAt, i: id, a: asOf });
   const base64 = btoa(payload);
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }

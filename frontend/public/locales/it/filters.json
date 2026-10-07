@@ -13,7 +13,8 @@
     "label": "Prezzo",
     "all": "Tutti",
     "free": "Gratuito",
-    "paid": "A pagamento"
+    "paid": "A pagamento",
+    "unknown": "Prezzo non specificato"
   },
   "distance": {
     "label": "Raggio di ricerca",
@@ -22,5 +23,10 @@
   "actions": {
     "reset": "Reimposta",
     "apply": "Applica"
+  },
+  "search": {
+    "label": "Cerca",
+    "placeholder": "Titolo, città o luogo",
+    "clear": "Cancella la ricerca"
   }
 }

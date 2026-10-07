@@ -66,6 +66,10 @@ function httpUrl(value) {
   }
 }
 
+function isDatatourismeUri(url) {
+  return new URL(url).hostname === 'data.datatourisme.fr';
+}
+
 function categoryFor(types) {
   if (types.some((type) => /sport|race|hiking|cycling/i.test(type))) return 'sport';
   if (
@@ -195,11 +199,13 @@ export function normalizeDatatourismeEvent(raw) {
     ? raw.type.filter((value) => typeof value === 'string')
     : [];
   const imageUrl = httpUrl(raw.hasMainRepresentation?.[0]?.hasRelatedResource?.[0]?.locator?.[0]);
+  // Page web du contact seulement : l'URI data.datatourisme.fr est technique
+  // (elle reste disponible dans sourceUrl) et ne doit pas servir de site officiel.
   const publicUrl =
     (Array.isArray(raw.hasContact) ? raw.hasContact : [])
       .flatMap((contact) => (Array.isArray(contact?.homepage) ? contact.homepage : []))
       .map(httpUrl)
-      .find(Boolean) ?? httpUrl(raw.uri);
+      .find((url) => url && !isDatatourismeUri(url)) ?? null;
   const { warning, ...price } = pricing(raw.offers);
   if (warning) {
     console.warn(

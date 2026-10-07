@@ -15,6 +15,7 @@
     "to": "Hasta {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Precio no disponible"
   },
   "filters": {
+    "search": { "label": "Buscar", "placeholder": "Nombre, ciudad o cocina", "clear": "Borrar la búsqueda" },
     "title": "Filtrar lugares", "type": "Tipo de lugar", "cuisine": "Cocina",
     "openNow": "Abierto ahora", "openOnly": "Mostrar solo lugares abiertos",
     "distance": "Radio de búsqueda", "reset": "Restablecer", "apply": "Aplicar",

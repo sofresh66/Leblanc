@@ -1,6 +1,12 @@
 import { CATEGORIES } from '@leblanc/shared';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { handleRequest } from '../index.js';
+
+const { executeQuery } = vi.hoisted(() => ({ executeQuery: vi.fn() }));
+vi.mock('../db/client.js', async (original) => ({
+  ...await original<typeof import('../db/client.js')>(),
+  executeQuery,
+}));
 
 describe('Routage et dispatcher global (worker/src/index.ts)', () => {
   it('GET /health retourne 200 avec { status: "ok", build: "dev" } sans appel DB', async () => {
@@ -12,14 +18,18 @@ describe('Routage et dispatcher global (worker/src/index.ts)', () => {
     expect(body).toEqual({ status: 'ok', build: 'dev' });
   });
 
-  it('GET /api/v1/categories retourne 200 avec la liste des catégories sans appel DB', async () => {
+  it('GET /api/v1/categories retourne chaque catégorie avec son nombre d’événements visibles', async () => {
+    executeQuery.mockResolvedValueOnce([{ category: 'culture', count: '58' }, { category: 'sport', count: 9 }]);
     const req = new Request('https://api.example.com/api/v1/categories');
     const res = await handleRequest(req);
 
     expect(res.status).toBe(200);
     expect(res.headers.get('Cache-Control')).toContain('max-age=3600');
     const body = await res.json();
-    expect(body).toEqual(CATEGORIES);
+    expect(body).toEqual(CATEGORIES.map((key) => ({ key, count: key === 'culture' ? 58 : key === 'sport' ? 9 : 0 })));
+    const sql = executeQuery.mock.calls[0]?.[1] as string;
+    expect(sql).toContain('COALESCE(o.ends_at, o.starts_at) >= $3::timestamptz');
+    expect(sql).toContain('GROUP BY e.category');
   });
 
   it('OPTIONS sur une route connue retourne 204 No Content', async () => {

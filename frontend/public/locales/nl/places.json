@@ -15,6 +15,7 @@
     "to": "Tot {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Prijs onbekend"
   },
   "filters": {
+    "search": { "label": "Zoeken", "placeholder": "Naam, plaats of keuken", "clear": "Zoekopdracht wissen" },
     "title": "Eetgelegenheden filteren", "type": "Soort locatie", "cuisine": "Keuken",
     "openNow": "Nu open", "openOnly": "Alleen geopende locaties tonen",
     "distance": "Zoekstraal", "reset": "Herstellen", "apply": "Toepassen",

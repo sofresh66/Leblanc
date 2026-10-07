@@ -98,6 +98,14 @@ describe('Mappers de données DB (worker/src/mappers/event.ts)', () => {
     }
   });
 
+  it('expose allDay sur l’événement et ses occurrences (faux par défaut)', () => {
+    expect(mapDbRowToEvent(sampleRow, 'fr').allDay).toBe(false);
+    const detail = mapDbRowToEventDetail({ ...sampleRow, all_day: true },
+      [{ id: 'b1000000-0000-4000-8000-000000000001', starts_at: '2026-10-01T22:00:00Z', ends_at: '2026-10-02T21:59:59Z', all_day: true }], 'fr');
+    expect(detail.allDay).toBe(true);
+    expect(detail.occurrences[0]?.allDay).toBe(true);
+  });
+
   it('ne sert pas une langue rejetée ni un titre recopié du français', () => {
     const row: EventDbRow = {
       ...sampleRow,

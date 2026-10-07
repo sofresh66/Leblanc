@@ -1,10 +1,12 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   SEARCH_RADIUS_METERS,
   type EventListParamsInput,
   type EventListResponse,
 } from '@leblanc/shared';
 import { eventsRepository } from '../api';
+import { ApiError } from '../api/apiEventsRepository';
 import { normalizeEventListParams } from '../api/eventsRepository';
 
 /**
@@ -47,9 +49,11 @@ export function useEvents(params: EventListParamsInput) {
 
 export function useInfiniteEvents(params: Omit<EventListParamsInput, 'cursor'>) {
   const normalizedKey = normalizeEventListParams(params);
+  const queryClient = useQueryClient();
+  const queryKey = ['events', 'infinite', normalizedKey];
 
-  return useInfiniteQuery<EventListResponse, Error>({
-    queryKey: ['events', 'infinite', normalizedKey],
+  const query = useInfiniteQuery<EventListResponse, Error>({
+    queryKey,
     queryFn: ({ pageParam }) => {
       const cursor = typeof pageParam === 'string' ? pageParam : undefined;
       const queryParams: EventListParamsInput = {
@@ -61,4 +65,13 @@ export function useInfiniteEvents(params: Omit<EventListParamsInput, 'cursor'>) 
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
+
+  // Curseur expiré (plus de 24 h, ou ancien format) : repartir de la première page.
+  const cursorExpired = query.error instanceof ApiError && query.error.code === 'CURSOR_EXPIRED';
+  const keyHash = JSON.stringify(normalizedKey);
+  useEffect(() => {
+    if (cursorExpired) void queryClient.resetQueries({ queryKey: ['events', 'infinite', JSON.parse(keyHash) as unknown] });
+  }, [cursorExpired, keyHash, queryClient]);
+
+  return query;
 }

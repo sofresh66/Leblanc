@@ -4,19 +4,20 @@ import { decodeCursor, encodeCursor } from '../validation/cursor.js';
 describe('Curseur de pagination (worker/src/validation/cursor.ts)', () => {
   const sampleDate = '2026-07-15T18:00:00.000Z';
   const sampleId = 'e1000000-0000-4000-8000-000000000001';
+  const asOf = '2026-07-15T10:00:00.000Z';
 
   it('préserve les microsecondes PostgreSQL', () => {
     const date = '2026-10-03T08:30:00.123456Z';
-    expect(decodeCursor(encodeCursor(date, sampleId)).d).toBe(date);
+    expect(decodeCursor(encodeCursor(date, sampleId, asOf)).d).toBe(date);
   });
 
   it('rejette un UUID invalide et une date non ISO avant tout SQL', () => {
-    expect(() => decodeCursor(encodeCursor(sampleDate, 'not-a-uuid'))).toThrow();
-    expect(() => decodeCursor(encodeCursor('03/12/2026', sampleId))).toThrow();
+    expect(() => decodeCursor(encodeCursor(sampleDate, 'not-a-uuid', asOf))).toThrow();
+    expect(() => decodeCursor(encodeCursor('03/12/2026', sampleId, asOf))).toThrow();
   });
 
   it('encode et décode en aller-retour sans altération (roundtrip)', () => {
-    const encoded = encodeCursor(sampleDate, sampleId);
+    const encoded = encodeCursor(sampleDate, sampleId, asOf);
     expect(typeof encoded).toBe('string');
     expect(encoded).not.toContain('+');
     expect(encoded).not.toContain('/');
@@ -25,10 +26,16 @@ describe('Curseur de pagination (worker/src/validation/cursor.ts)', () => {
     const decoded = decodeCursor(encoded);
     expect(decoded.d).toBe(sampleDate);
     expect(decoded.i).toBe(sampleId);
+    expect(decoded.a).toBe(asOf);
+  });
+
+  it('rejette un ancien curseur sans date de référence', () => {
+    const legacy = Buffer.from(JSON.stringify({ d: sampleDate, i: sampleId })).toString('base64url');
+    expect(() => decodeCursor(legacy)).toThrowError(/Curseur invalide/);
   });
 
   it('supporte également le décodage du base64 standard avec padding', () => {
-    const rawJson = JSON.stringify({ d: sampleDate, i: sampleId });
+    const rawJson = JSON.stringify({ d: sampleDate, i: sampleId, a: asOf });
     const standardBase64 = Buffer.from(rawJson).toString('base64');
 
     const decoded = decodeCursor(standardBase64);

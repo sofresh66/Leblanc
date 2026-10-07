@@ -40,7 +40,7 @@ describe('ics utility', () => {
     expect(ics).toContain(`UID:${mockEvent.id}@leblanc-et-moi.fr`);
     expect(ics).toContain('SUMMARY:Concert au bord de l’eau');
     expect(ics).toContain('DESCRIPTION:Un concert acoustique exceptionnel.\\nEntrée libre.');
-    expect(ics).toContain('LOCATION:Guinguette des Rives, Quai de la Creuse, 36300 Le Blanc');
+    expect(ics).toContain('LOCATION:Guinguette des Rives\\, Quai de la Creuse\\, 36300 Le Blanc');
     expect(ics).toContain('URL:https://www.leblanc-tourisme.com');
     expect(ics).toContain('END:VEVENT');
     expect(ics).toContain('END:VCALENDAR');
@@ -100,6 +100,37 @@ describe('ics utility', () => {
     };
 
     const ics = generateIcsContent(eventWithoutVenue);
-    expect(ics).toContain('LOCATION:Quai de la Creuse, 36300 Le Blanc');
+    expect(ics).toContain('LOCATION:Quai de la Creuse\\, 36300 Le Blanc');
+  });
+
+  it('écrit une journée entière en dates seules, fin exclusive au lendemain', () => {
+    // Stockage source : 00:00 → 23:59:59 heure de Paris (22:00Z la veille en été).
+    const allDay: Event = { ...mockEvent, allDay: true,
+      startDate: '2026-10-01T22:00:00.000Z', endDate: '2026-10-02T21:59:59.000Z' };
+    const ics = generateIcsContent(allDay);
+    expect(ics).toContain('DTSTART;VALUE=DATE:20261002\r\n');
+    expect(ics).toContain('DTEND;VALUE=DATE:20261003\r\n');
+    expect(ics).not.toMatch(/DTSTART:\d/);
+    const range = generateIcsContent({ ...allDay, endDate: '2026-11-10T22:59:59.000Z' });
+    expect(range).toContain('DTEND;VALUE=DATE:20261111');
+  });
+
+  it('échappe virgules, points-virgules et antislashs', () => {
+    const ics = generateIcsContent({ ...mockEvent, title: 'Jazz, blues; et \\ swing' });
+    expect(ics).toContain('SUMMARY:Jazz\\, blues\\; et \\\\ swing');
+  });
+
+  it('replie les lignes à 75 octets UTF-8 sans couper les caractères accentués', () => {
+    const long = 'Événement très attendu à l’Église Saint-Génitour '.repeat(6);
+    const ics = generateIcsContent({ ...mockEvent, description: long });
+    const encoder = new TextEncoder();
+    for (const line of ics.split('\r\n')) expect(encoder.encode(line).length).toBeLessThanOrEqual(75);
+    const unfolded = ics.replace(/\r\n /g, '');
+    expect(unfolded).toContain(`DESCRIPTION:${long.trim()}`);
+  });
+
+  it('n’écrit pas l’URI technique DATAtourisme comme URL', () => {
+    const ics = generateIcsContent({ ...mockEvent, publicUrl: 'https://data.datatourisme.fr/15/abc' });
+    expect(ics).not.toContain('URL:');
   });
 });

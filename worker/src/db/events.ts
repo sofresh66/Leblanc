@@ -11,7 +11,7 @@ import {
   type OccurrenceDbRow,
 } from '../mappers/event.js';
 import { encodeCursor } from '../validation/cursor.js';
-import type { ParsedEventListQuery } from '../validation/query.js';
+import { escapeLikePattern, type ParsedEventListQuery } from '../validation/query.js';
 import { executeQuery } from './client.js';
 
 export interface EventListDbResult {
@@ -30,13 +30,16 @@ export async function listEventsFromDb(
   const centerLng = LE_BLANC_CENTER.lng; // 1.0622
   const centerLat = LE_BLANC_CENTER.lat; // 46.6339
 
+  // Date de référence fixée à la première page puis reprise du curseur : now()
+  // change entre deux pages et casserait l'ordre (doublons ou trous).
+  const asOf = query.decodedCursor?.a ?? nowIso;
   const params: unknown[] = [
     centerLng, // $1
     centerLat, // $2
-    nowIso,    // $3
+    asOf,      // $3
   ];
 
-  const startTime = query.from ? query.from : nowIso;
+  const startTime = query.from ? query.from : asOf;
   params.push(startTime); // $4
 
   const maxDistance = query.maxDistance ? Math.min(query.maxDistance, 20000) : 20000;
@@ -61,9 +64,22 @@ export async function listEventsFromDb(
   }
 
   let sqlFree = '';
-  if (query.isFree !== undefined) {
+  if (query.isFree === null) {
+    sqlFree = 'AND e.is_free IS NULL';
+  } else if (query.isFree !== undefined) {
     params.push(query.isFree);
     sqlFree = `AND e.is_free = $${params.length}`;
+  }
+
+  let sqlSearch = '';
+  if (query.q) {
+    params.push(`%${escapeLikePattern(query.q)}%`);
+    const pattern = `unaccent(lower($${params.length}))`;
+    sqlSearch = `AND (
+      EXISTS (SELECT 1 FROM jsonb_each_text(e.title_i18n) t WHERE unaccent(lower(t.value)) LIKE ${pattern} ESCAPE '\\')
+      OR unaccent(lower(coalesce(e.city, ''))) LIKE ${pattern} ESCAPE '\\'
+      OR unaccent(lower(coalesce(e.venue_name, ''))) LIKE ${pattern} ESCAPE '\\'
+    )`;
   }
 
   let sqlCursor = '';
@@ -72,7 +88,7 @@ export async function listEventsFromDb(
     const dateParamIndex = params.length;
     params.push(query.decodedCursor.i);
     const idParamIndex = params.length;
-    sqlCursor = `AND ((o.starts_at > $${dateParamIndex}::timestamptz) OR (o.starts_at = $${dateParamIndex}::timestamptz AND e.id > $${idParamIndex}::uuid))`;
+    sqlCursor = `AND ((o.sort_at > $${dateParamIndex}::timestamptz) OR (o.sort_at = $${dateParamIndex}::timestamptz AND e.id > $${idParamIndex}::uuid))`;
   }
 
   const limitPlusOne = query.limit + 1;
@@ -102,15 +118,20 @@ export async function listEventsFromDb(
       o.starts_at,
       o.ends_at,
       o.timezone,
-      to_char(o.starts_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS cursor_date,
+      o.all_day,
+      to_char(o.sort_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS cursor_date,
       ROUND(ST_Distance(e.location, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography))::integer AS distance
     FROM events e
     CROSS JOIN LATERAL (
-      SELECT o1.starts_at, o1.ends_at, o1.timezone
+      -- Chevauchement avec la période : une exposition en cours reste visible.
+      -- Clé de tri : début de l'occurrence, ramené au début de la période
+      -- (asOf ou from) pour qu'un événement en cours ne passe pas en tête.
+      SELECT o1.starts_at, o1.ends_at, o1.timezone, o1.all_day,
+        GREATEST(o1.starts_at, GREATEST($4::timestamptz, $3::timestamptz)) AS sort_at
       FROM event_occurrences o1
       WHERE o1.event_id = e.id
         AND o1.status = 'scheduled'
-        AND o1.starts_at >= GREATEST($4::timestamptz, $3::timestamptz)
+        AND COALESCE(o1.ends_at, o1.starts_at) >= GREATEST($4::timestamptz, $3::timestamptz)
         AND o1.starts_at <= ($3::timestamptz + interval '90 days')
         ${sqlTo}
       ORDER BY o1.starts_at ASC, o1.id ASC
@@ -121,8 +142,9 @@ export async function listEventsFromDb(
       ${sqlCat}
       ${sqlCity}
       ${sqlFree}
+      ${sqlSearch}
       ${sqlCursor}
-    ORDER BY o.starts_at ASC, e.id ASC
+    ORDER BY o.sort_at ASC, e.id ASC
     ${sqlLimit};
   `;
 
@@ -138,7 +160,7 @@ export async function listEventsFromDb(
     const lastRow = resultRows[resultRows.length - 1];
     if (lastRow?.cursor_date) {
       // Conserver les microsecondes PostgreSQL dans le curseur, sans conversion en Date.
-      nextCursor = encodeCursor(lastRow.cursor_date, lastRow.id);
+      nextCursor = encodeCursor(lastRow.cursor_date, lastRow.id, asOf);
     } else {
       throw new Error('Horodatage de pagination absent de la réponse SQL');
     }
@@ -212,7 +234,8 @@ export async function getEventByIdFromDb(
       o.id,
       o.starts_at,
       o.ends_at,
-      o.timezone
+      o.timezone,
+      o.all_day
     FROM event_occurrences o
     WHERE o.event_id = $1::uuid
       AND o.status = 'scheduled'
@@ -221,8 +244,8 @@ export async function getEventByIdFromDb(
 
   const occRows = await executeQuery<OccurrenceDbRow>(databaseUrl, occSql, [id]);
 
-  // La fiche représente la prochaine séance, ou la dernière passée si l'événement est terminé.
-  const nextOccurrence = occRows.find((occ) => new Date(occ.starts_at).getTime() >= Date.parse(nowIso))
+  // La fiche représente la séance en cours ou à venir, ou la dernière passée si l'événement est terminé.
+  const nextOccurrence = occRows.find((occ) => new Date(occ.ends_at ?? occ.starts_at).getTime() >= Date.parse(nowIso))
     ?? occRows[occRows.length - 1];
   if (!nextOccurrence) {
     return null;
@@ -248,6 +271,7 @@ export async function getEventByIdFromDb(
     currency: baseRow.currency,
     distance: baseRow.distance,
     starts_at: nextOccurrence.starts_at,
+    all_day: nextOccurrence.all_day ?? false,
     ends_at: nextOccurrence.ends_at,
     timezone: nextOccurrence.timezone,
   };

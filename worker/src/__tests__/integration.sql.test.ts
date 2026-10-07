@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { EventDetailSchema, LE_BLANC_CENTER, PlaceApiSchema, type Event } from '@leblanc/shared';
 import { executeQuery } from '../db/client.js';
 import { getEventByIdFromDb, listEventsFromDb } from '../db/events.js';
-import { listCitiesFromDb } from '../db/referenceData.js';
+import { listCategoryCountsFromDb, listCitiesFromDb } from '../db/referenceData.js';
 import { getPlaceByIdFromDb, listPlaceCategoriesFromDb, listPlacesFromDb } from '../db/places.js';
 import { parsePlaceListQuery } from '../validation/placesQuery.js';
 import { decodeCursor } from '../validation/cursor.js';
@@ -86,6 +86,75 @@ describe.skipIf(!databaseUrl)('Intégration SQL sur Neon réel, en lecture seule
     expect(second.items.length).toBeGreaterThan(0);
     const ids = new Set(first.items.map((event) => event.id));
     expect(second.items.every((event) => !ids.has(event.id))).toBe(true);
+  });
+
+  async function traverse(limit: number, clock: (page: number) => string) {
+    const ids: string[] = [];
+    let cursor: string | null = null;
+    for (let page = 0; page < 50; page++) {
+      const at = clock(page);
+      const result = await listEventsFromDb(databaseUrl, {
+        lang: 'fr', limit, ...(cursor ? { decodedCursor: decodeCursor(cursor) } : {}),
+      }, at);
+      ids.push(...result.items.map((event) => event.id));
+      cursor = result.nextCursor;
+      if (!cursor) break;
+    }
+    return ids;
+  }
+
+  it('parcourt toute la liste sans doublon, et à l’identique malgré un décalage d’horloge', async () => {
+    const reference = await traverse(50, () => nowIso);
+    expect(new Set(reference).size).toBe(reference.length);
+    // Même parcours par pages de 20, l'horloge avançant de 2 h à chaque page.
+    const shifted = await traverse(20, (page) => new Date(Date.parse(nowIso) + page * 2 * 3600 * 1000).toISOString());
+    expect(shifted).toEqual(reference);
+  });
+
+  it('montre un événement en cours sur une période future qu’il chevauche', async () => {
+    const [ongoing] = await executeQuery<{ id: string; ends_at: string }>(databaseUrl, `
+      SELECT e.id, o.ends_at FROM events e JOIN event_occurrences o ON o.event_id = e.id
+      WHERE e.status = 'published' AND o.status = 'scheduled'
+        AND o.starts_at < $1::timestamptz AND o.ends_at > $1::timestamptz + interval '3 days'
+        AND ST_DWithin(e.location, ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography, 20000)
+      ORDER BY o.ends_at LIMIT 1`, [nowIso, LE_BLANC_CENTER.lng, LE_BLANC_CENTER.lat]);
+    if (!ongoing) throw new Error('Fixture absente : aucun événement en cours au-delà de 3 jours');
+    const day = (offset: number) => new Date(Date.parse(nowIso) + offset * 86400000).toISOString().slice(0, 10);
+    const ids: string[] = [];
+    let cursor: string | null = null;
+    do {
+      const page = await listEventsFromDb(databaseUrl, parseEventListQuery(new URL(
+        `https://example.test/?from=${day(1)}&to=${day(2)}&limit=50${cursor ? `&cursor=${cursor}` : ''}`), nowIso), nowIso);
+      ids.push(...page.items.map((event) => event.id));
+      cursor = page.nextCursor;
+    } while (cursor);
+    expect(ids).toContain(ongoing.id);
+  });
+
+  it('compte par catégorie exactement les événements visibles dans la liste', async () => {
+    const counts = await listCategoryCountsFromDb(databaseUrl, nowIso);
+    const visible = await traverse(50, () => nowIso);
+    expect(counts.reduce((sum, category) => sum + category.count, 0)).toBe(visible.length);
+  });
+
+  it('filtre le tarif non précisé et recherche sans tenir compte des accents', async () => {
+    const unknown = await listEventsFromDb(databaseUrl, parseEventListQuery(new URL('https://example.test/?isFree=unknown&limit=50'), nowIso), nowIso);
+    expect(unknown.items.every((event) => event.isFree === null)).toBe(true);
+    const visible = await listEventsFromDb(databaseUrl, { lang: 'fr', limit: 50 }, nowIso);
+    const sample = visible.items.find((event) => /[éèàç]\p{L}*/u.test(event.title_i18n.fr));
+    if (!sample) throw new Error('Fixture absente : aucun titre accentué parmi les événements visibles');
+    const word = sample.title_i18n.fr.split(/\s+/).find((part) => /[éèàç]/.test(part) && part.length >= 3) ?? sample.title_i18n.fr;
+    const folded = word.normalize('NFD').replace(/\p{M}/gu, '').replace(/[^\p{L}]/gu, '').toUpperCase();
+    const ids: string[] = [];
+    let cursor: string | null = null;
+    do {
+      const page = await listEventsFromDb(databaseUrl, parseEventListQuery(new URL(
+        `https://example.test/?q=${encodeURIComponent(folded)}&limit=50${cursor ? `&cursor=${cursor}` : ''}`), nowIso), nowIso);
+      ids.push(...page.items.map((event) => event.id));
+      cursor = page.nextCursor;
+    } while (cursor);
+    expect(ids).toContain(sample.id);
+    expect(() => parseEventListQuery(new URL("https://example.test/?q=%25_'%3B drop"), nowIso)).not.toThrow();
   });
 
   it('filtre la catégorie culture', async () => {

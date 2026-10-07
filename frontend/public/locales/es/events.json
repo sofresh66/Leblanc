@@ -34,5 +34,9 @@
     "emptyTitle": "No se encontraron eventos",
     "emptyDescription": "No hay eventos que coincidan con sus filtros. Intente ampliar la búsqueda.",
     "resetFilters": "Restablecer filtros"
+  },
+  "dates": {
+    "allDay": "Todo el día",
+    "until": "Hasta el {{date}}"
   }
 }

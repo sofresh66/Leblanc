@@ -13,6 +13,13 @@ Tout a été validé sur la branche Neon `audit-fixes-2026-10`. Aucune étape ci
 
 6. Après l'étape 5, avec accord : `node scripts/score-translations.mjs` (rapport), puis `--apply` pour rejeter les fiches dont toutes les descriptions traduites ont un score < 0,50 (`record_mismatch`, 43 fiches sur la branche). Variables locales : `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_AI_TOKEN`. Le rejet est conservé par l'ingestion tant que le contenu source est inchangé (empreinte) ; sinon il est levé et la fiche signalée « à rescorer ».
 
+7. Migration `011_occurrence_all_day.sql` (colonne `all_day` + rattrapage des occurrences DATAtourisme sans heure) : à appliquer **avant** de déployer le Worker, qui la lit.
+
+## Ordre de déploiement du code (lot 5)
+
+- Le contrat HTTP change : curseur de pagination avec date de référence (`a`), `GET /v1/categories` renvoie `[{ key, count }]`, `isFree=unknown` et `q` acceptés. Déployer le Worker, puis le frontend Pages. Les anciens curseurs encore en mémoire dans un navigateur reçoivent `400 CURSOR_EXPIRED` et la liste repart de la première page.
+- Diagnostic en lecture seule : `docs/sql/events-visibility-breakdown.sql`.
+
 ## Signalement au producteur
 
 - `artifacts/signalement-destination-brenne.csv` (42 fiches) et `artifacts/signalement-berry.csv` (1 fiche), régénérés par `score-translations`. Constat vérifié sur le JSON brut DATAtourisme : un seul bloc de description, `@fr` correct, traductions (description et résumé) d'un autre événement du même cycle.
@@ -23,4 +30,4 @@ Tout a été validé sur la branche Neon `audit-fixes-2026-10`. Aucune étape ci
 
 ## Code
 
-- Lots livrés sur `main` en local, non poussés : lot 1 (`746dff5`), lot 4 (`66d9044`), lot 3 (`51b3af7`, `f576880`), lot 2 (`761750d`, `3d23b6f`, `b3fa4c3` et le commit de la règle de fiche).
+- Lots livrés sur `main` en local, non poussés : lot 1 (`746dff5`), lot 4 (`66d9044`), lot 3 (`51b3af7`, `f576880`), lot 2 (`761750d`, `3d23b6f`, `b3fa4c3`, `cafe3e6`), lot 5 (commit des filtres et de l'API).

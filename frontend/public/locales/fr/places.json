@@ -15,6 +15,7 @@
     "to": "Jusqu’à {{max}} {{currency}}", "exact": "{{value}} {{currency}}", "unknown": "Prix non renseigné"
   },
   "filters": {
+    "search": { "label": "Rechercher", "placeholder": "Nom, ville ou cuisine", "clear": "Effacer la recherche" },
     "title": "Filtrer les adresses", "type": "Type de lieu", "cuisine": "Cuisine",
     "openNow": "Ouvert maintenant", "openOnly": "Afficher uniquement les lieux ouverts",
     "distance": "Rayon de recherche", "reset": "Réinitialiser", "apply": "Appliquer",

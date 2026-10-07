@@ -36,6 +36,7 @@ export interface EventDbRow {
   starts_at: string | Date;
   ends_at: string | Date | null;
   timezone?: string | null | undefined;
+  all_day?: boolean | null | undefined;
   distance: number | string;
 }
 
@@ -44,6 +45,7 @@ export interface OccurrenceDbRow {
   starts_at: string | Date;
   ends_at: string | Date | null;
   timezone?: string | null | undefined;
+  all_day?: boolean | null | undefined;
 }
 
 function ensureObject<T>(val: T | string): T {
@@ -83,6 +85,7 @@ export function mapDbRowToEvent(row: EventDbRow, lang: SupportedLanguage): Event
     startDate: toIsoString(row.starts_at),
     endDate: row.ends_at ? toIsoString(row.ends_at) : null,
     timezone: row.timezone || DEFAULT_TIMEZONE,
+    allDay: row.all_day === true,
     venueName: row.venue_name,
     address: row.address,
     postalCode: row.postal_code,
@@ -122,6 +125,7 @@ export function mapDbRowToEventDetail(
     startDate: toIsoString(occ.starts_at),
     endDate: occ.ends_at ? toIsoString(occ.ends_at) : null,
     timezone: occ.timezone || DEFAULT_TIMEZONE,
+    allDay: occ.all_day === true,
   }));
 
   return EventDetailSchema.parse({

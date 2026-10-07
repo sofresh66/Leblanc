@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { PageSeo } from '../components/PageSeo';
+import { SearchField } from '../components/common/SearchField';
 import { PlaceFilters } from '../components/places/PlaceFilters';
 import { PlaceList } from '../components/places/PlaceList';
 import { readPlaceFilterParams, writePlaceFilterParams } from '../components/places/placeFilterParams';
@@ -16,7 +17,9 @@ export function EatPage() {
   const total = categories.data?.types.reduce((sum, type) => sum + type.count, 0);
   const filters = useMemo(() => {
     const values = readPlaceFilterParams(searchParams);
+    const q = searchParams.get('q')?.trim();
     return {
+      ...(q && q.length >= 2 ? { q: q.slice(0, 80) } : {}),
       lang,
       ...(values.types.length ? { types: values.types } : {}),
       ...(values.cuisines.length ? { cuisines: values.cuisines } : {}),
@@ -46,6 +49,13 @@ export function EatPage() {
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[300px_minmax(0,1fr)]">
         <div className="lg:sticky lg:top-24"><PlaceFilters /></div>
         <section id="place-results" className="min-w-0 scroll-mt-24" aria-label={t('list.results')}>
+          <SearchField
+            className="mb-6"
+            label={t('filters.search.label')}
+            placeholder={t('filters.search.placeholder')}
+            clearLabel={t('filters.search.clear')}
+            resetParams={['cursor']}
+          />
           <PlaceList filters={filters} onResetFilters={resetFilters} />
         </section>
       </div>

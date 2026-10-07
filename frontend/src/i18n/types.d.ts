@@ -95,9 +95,14 @@ export interface EventsResource {
     free: string;
     from: string;
     paid: string;
+    unknown: string;
   };
   distance: {
     km: string;
+  };
+  dates: {
+    allDay: string;
+    until: string;
   };
   details: {
     directions: string;
@@ -137,7 +142,9 @@ export interface FiltersResource {
     all: string;
     free: string;
     paid: string;
+    unknown: string;
   };
+  search: { label: string; placeholder: string; clear: string };
   distance: {
     label: string;
     value: string;
@@ -166,6 +173,7 @@ export interface PlacesResource {
   status: { open: string; closed: string; unknown: string };
   price: { range: string; from: string; to: string; exact: string; unknown: string };
   filters: {
+    search: { label: string; placeholder: string; clear: string };
     title: string;
     type: string;
     cuisine: string;

@@ -61,7 +61,7 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
     if (isHealth) {
       response = handleHealth(request, env);
     } else if (isCategories) {
-      response = handleCategories(request, env);
+      response = await handleCategories(request, env, nowIso);
     } else if (isCities) {
       response = await handleCities(request, env, nowIso);
     } else if (isEventsList) {

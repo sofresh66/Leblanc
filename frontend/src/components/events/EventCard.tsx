@@ -6,6 +6,7 @@ import type { Event } from '@leblanc/shared';
 import { useLanguageDisplayName } from '../../hooks/useLanguageDisplayName';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../../i18n/languages';
 import { buildLocalizedPath } from '../../routes/routeMapping';
+import { formatEventDate } from '../../utils/eventDates';
 import { formatVenueCity } from '../../utils/eventLocation';
 
 export interface EventCardProps {
@@ -22,26 +23,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
   const detailUrl = buildLocalizedPath('events', currentLang, event.id);
 
-  // Format dates
-  const startDate = new Date(event.startDate);
-  const endDate = event.endDate ? new Date(event.endDate) : null;
-  const isSameDay = !endDate || startDate.toDateString() === endDate.toDateString();
-
-  const dateFormatter = new Intl.DateTimeFormat(currentLang, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    timeZone: event.timezone || 'Europe/Paris',
+  const formattedDate = formatEventDate(event, currentLang, 'short', {
+    allDay: t('dates.allDay', { ns: 'events' }),
+    until: (date) => t('dates.until', { ns: 'events', date }),
   });
-  const timeFormatter = new Intl.DateTimeFormat(currentLang, {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: event.timezone || 'Europe/Paris',
-  });
-
-  const formattedDate = isSameDay
-    ? `${dateFormatter.format(startDate)} • ${timeFormatter.format(startDate)}`
-    : `${dateFormatter.format(startDate)} - ${dateFormatter.format(endDate!)}`;
 
   // Format distance (en mètres dans le modèle -> converti en km avec Intl.NumberFormat)
   const distanceKm =

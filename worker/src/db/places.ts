@@ -11,6 +11,7 @@ import {
   type ParsedPlaceListQuery,
   type PlaceCursor,
 } from '../validation/placesQuery.js';
+import { escapeLikePattern } from '../validation/query.js';
 import { executeQuery } from './client.js';
 
 const PLACE_COLUMNS = `
@@ -55,6 +56,16 @@ async function fetchPlaceBatch(
     params.push(query.cuisines);
     cuisineFilter = `AND p.cuisines && $${params.length}::text[]`;
   }
+  let searchFilter = '';
+  if (query.q) {
+    params.push(`%${escapeLikePattern(query.q)}%`);
+    const pattern = `unaccent(lower($${params.length}))`;
+    searchFilter = `AND (
+      EXISTS (SELECT 1 FROM jsonb_each_text(p.title_i18n) t WHERE unaccent(lower(t.value)) LIKE ${pattern} ESCAPE '\\')
+      OR unaccent(lower(coalesce(p.city, ''))) LIKE ${pattern} ESCAPE '\\'
+      OR EXISTS (SELECT 1 FROM unnest(p.cuisines) c WHERE unaccent(lower(c)) LIKE ${pattern} ESCAPE '\\')
+    )`;
+  }
   if (cursor) {
     if (cursor.d === null) {
       params.push(cursor.i);
@@ -78,6 +89,7 @@ async function fetchPlaceBatch(
         AND (p.location IS NULL OR ST_DWithin(p.location, centre.point, $3::double precision))
         ${typeFilter}
         ${cuisineFilter}
+        ${searchFilter}
     )
     SELECT * FROM candidates
     ${cursorFilter}

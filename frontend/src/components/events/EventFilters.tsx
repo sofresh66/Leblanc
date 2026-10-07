@@ -17,7 +17,7 @@ const FilterFormSchema = z.object({
   from: z.string().optional(),
   to: z.string().optional(),
   category: z.string().optional(),
-  priceType: z.enum(['all', 'free', 'paid']),
+  priceType: z.enum(['all', 'free', 'paid', 'unknown']),
   maxDistanceKm: z.number().min(1).max(20),
 });
 
@@ -25,7 +25,7 @@ export type FilterFormValues = {
   from?: string | undefined;
   to?: string | undefined;
   category?: string | undefined;
-  priceType: 'all' | 'free' | 'paid';
+  priceType: 'all' | 'free' | 'paid' | 'unknown';
   maxDistanceKm: number;
 };
 
@@ -51,8 +51,10 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
     const to = searchParams.get('to') || '';
     const category = searchParams.get('category') || '';
     const isFreeParam = searchParams.get('isFree');
-    const priceType: 'all' | 'free' | 'paid' =
-      isFreeParam === 'true' ? 'free' : isFreeParam === 'false' ? 'paid' : 'all';
+    const priceType: FilterFormValues['priceType'] =
+      isFreeParam === 'true' ? 'free'
+        : isFreeParam === 'false' ? 'paid'
+          : isFreeParam === 'unknown' ? 'unknown' : 'all';
     // L'URL porte la distance en mètres (`maxDistance`) ; l'ancien paramètre en kilomètres
     // (`maxDistanceKm`) reste accepté, et le curseur affiche des kilomètres (1 à 20 km).
     const maxDistanceMeters = resolveMaxDistanceMeters(searchParams);
@@ -104,6 +106,8 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
       newParams.set('isFree', 'true');
     } else if (data.priceType === 'paid') {
       newParams.set('isFree', 'false');
+    } else if (data.priceType === 'unknown') {
+      newParams.set('isFree', 'unknown');
     } else {
       newParams.delete('isFree');
     }
@@ -130,7 +134,9 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
           ? { isFree: true }
           : data.priceType === 'paid'
             ? { isFree: false }
-            : {}),
+            : data.priceType === 'unknown'
+              ? { isFree: null }
+              : {}),
         ...(data.maxDistanceKm * 1000 < SEARCH_RADIUS_METERS
           ? { maxDistance: data.maxDistanceKm * 1000 }
           : {}),
@@ -247,6 +253,7 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
               { id: 'all', label: t('price.all', { ns: 'filters' }) },
               { id: 'free', label: t('price.free', { ns: 'filters' }) },
               { id: 'paid', label: t('price.paid', { ns: 'filters' }) },
+              { id: 'unknown', label: t('price.unknown', { ns: 'filters' }) },
             ].map((option) => (
               <label
                 key={option.id}
