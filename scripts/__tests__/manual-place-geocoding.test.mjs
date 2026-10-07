@@ -20,6 +20,15 @@ describe('Réutilisation des coordonnées des restaurants manuels', () => {
     expect(plan.points.get(item.externalId)).toBeNull();
   });
 
+  it('relance les coordonnées nulles seulement avec retryMissing', () => {
+    const nullStored = { ...stored, latitude: null, longitude: null };
+    const plan = planManualGeocoding([item], [nullStored], { retryMissing: true });
+    expect(plan.pending).toEqual([item]);
+    expect(plan.points.size).toBe(0);
+    const located = planManualGeocoding([item], [stored], { retryMissing: true });
+    expect(located.pending).toEqual([]);
+  });
+
   it('géocode un lieu nouveau', () => {
     const plan = planManualGeocoding([item], []);
     expect(plan.pending).toEqual([item]);

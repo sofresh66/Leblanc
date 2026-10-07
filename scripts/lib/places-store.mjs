@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { assertPublicDescriptionClean } from './public-description-guard.mjs';
 
 export const PLACES_SOURCE = 'datatourisme_places';
 export const PLACES_LOCK_ID = 8493022;
@@ -15,6 +16,7 @@ function ruleId(placeId, rule) {
 
 // L'appelant doit détenir PLACES_LOCK_ID et ouvrir une transaction.
 export async function upsertPlace(client, item) {
+  assertPublicDescriptionClean(item.place.description_i18n, `${PLACES_SOURCE}:${item.externalId}`);
   const { rows } = await client.query(
     'SELECT place_id FROM place_source_records WHERE source=$1 AND external_id=$2 FOR UPDATE',
     [PLACES_SOURCE, item.externalId],

@@ -1,11 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import { bestDedupeCandidate, classifyDedupe } from './osm-dedupe.mjs';
+import { assertPublicDescriptionClean } from './public-description-guard.mjs';
 
 export const OSM_SOURCE = 'openstreetmap';
 export const OSM_LOCK_ID = 8493023;
 
 // L'appelant détient OSM_LOCK_ID et une transaction.
 export async function upsertOsmPlace(client, item) {
+  assertPublicDescriptionClean(item.place.description_i18n, `${OSM_SOURCE}:${item.externalId}`);
   const existing = await client.query(
     'SELECT place_id FROM place_source_records WHERE source=$1 AND external_id=$2 FOR UPDATE',
     [OSM_SOURCE, item.externalId],

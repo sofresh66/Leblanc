@@ -7,6 +7,7 @@ import pg from 'pg';
 import { comparableName, nameSimilarity } from './lib/osm-dedupe.mjs';
 import { manualPlaceContent } from './lib/manual-place-content.mjs';
 import { planManualGeocoding } from './lib/manual-place-geocoding.mjs';
+import { BAN_SEARCH_URL, geocodeWithBan } from './lib/ban-geocoder.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceFile = path.join(root, 'data/restaurants-manuel.json');
@@ -56,26 +57,56 @@ async function saveCache(cache) {
   await fs.rename(temporary, cacheFile);
 }
 
-async function geocode(items) {
+// BAN (Géoplateforme) d'abord, Nominatim en repli. Clés de cache distinctes :
+// « ban:<requête> » pour la BAN, la requête seule pour Nominatim (historique).
+// Sans persist (dry-run), le cache est lu mais jamais écrit.
+async function geocode(items, { persist = true } = {}) {
   let cache;
   try { cache = JSON.parse(await fs.readFile(cacheFile, 'utf8')); }
   catch (error) {
     if (error.code !== 'ENOENT') throw error;
     cache = {};
   }
+  const remember = async (key, value) => {
+    cache[key] = value;
+    if (persist) await saveCache(cache);
+  };
   const results = new Map();
+  const details = new Map();
   let lastRequest = 0;
   for (const item of items) {
     const query = [item.adresse || item.nom, item.codePostal, item.commune, 'France']
       .filter(Boolean).join(', ');
-    if (Object.hasOwn(cache, query) && (!cache[query]
-      || distanceMeters(cache[query], LE_BLANC_CENTER) <= 20000)) {
+    const banKey = `ban:${query}`;
+    const usable = (point) => !point || distanceMeters(point, LE_BLANC_CENTER) <= 20000;
+
+    let point = null;
+    if (Object.hasOwn(cache, banKey) && usable(cache[banKey])) {
+      point = cache[banKey];
+      details.set(item.externalId, { source: 'ban', cached: true, reason: point ? 'ok' : 'cached_null' });
+    } else {
+      try {
+        const ban = await geocodeWithBan(item, LE_BLANC_CENTER, { baseUrl: process.env.BAN_SEARCH_URL || BAN_SEARCH_URL });
+        point = ban.point;
+        details.set(item.externalId, { source: 'ban', cached: false, ...ban });
+        await remember(banKey, point);
+      } catch (error) {
+        console.warn(JSON.stringify({ step: 'ban_failed', name: item.nom,
+          code: error?.name === 'TimeoutError' ? 'TIMEOUT' : /^HTTP_d+$/.test(error?.message ?? '') ? error.message : 'NETWORK' }));
+      }
+    }
+    if (point) {
+      results.set(item.externalId, point);
+      continue;
+    }
+
+    if (Object.hasOwn(cache, query) && usable(cache[query])) {
       results.set(item.externalId, cache[query]);
+      if (cache[query]) details.set(item.externalId, { source: 'nominatim', cached: true, reason: 'ok' });
       continue;
     }
     await delay(Math.max(0, 1100 - (Date.now() - lastRequest)));
     lastRequest = Date.now();
-    let point = null;
     try {
       const url = new URL(process.env.NOMINATIM_URL || 'https://nominatim.openstreetmap.org/search');
       url.search = new URLSearchParams({ q: query, format: 'jsonv2', limit: '1', addressdetails: '1', countrycodes: 'fr' });
@@ -99,15 +130,15 @@ async function geocode(items) {
           && distanceMeters({ latitude, longitude }, LE_BLANC_CENTER) <= 20000)
           point = { latitude, longitude };
       }
-      cache[query] = point;
-      await saveCache(cache);
+      if (point) details.set(item.externalId, { source: 'nominatim', cached: false, reason: 'ok' });
+      await remember(query, point);
     } catch (error) {
       console.warn(JSON.stringify({ step: 'geocode_failed', name: item.nom,
-        code: error?.name === 'TimeoutError' ? 'TIMEOUT' : /^HTTP_\d+$/.test(error?.message ?? '') ? error.message : 'NETWORK' }));
+        code: error?.name === 'TimeoutError' ? 'TIMEOUT' : /^HTTP_d+$/.test(error?.message ?? '') ? error.message : 'NETWORK' }));
     }
     results.set(item.externalId, point);
   }
-  return results;
+  return { results, details };
 }
 
 function distanceMeters(a, b) {
@@ -136,6 +167,11 @@ function bestDuplicate(item, point, datatourisme) {
     || (a.distance ?? Infinity) - (b.distance ?? Infinity))[0] ?? null;
 }
 
+// --dry-run : lecture seule, aucun cache ni ligne écrits ; affiche le géocodage prévu.
+// --retry-missing : relance ponctuellement le géocodage des lieux restés sans coordonnées.
+const DRY_RUN = process.argv.includes('--dry-run');
+const RETRY_MISSING = process.argv.includes('--retry-missing');
+
 async function main() {
   if (!process.env.DATABASE_URL_DIRECT) throw new Error('DATABASE_URL_DIRECT_MISSING');
   const items = validate(JSON.parse(await fs.readFile(sourceFile, 'utf8')));
@@ -145,6 +181,7 @@ async function main() {
   let transaction = false;
   try {
     await client.connect();
+    if (DRY_RUN) await client.query('SET default_transaction_read_only = on');
     const migration = await client.query("SELECT EXISTS (SELECT 1 FROM schema_migrations WHERE version='008_manual_places_nullable_location.sql') AS ready");
     if (!migration.rows[0]?.ready) throw new Error('MIGRATION_008_REQUIRED');
     const lock = await client.query('SELECT pg_try_advisory_lock($1) AS acquired', [LOCK_ID]);
@@ -153,10 +190,22 @@ async function main() {
     const stored = await client.query(`SELECT p.id,sr.external_id,p.address,p.postal_code,p.city,
       p.latitude,p.longitude FROM places p JOIN place_source_records sr ON sr.place_id=p.id
       WHERE sr.source=$1`, [SOURCE]);
-    const plan = planManualGeocoding(items, stored.rows);
+    const plan = planManualGeocoding(items, stored.rows, { retryMissing: RETRY_MISSING });
     console.log(JSON.stringify({ step: 'geocoding_plan', reused: plan.points.size,
       required: plan.pending.length }));
-    const freshPoints = plan.pending.length ? await geocode(plan.pending) : new Map();
+    const geocoded = plan.pending.length
+      ? await geocode(plan.pending, { persist: !DRY_RUN })
+      : { results: new Map(), details: new Map() };
+    const freshPoints = geocoded.results;
+    if (DRY_RUN) {
+      const report = plan.pending.map((item) => ({ name: item.nom, commune: item.commune,
+        address: item.adresse || null, point: freshPoints.get(item.externalId) ?? null,
+        ...geocoded.details.get(item.externalId) }));
+      console.log(JSON.stringify({ step: 'dry_run', retryMissing: RETRY_MISSING,
+        reused: plan.points.size, pending: plan.pending.length,
+        found: report.filter((row) => row.point).length, report }, null, 2));
+      return;
+    }
     const points = new Map([...plan.points, ...freshPoints]);
     await client.query('BEGIN');
     transaction = true;

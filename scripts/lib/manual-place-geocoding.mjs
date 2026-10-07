@@ -1,5 +1,8 @@
-/** Réutilise aussi les échecs de géocodage (null) tant que l'adresse reste identique. */
-export function planManualGeocoding(items, storedPlaces) {
+/**
+ * Réutilise aussi les échecs de géocodage (null) tant que l'adresse reste
+ * identique, sauf avec retryMissing (relance manuelle ponctuelle).
+ */
+export function planManualGeocoding(items, storedPlaces, { retryMissing = false } = {}) {
   const existing = new Map(storedPlaces.map((place) => [place.external_id, place]));
   const points = new Map();
   const pending = [];
@@ -14,7 +17,8 @@ export function planManualGeocoding(items, storedPlaces) {
       continue;
     }
     if (place.latitude === null && place.longitude === null) {
-      points.set(item.externalId, null);
+      if (retryMissing) pending.push(item);
+      else points.set(item.externalId, null);
       continue;
     }
     const latitude = Number(place.latitude);

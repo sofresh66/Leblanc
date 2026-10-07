@@ -182,6 +182,22 @@ describe.skipIf(!databaseUrl)('Intégration SQL des lieux, en lecture seule', ()
     }
   });
 
+  it('n’expose ni raw_excerpt ni les notes de précision dans le détail ou la liste', async () => {
+    const [noted] = await executeQuery<{ id: string; precision: string }>(databaseUrl, `
+      SELECT p.id, sr.raw_excerpt->>'precision' AS precision
+      FROM places p JOIN place_source_records sr ON sr.place_id=p.id AND sr.source='manuel'
+      WHERE p.status='published' AND coalesce(sr.raw_excerpt->>'precision','')<>''
+      ORDER BY p.id LIMIT 1`);
+    if (!noted) throw new Error('Fixture absente : aucun lieu manuel publié avec une note privée');
+    const detail = await getPlaceByIdFromDb(databaseUrl, noted.id, 'fr', now);
+    const serialized = JSON.stringify(detail);
+    expect(detail).not.toBeNull();
+    expect(serialized).not.toMatch(/raw_?excerpt|"precision"/i);
+    expect(serialized).not.toContain(noted.precision);
+    const list = JSON.stringify(await listPlacesFromDb(databaseUrl, query('?limit=50'), now));
+    expect(list).not.toMatch(/raw_?excerpt|"precision"/i);
+  });
+
   it('récupère trois lieux publiés', async () => {
     const page = await listPlacesFromDb(databaseUrl, query('?limit=3'), now);
     expect(page.items).toHaveLength(3);

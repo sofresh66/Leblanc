@@ -98,6 +98,12 @@ describe('mapping et SQL des lieux', () => {
     expect(fallback).toMatchObject({ title: 'La Table', contentLanguage: 'fr', isFallback: true });
   });
 
+  it('n’expose pas raw_excerpt même si la ligne SQL le contient', () => {
+    const leaked = { ...row, raw_excerpt: { precision: 'Doublon possible' }, precision: 'à vérifier' } as PlaceDbRow;
+    const place = mapPlace(leaked, 'fr');
+    expect(JSON.stringify(place)).not.toMatch(/raw_excerpt|precision|Doublon|vérifier/);
+  });
+
   it('sert la description allemande sous un nom français sans signaler de repli', () => {
     const place = mapPlace({ ...row, title_i18n: { fr: 'La Table' },
       description_i18n: { fr: 'Cuisine locale', de: 'Regionale Küche' } }, 'de');
