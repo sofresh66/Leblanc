@@ -13,7 +13,7 @@
 
 ## Images de catégories (Unsplash License)
 
-Ces fichiers illustrent des événements fictifs. Leurs pages d'origine ont été fournies par le propriétaire du projet ; l'attribution n'est pas obligatoire sous la [licence Unsplash](https://unsplash.com/license), mais les liens sont conservés pour la traçabilité.
+Ces photographies illustrent les catégories d'événements lorsqu'un événement n'a pas d'image ; l'attribution n'est pas obligatoire sous la [licence Unsplash](https://unsplash.com/license), mais les liens sont conservés pour la traçabilité.
 
 | Fichier | Sujet | Page d'origine |
 | --- | --- | --- |

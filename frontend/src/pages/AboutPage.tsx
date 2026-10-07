@@ -29,10 +29,6 @@ export function AboutPage() {
               <a className="text-creuse-800 underline underline-offset-4 hover:text-creuse-900" href="https://www.datatourisme.fr/ressources-juridiques/">{t('about.datatourismeLabel')}</a>
               <p className="mt-1">{t('about.datatourismeLicense')}</p>
             </li>
-            <li>
-              <a className="text-creuse-800 underline underline-offset-4 hover:text-creuse-900" href="https://doc.openagenda.com/fr/article/conditions-generales-dutilisation-xq325m/">{t('about.openagendaLabel')}</a>
-              <p className="mt-1">{t('about.openagendaLicense')}</p>
-            </li>
           </ul>
           <p className="rounded-xl bg-brenne-50 p-4 text-sm leading-relaxed text-brenne-900">{t('about.updates')}</p>
         </section>

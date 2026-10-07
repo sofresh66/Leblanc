@@ -34,16 +34,14 @@
   },
   "about": {
     "title": "About Le Blanc & Moi",
-    "description": "Independent civic and tourist application listing cultural, festive and sporting events within a 20 km radius of Le Blanc (Indre, France).",
+    "description": "Independent civic and tourist application listing cultural, festive and sporting events, as well as restaurants, within a 20 km radius of Le Blanc (Indre, France).",
     "projectTitle": "The project",
     "projectBody": "Find cultural, sporting, festive and community events within 20 km of Le Blanc. Browse the list or map, filter by your interests and check practical details for each event. The site is available in six languages.",
     "dataTitle": "The data",
-    "dataBody": "The project’s data sources are DATAtourisme and OpenAgenda. Information is supplied by contributing organisations and event organisers. Check the event’s official website before travelling.",
+    "dataBody": "Events and some of the restaurants come from DATAtourisme, based on information supplied by tourist offices and organisers. The other restaurants come from the project’s own editorial selection. Check the details (dates, opening hours, prices) with the organiser or venue before travelling.",
     "datatourismeLabel": "DATAtourisme — reuse conditions",
     "datatourismeLicense": "Data under the Open Licence, with source attribution.",
-    "openagendaLabel": "OpenAgenda — reuse conditions",
-    "openagendaLicense": "Public event listings may be reused under the applicable open licence.",
-    "updates": "Daily data updates are planned.",
+    "updates": "The data is updated every night.",
     "photosTitle": "Photo credits",
     "photosBody": "The photograph of Le Blanc on the home page is by Daniel Jolivet, under CC BY 2.0. Sources, licences and changes to local images are detailed in the credits document. Event images remain subject to their sources’ terms.",
     "creditsLink": "View photo credits",
@@ -73,7 +71,7 @@
       "file": "File",
       "subject": "Subject",
       "source": "Unsplash URL",
-      "description": "These files illustrate fictional events. Their original pages were supplied by the project owner. Links are retained for traceability.",
+      "description": "These photographs illustrate event categories when an event has no image of its own. Links to their original pages are retained for traceability.",
       "license": "Unsplash licence",
       "subjects": {
         "culture": "Stage performance",
@@ -111,7 +109,7 @@
     },
     "tracking": {
       "title": "No advertising tracking",
-      "body": "The site does not implement advertising trackers or audience measurement tools. The publisher does not collect personal data for tracking or advertising purposes."
+      "body": "The site does not use any advertising tracker. The host, Cloudflare Pages, adds Cloudflare Web Analytics, an audience measurement tool without cookies or persistent identifiers that only provides aggregated statistics (page views, country, browser, device type). The publisher does not collect personal data for tracking or advertising purposes."
     },
     "services": {
       "title": "Technical services and external content",

@@ -34,16 +34,14 @@
   },
   "about": {
     "title": "Chi siamo — Le Blanc & Moi",
-    "description": "Applicazione civica e turistica indipendente che raccoglie eventi culturali e sportivi entro 20 km da Le Blanc.",
+    "description": "Applicazione civica e turistica indipendente che raccoglie gli eventi culturali, festivi e sportivi, oltre ai ristoranti, in un raggio di 20 km intorno a Le Blanc (Indre, Francia).",
     "projectTitle": "Il progetto",
     "projectBody": "Scopri eventi culturali, sportivi, festivi e associativi entro 20 km da Le Blanc. Esplora l’elenco o la mappa, filtra secondo i tuoi interessi e consulta le informazioni pratiche di ogni evento. Il sito è disponibile in sei lingue.",
     "dataTitle": "I dati",
-    "dataBody": "Le fonti dei dati del progetto sono DATAtourisme e OpenAgenda. Le informazioni sono fornite dagli enti e dagli organizzatori partecipanti. Consulta il sito ufficiale dell’evento prima di partire.",
+    "dataBody": "Gli eventi e una parte dei ristoranti provengono da DATAtourisme, sulla base delle informazioni fornite dagli uffici del turismo e dagli organizzatori. Gli altri ristoranti provengono da una selezione redazionale del progetto. Verifica i dettagli (date, orari, prezzi) con l’organizzatore o il locale prima di partire.",
     "datatourismeLabel": "DATAtourisme — condizioni di riutilizzo",
     "datatourismeLicense": "Dati sotto Licence Ouverte, con attribuzione della fonte.",
-    "openagendaLabel": "OpenAgenda — condizioni di riutilizzo",
-    "openagendaLicense": "Gli annunci pubblici possono essere riutilizzati secondo la licenza aperta applicabile.",
-    "updates": "È previsto un aggiornamento quotidiano dei dati.",
+    "updates": "I dati vengono aggiornati ogni notte.",
     "photosTitle": "Crediti fotografici",
     "photosBody": "La fotografia di Le Blanc nella pagina iniziale è di Daniel Jolivet, sotto CC BY 2.0. Fonti, licenze e modifiche delle immagini locali sono descritte nel documento dei crediti. Le immagini degli eventi restano soggette alle condizioni delle rispettive fonti.",
     "creditsLink": "Consulta i crediti fotografici",
@@ -73,7 +71,7 @@
       "file": "File",
       "subject": "Soggetto",
       "source": "URL Unsplash",
-      "description": "Questi file illustrano eventi fittizi. Le pagine originali sono state fornite dal proprietario del progetto. I collegamenti sono conservati per garantirne la tracciabilità.",
+      "description": "Queste fotografie illustrano le categorie di eventi quando un evento non ha un’immagine propria. I link alle pagine di origine sono conservati per tracciabilità.",
       "license": "Licenza Unsplash",
       "subjects": {
         "culture": "Spettacolo sul palco",
@@ -111,7 +109,7 @@
     },
     "tracking": {
       "title": "Nessun tracciamento pubblicitario",
-      "body": "Il sito non utilizza strumenti di tracciamento pubblicitario né di misurazione del pubblico. L’editore non raccoglie dati personali per finalità di tracciamento o pubblicità."
+      "body": "Il sito non utilizza strumenti di tracciamento pubblicitario. L’hosting Cloudflare Pages aggiunge Cloudflare Web Analytics, uno strumento di misurazione del pubblico senza cookie né identificativi persistenti, che fornisce solo statistiche aggregate (pagine viste, paese, browser, tipo di dispositivo). L’editore non raccoglie dati personali a fini di tracciamento o pubblicità."
     },
     "services": {
       "title": "Servizi tecnici e contenuti esterni",
