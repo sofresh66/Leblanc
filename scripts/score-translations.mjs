@@ -43,9 +43,10 @@ try {
 }
 
 const rows = await scoreTranslations(events, embed);
-const columns = ['eventId', 'externalId', 'lang', 'status', 'reason', 'titleScore', 'descriptionScore', 'titleFr'];
+const columns = ['eventId', 'externalId', 'lang', 'status', 'reason', 'titleScore', 'descriptionScore', 'titleFr', 'translatedStart'];
 const cell = (value) => (/[",\n]/.test(String(value ?? '')) ? `"${String(value).replace(/"/g, '""')}"` : String(value ?? ''));
 await fs.mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
 await fs.writeFile(CSV_FILE, [columns.join(','), ...rows.map((row) => columns.map((column) => cell(row[column])).join(','))].join('\n') + '\n');
+await fs.writeFile(CSV_FILE.replace(/\.csv$/, '.json'), JSON.stringify(rows, null, 1));
 console.log(JSON.stringify({ step: 'scores', events: events.length, pairs: rows.length, csv: CSV_FILE,
   ...scoreDistribution(rows) }, null, 2));

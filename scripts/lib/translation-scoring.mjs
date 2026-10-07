@@ -70,7 +70,10 @@ export async function scoreTranslations(events, embed) {
     const row = rows.get(key) ?? {
       eventId: job.event.id, externalId: job.event.externalId, lang: job.lang, titleFr: job.event.titleI18n.fr,
       status: entry?.status ?? 'ok', reason: entry?.reason ?? '', titleScore: null, descriptionScore: null,
+      translatedStart: '',
     };
+    // Début de la traduction pour la relecture (description de préférence).
+    if (job.field === 'description' || !row.translatedStart) row.translatedStart = job.translated.replace(/\s+/g, ' ').slice(0, 90);
     row[`${job.field}Score`] = Number(cosine(vectors.get(job.fr), vectors.get(job.translated)).toFixed(3));
     rows.set(key, row);
   }
@@ -93,7 +96,7 @@ export function scoreDistribution(rows, thresholds = CANDIDATE_THRESHOLDS) {
   }
   const belowThreshold = Object.fromEntries(thresholds.map((threshold) => [threshold,
     rows.filter((row) => (minScore(row) ?? 1) < threshold)
-      .map(({ eventId, lang, titleFr, titleScore, descriptionScore, status }) =>
-        ({ eventId, lang, titleFr, titleScore, descriptionScore, status }))]));
+      .map(({ eventId, lang, titleFr, titleScore, descriptionScore, status, translatedStart }) =>
+        ({ eventId, lang, titleFr, titleScore, descriptionScore, status, translatedStart }))]));
   return { histogram, belowThreshold };
 }

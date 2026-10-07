@@ -6,5 +6,13 @@
     "status": "rejected",
     "reason": "cross_record_translation",
     "note": "Musique ! Une histoire des pratiques musicales amateurs : titre et description allemands d'autres expositions"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "8d2aaf5b-e1a3-3529-8b17-01d33bd02a34",
+    "lang": "en",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Une épopée municipale : la description anglaise présente le spectacle d'un imitateur"
   }
 ]

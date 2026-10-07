@@ -36,6 +36,7 @@ describe('Rapport d’embeddings des traductions', () => {
       eventId: 'e1', lang: 'de', status: 'rejected', reason: 'override:cross_record_translation', titleScore: 0, descriptionScore: 0,
     }));
     expect(rows).toContainEqual(expect.objectContaining({ eventId: 'e2', lang: 'en', status: 'ok', titleScore: 1 }));
+    expect(rows.find((row) => row.eventId === 'e1').translatedStart).toBe('Ausstellung über die Bauern im Indre.');
     const { histogram, belowThreshold } = scoreDistribution(rows);
     expect(histogram).toEqual({ '0.0': 1, '0.9': 1 });
     expect(belowThreshold[0.5].map((row) => row.eventId)).toEqual(['e1']);
