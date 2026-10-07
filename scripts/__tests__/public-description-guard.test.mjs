@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import fs from 'node:fs';
-import { assertPublicDescriptionClean, findInternalNoteMarkers } from '../lib/public-description-guard.mjs';
+import {
+  assertPublicDescriptionClean, findInternalNoteMarkers, warnOnInternalNoteMarkers,
+} from '../lib/public-description-guard.mjs';
 import { manualPlaceContent } from '../lib/manual-place-content.mjs';
 import { upsertPlace } from '../lib/places-store.mjs';
 import { upsertOsmPlace } from '../lib/osm-places-store.mjs';
@@ -41,11 +43,33 @@ describe('Garde des descriptions publiques', () => {
     for (const item of seed) expect(() => manualPlaceContent(item)).not.toThrow();
   });
 
-  it('bloque l’écriture DATAtourisme et OSM avant toute requête SQL', async () => {
-    const client = { query: vi.fn() };
-    const item = { externalId: 'ext-1', place: { description_i18n: { fr: 'Horaires à vérifier.' } } };
-    await expect(upsertPlace(client, item)).rejects.toThrow(/datatourisme_places:ext-1/);
-    await expect(upsertOsmPlace(client, item)).rejects.toThrow(/openstreetmap:ext-1/);
-    expect(client.query).not.toHaveBeenCalled();
+  it('importe normalement une description DATAtourisme ou OSM avec un mot-clé et le journalise', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const client = { query: vi.fn().mockResolvedValue({ rows: [], rowCount: 0 }) };
+    const description = 'Pensez à vérifier les horaires avant de venir.';
+    const item = {
+      externalId: 'ext-1', sourceUrl: null, sourceUpdatedAt: null, rawExcerpt: {}, openingHours: [],
+      place: { title_i18n: { fr: 'La Table' }, description_i18n: { fr: description }, subtypes: [], cuisines: [],
+        priceDetails: [] },
+    };
+    await expect(upsertPlace(client, item)).resolves.toBeDefined();
+    await expect(upsertOsmPlace(client, item)).resolves.toMatchObject({ action: 'created' });
+    const inserts = client.query.mock.calls.filter(([sql]) => /INSERT INTO places/.test(sql));
+    expect(inserts).toHaveLength(2);
+    for (const [, params] of inserts) expect(params).toContain(JSON.stringify({ fr: description }));
+    const logs = warn.mock.calls.map(([line]) => JSON.parse(line));
+    expect(logs).toEqual([
+      { step: 'description_marker', context: 'datatourisme_places:ext-1', lang: 'fr', marker: 'verifier' },
+      { step: 'description_marker', context: 'openstreetmap:ext-1', lang: 'fr', marker: 'verifier' },
+    ]);
+    expect(JSON.stringify(logs)).not.toContain('Pensez');
+    warn.mockRestore();
+  });
+
+  it('ne journalise rien pour une description propre', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(warnOnInternalNoteMarkers({ fr: 'Cuisine locale' }, 'x')).toEqual([]);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });

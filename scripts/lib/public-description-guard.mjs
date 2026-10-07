@@ -15,8 +15,21 @@ export function findInternalNoteMarkers(descriptionI18n) {
 }
 
 /**
- * Fait échouer l'écriture plutôt que de publier une note interne. Le message cite
- * l'identifiant et le marqueur, jamais le texte complet.
+ * Sources externes (DATAtourisme, OSM) : un mot-clé peut apparaître dans une vraie
+ * description. On importe normalement et on journalise l'identifiant et le marqueur.
+ */
+export function warnOnInternalNoteMarkers(descriptionI18n, context) {
+  const findings = findInternalNoteMarkers(descriptionI18n);
+  for (const { lang, marker } of findings) {
+    console.warn(JSON.stringify({ step: 'description_marker', context, lang, marker }));
+  }
+  return findings;
+}
+
+/**
+ * Import manuel, d'où viennent nos notes : fait échouer l'écriture plutôt que de
+ * publier une note interne. Le message cite l'identifiant et le marqueur, jamais
+ * le texte complet.
  */
 export function assertPublicDescriptionClean(descriptionI18n, context) {
   const findings = findInternalNoteMarkers(descriptionI18n);

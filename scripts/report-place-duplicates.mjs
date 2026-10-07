@@ -1,6 +1,7 @@
 // Rapport des doublons probables parmi les lieux publiés. Lecture seule : aucune
 // fusion n'est effectuée ici ; les décisions passent par place_dedupe_candidates.
-// Usage : node scripts/report-place-duplicates.mjs [--json]
+// Usage : node scripts/report-place-duplicates.mjs [--json] [--all]
+// Par défaut, les paires déjà tranchées (merge, keep_separate) sont omises.
 import 'dotenv/config';
 import pg from 'pg';
 
@@ -44,11 +45,12 @@ JOIN published l ON l.id = pr.left_id
 JOIN published r ON r.id = pr.right_id
 LEFT JOIN place_dedupe_candidates d
   ON (d.left_place_id, d.right_place_id) IN ((pr.left_id, pr.right_id), (pr.right_id, pr.left_id))
-WHERE (pr.distance_m IS NOT NULL AND pr.distance_m < $1 AND pr.similarity >= $3)
+WHERE ($6::boolean OR d.decision IS NULL OR d.decision = 'pending')
+  AND ((pr.distance_m IS NOT NULL AND pr.distance_m < $1 AND pr.similarity >= $3)
    OR (pr.distance_m IS NOT NULL AND pr.distance_m < $2)
    OR (pr.distance_m IS NULL AND pr.same_city AND pr.similarity >= $3)
    OR (pr.same_city AND pr.similarity >= $4)
-   OR (pr.same_city AND pr.address_similarity >= $5 AND coalesce(pr.distance_m < $1, true))
+   OR (pr.same_city AND pr.address_similarity >= $5 AND coalesce(pr.distance_m < $1, true)))
 ORDER BY pr.distance_m NULLS LAST, pr.similarity DESC`;
 
 const databaseUrl = process.env.DATABASE_URL_DIRECT;
@@ -59,7 +61,7 @@ const client = new pg.Client({ connectionString: databaseUrl });
 await client.connect();
 try {
   await client.query('BEGIN TRANSACTION READ ONLY');
-  const { rows } = await client.query(SQL, [NEAR_METERS, SAME_SPOT_METERS, MIN_SIMILARITY, SAME_NAME_SIMILARITY, SAME_ADDRESS_SIMILARITY]);
+  const { rows } = await client.query(SQL, [NEAR_METERS, SAME_SPOT_METERS, MIN_SIMILARITY, SAME_NAME_SIMILARITY, SAME_ADDRESS_SIMILARITY, process.argv.includes('--all')]);
   await client.query('ROLLBACK');
   if (process.argv.includes('--json')) {
     console.log(JSON.stringify(rows, null, 2));
