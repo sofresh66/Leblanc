@@ -9,10 +9,74 @@
   },
   {
     "source": "datatourisme",
+    "externalId": "5cef2412-77ef-3a0b-8d1c-4eb65eeb7b7a",
+    "lang": "en",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Musique ! Une histoire des pratiques musicales amateurs : traductions d’autres expositions (score ≤ 0,44 dans toutes les langues)"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "5cef2412-77ef-3a0b-8d1c-4eb65eeb7b7a",
+    "lang": "es",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Musique ! Une histoire des pratiques musicales amateurs : traductions d’autres expositions (score ≤ 0,44 dans toutes les langues)"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "5cef2412-77ef-3a0b-8d1c-4eb65eeb7b7a",
+    "lang": "it",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Musique ! Une histoire des pratiques musicales amateurs : traductions d’autres expositions (score ≤ 0,44 dans toutes les langues)"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "5cef2412-77ef-3a0b-8d1c-4eb65eeb7b7a",
+    "lang": "nl",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Musique ! Une histoire des pratiques musicales amateurs : traductions d’autres expositions (score ≤ 0,44 dans toutes les langues)"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "8d2aaf5b-e1a3-3529-8b17-01d33bd02a34",
+    "lang": "de",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Une épopée municipale : traductions sur le spectacle d’un imitateur (score ≤ 0,49 dans toutes les langues)"
+  },
+  {
+    "source": "datatourisme",
     "externalId": "8d2aaf5b-e1a3-3529-8b17-01d33bd02a34",
     "lang": "en",
     "status": "rejected",
     "reason": "cross_record_translation",
     "note": "Une épopée municipale : la description anglaise présente le spectacle d'un imitateur"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "8d2aaf5b-e1a3-3529-8b17-01d33bd02a34",
+    "lang": "es",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Une épopée municipale : traductions sur le spectacle d’un imitateur (score ≤ 0,49 dans toutes les langues)"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "8d2aaf5b-e1a3-3529-8b17-01d33bd02a34",
+    "lang": "it",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Une épopée municipale : traductions sur le spectacle d’un imitateur (score ≤ 0,49 dans toutes les langues)"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "8d2aaf5b-e1a3-3529-8b17-01d33bd02a34",
+    "lang": "nl",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Une épopée municipale : traductions sur le spectacle d’un imitateur (score ≤ 0,49 dans toutes les langues)"
   }
 ]
