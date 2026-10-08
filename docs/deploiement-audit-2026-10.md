@@ -116,7 +116,7 @@ Réussite : toutes les étapes du workflow sont vertes (tests, migrations déjà
 - `/de/veranstaltungen/df0d2109-8eba-4b52-a0cf-4704fccd4314` : titre et description en français, mention « Beschreibung auf Französisch verfügbar » ;
 - `/fr/a-propos` et `/fr/confidentialite` : plus d'OpenAgenda, Cloudflare Web Analytics déclaré.
 
-Les anciens curseurs encore en mémoire dans un navigateur reçoivent `400 CURSOR_EXPIRED` ; la liste repart d'elle-même de la première page.
+Pagination pendant la transition : le Worker accepte encore les curseurs de l'ancien format (sans date de référence), avec `now()` comme référence, donc l'ancien front continue de paginer normalement. Les nouveaux curseurs portent une date de référence ; au-delà de 24 h, le Worker répond `400 CURSOR_EXPIRED` et le nouveau front repart de lui-même de la première page.
 
 Après la mise en production : `bash scripts/check-seo.sh https://leblanc-et-moi.pages.dev`, puis tester un aperçu de partage (outil de débogage de partage de Facebook ou envoi d'un lien dans WhatsApp).
 

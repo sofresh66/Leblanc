@@ -29,9 +29,9 @@ describe('Curseur de pagination (worker/src/validation/cursor.ts)', () => {
     expect(decoded.a).toBe(asOf);
   });
 
-  it('rejette un ancien curseur sans date de référence', () => {
+  it('accepte un ancien curseur sans date de référence (émis par l’ancien Worker)', () => {
     const legacy = Buffer.from(JSON.stringify({ d: sampleDate, i: sampleId })).toString('base64url');
-    expect(() => decodeCursor(legacy)).toThrowError(/Curseur invalide/);
+    expect(decodeCursor(legacy)).toEqual({ d: sampleDate, i: sampleId });
   });
 
   it('supporte également le décodage du base64 standard avec padding', () => {

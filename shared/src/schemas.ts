@@ -156,7 +156,9 @@ const CursorDateSchema = z.string().datetime({ offset: true, message: 'Invalid I
 export const CursorPayloadSchema = z.object({
   d: CursorDateSchema,
   i: z.string().uuid(),
-  a: CursorDateSchema,
+  // Absent dans les curseurs émis par l'ancien Worker : accepté avec now()
+  // pour que l'ancien front pagine sans erreur pendant le déploiement.
+  a: CursorDateSchema.optional(),
 });
 
 // Contrats des lieux permanents, indépendants des événements.

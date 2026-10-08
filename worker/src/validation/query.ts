@@ -241,9 +241,12 @@ export function parseEventListQuery(url: URL, nowIso = new Date().toISOString())
   if (rawCursor !== null) {
     decodedCursor = decodeCursor(rawCursor);
     cursor = rawCursor;
-    const age = Date.parse(nowIso) - Date.parse(decodedCursor.a);
-    if (age > CURSOR_MAX_AGE_MS || age < -CURSOR_CLOCK_SKEW_MS) {
-      throw new CursorExpiredError('Curseur expiré : reprenez depuis la première page');
+    // Ancien curseur sans date de référence : la liste utilise now(), comme avant.
+    if (decodedCursor.a !== undefined) {
+      const age = Date.parse(nowIso) - Date.parse(decodedCursor.a);
+      if (age > CURSOR_MAX_AGE_MS || age < -CURSOR_CLOCK_SKEW_MS) {
+        throw new CursorExpiredError('Curseur expiré : reprenez depuis la première page');
+      }
     }
   }
 

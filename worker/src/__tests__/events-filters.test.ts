@@ -71,12 +71,38 @@ describe('Curseur stable (asOf)', () => {
     expect((executeQuery.mock.calls[0]?.[2] as unknown[])[2]).toBe(now);
   });
 
-  it('refuse un curseur de plus de 24 h ou daté du futur, et un ancien curseur sans asOf', () => {
+  it('refuse un curseur de plus de 24 h ou daté du futur', () => {
     expect(() => query(`?cursor=${cursor('2026-10-09T07:59:00.000Z')}`)).toThrow(CursorExpiredError);
     expect(() => query(`?cursor=${cursor('2026-10-10T09:00:00.000Z')}`)).toThrow(CursorExpiredError);
     expect(query(`?cursor=${cursor('2026-10-09T09:00:00.000Z')}`).decodedCursor?.a).toBe('2026-10-09T09:00:00.000Z');
-    const legacy = Buffer.from(JSON.stringify({ d: now, i: ids[0] })).toString('base64url');
-    expect(() => query(`?cursor=${legacy}`)).toThrow(/Curseur invalide/);
+  });
+
+  it('accepte un ancien curseur sans date de référence (ancien front) avec now() comme référence', async () => {
+    const legacy = Buffer.from(JSON.stringify({ d: '2026-10-11T08:00:00.000Z', i: ids[0] })).toString('base64url');
+    const parsed = query(`?cursor=${legacy}`);
+    expect(parsed.decodedCursor?.a).toBeUndefined();
+    executeQuery.mockResolvedValue([]);
+    await listEventsFromDb('db', parsed, now);
+    const params = executeQuery.mock.calls[0]?.[2] as unknown[];
+    expect(params[2]).toBe(now);
+    expect(params).toContain('2026-10-11T08:00:00.000Z');
+    const response = await handleRequest(new Request(`https://api.example.test/api/v1/events?cursor=${legacy}`), { DATABASE_URL: 'db', ALLOWED_ORIGINS: '' });
+    expect(response.status).toBe(200);
+  });
+
+  it('émet toujours la date de référence dans les nouveaux curseurs', async () => {
+    executeQuery.mockResolvedValue([
+      { ...{ id: ids[0], category: 'culture', title_i18n: { fr: 'A' }, description_i18n: { fr: '' }, source: 'datatourisme', venue_name: null,
+        address: null, postal_code: null, city: null, latitude: 46.63, longitude: 1.08, public_url: null, image_url: null,
+        is_free: null, price_min: null, starts_at: '2026-10-11T08:00:00.000Z', ends_at: null, timezone: 'Europe/Paris',
+        distance: 0, cursor_date: '2026-10-11T08:00:00.000000Z' } },
+      { id: ids[1], category: 'culture', title_i18n: { fr: 'B' }, description_i18n: { fr: '' }, source: 'datatourisme', venue_name: null,
+        address: null, postal_code: null, city: null, latitude: 46.63, longitude: 1.08, public_url: null, image_url: null,
+        is_free: null, price_min: null, starts_at: '2026-10-12T08:00:00.000Z', ends_at: null, timezone: 'Europe/Paris',
+        distance: 0, cursor_date: '2026-10-12T08:00:00.000000Z' },
+    ]);
+    const page = await listEventsFromDb('db', query('?limit=1'), now);
+    expect(decodeCursor(page.nextCursor ?? '').a).toBe(now);
   });
 
   it('répond 400 CURSOR_EXPIRED pour un curseur expiré', async () => {
