@@ -143,14 +143,20 @@ Après la mise en production : `bash scripts/check-seo.sh https://leblanc-et-moi
 | Élément | En production | Retour arrière |
 | --- | --- | --- |
 | Base Neon | migrations 009–011 et scripts de données appliqués | branche `prod-avant-audit-2026-10-08` (`br-crimson-water-b254j02n`), créée avant les migrations |
-| Worker `leblanc-api` | version `d1b04b10-4c84-4214-af37-8b09958d6306` | `cd worker && npx wrangler rollback e00670e9-e9c2-4674-b59a-0d5cd2a0aad9` |
-| Pages `leblanc-et-moi` | déploiement `e74b1756` (commit `0223a0e`, run GitHub 37822234145) | déploiement `8fd6b244-6713-433c-b644-7a007429b537` (tableau de bord Pages, « Rollback to this deployment ») |
+| Worker `leblanc-api` | version `31b80495-1789-4073-8ea7-cd442e0b3687` (règle `no_reference`) | `cd worker && npx wrangler rollback d1b04b10-4c84-4214-af37-8b09958d6306` (puis `e00670e9-e9c2-4674-b59a-0d5cd2a0aad9`, version d'avant l'audit) |
+| Pages `leblanc-et-moi` | déploiement `27bb1224` (commit `7bcdf19`, run GitHub 37825962574) | déploiement `e74b1756` (puis `8fd6b244-6713-433c-b644-7a007429b537`, avant l'audit) |
 
-`main` est poussé jusqu'à `0223a0e`. `scripts/check-seo.sh https://leblanc-et-moi.pages.dev` passe tous ses contrôles ; aucun en-tête `x-robots-tag` en production.
+`main` est poussé jusqu'à `7bcdf19`. `scripts/check-seo.sh https://leblanc-et-moi.pages.dev` passe tous ses contrôles ; aucun en-tête `x-robots-tag` en production.
+
+### Correctif du 8 octobre (soir) : description française absente
+
+- Règle `no_reference` : sans description française, les descriptions traduites ne sont pas servies (le titre suit les règles habituelles) ; liste blanche respectée (« Marché hebdomadaire », traduction relue). Fiche concernée : « Moins de voiture, plus d'aventure ! », qui affiche « Description non disponible ».
+- Statut appliqué en production par `revalidate-translations --apply` ; l'ingestion de nuit applique la règle (`rejectedDescriptions` dans son résumé).
+- Les CSV de signalement ont une colonne `motif` (« traductions d'un autre événement » ou « description française absente ») : 44 fiches Destination Brenne, 1 BERRY.
 
 ## Reste à faire
 
-- Relire les 43 fiches signalées (`artifacts/signalement-*.csv`) et les transmettre à Destination Brenne et BERRY.
+- Relire les 45 fiches signalées (`artifacts/signalement-*.csv`) et les transmettre à Destination Brenne et BERRY.
 - Après une semaine de rapports CSP sans violation légitime, passer la CSP en mode bloquant (voir plus haut).
 - Planifier `score-translations --apply` chaque semaine (suite possible ci-dessus) : la nuit, seule l'ingestion tourne, les nouvelles fiches ne sont pas encore scorées.
 - Nettoyage : supprimer la branche de test (`npx neonctl branches delete audit-fixes-2026-10 --project-id still-feather-70001673`) et la preview `audit-preview` ; garder `prod-avant-audit-2026-10-08` quelques semaines ; `npx neonctl auth --logout`.

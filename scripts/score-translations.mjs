@@ -78,15 +78,27 @@ try {
   await fs.writeFile(CSV_FILE, toCsv(['eventId', 'externalId', 'lang', 'status', 'reason', 'titleScore', 'descriptionScore', 'titleFr', 'translatedStart'], scores));
   await fs.writeFile(CSV_FILE.replace(/\.csv$/, '.json'), JSON.stringify(scores, null, 1));
 
-  // Signalement aux producteurs : une ligne par fiche rejetée.
+  // Signalement aux producteurs : une ligne par fiche à corriger dans la source.
   const reports = {};
-  for (const { event, max, enStart } of flagged) {
+  const reportLine = (event, motif, scoreMax, enStart) => {
     const producer = event.producer || 'inconnu';
     (reports[producer] ??= []).push({
-      producteur: producer, identifiantDatatourisme: event.external_id, uri: event.source_url ?? '',
+      producteur: producer, motif, identifiantDatatourisme: event.external_id, uri: event.source_url ?? '',
       titreFr: event.title_i18n.fr, miseAJourSource: event.source_updated_at?.toISOString?.().slice(0, 10) ?? '',
-      scoreMax: max.toFixed(3), debutTraductionAnglaise: enStart,
+      scoreMax, debutTraductionAnglaise: enStart,
     });
+  };
+  for (const { event, max, enStart } of flagged) {
+    reportLine(event, 'traductions d’un autre événement', max.toFixed(3), enStart);
+  }
+  // Description française absente (traductions invérifiables), liste blanche comprise :
+  // la source reste à corriger même si la traduction a été relue.
+  for (const event of events) {
+    const translated = Object.entries(event.descriptionI18n ?? {}).filter(([lang, text]) => lang !== 'fr' && String(text ?? '').trim());
+    if (!String(event.descriptionI18n?.fr ?? '').trim() && translated.length) {
+      const en = String(event.descriptionI18n.en ?? '').replace(/\s+/g, ' ').slice(0, 90);
+      reportLine(event, 'description française absente', '', en);
+    }
   }
   const reportFiles = [];
   for (const [producer, lines] of Object.entries(reports)) {
