@@ -90,6 +90,18 @@ describe('SEO et sitemap', () => {
     expect(result.robots).toContain('Sitemap: https://example.test/sitemap.xml');
   });
 
+  it('ajoute lastmod : mise à jour du contenu pour les fiches, date du build sinon', async () => {
+    const event = { ...await fixture(), updatedAt: '2026-09-16T00:00:00.000Z' };
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ items: [event], nextCursor: null, generatedAt: 'now' }))
+      .mockResolvedValueOnce(Response.json({ items: [placeFixture], nextCursor: null, generatedAt: new Date().toISOString() }));
+    const result = await generateSitemap('https://example.test', '/api', fetcher, new Date('2026-10-08T03:00:00Z'));
+    expect(result.xml).toContain(`<loc>https://example.test/fr/evenements/${event.id}</loc><lastmod>2026-09-16</lastmod>`);
+    expect(result.xml).toContain(`<loc>https://example.test/fr/lieux/${placeFixture.id}</loc><lastmod>2026-10-08</lastmod>`);
+    expect(result.xml).toContain('<loc>https://example.test/fr/carte</loc><lastmod>2026-10-08</lastmod>');
+    expect(result.xml.match(/<url>/g)?.length).toBe(result.xml.match(/<lastmod>/g)?.length);
+  });
+
   it('pagine les lieux, déduplique les IDs et ignore les lieux non publiés', async () => {
     const fetcher = vi.fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ items: [], nextCursor: null, generatedAt: 'now' }))

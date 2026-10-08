@@ -7,7 +7,8 @@
     "view": "Bekijken",
     "close": "Sluiten",
     "loading": "Laden...",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "skipToContent": "Naar de inhoud"
   },
   "footer": {
     "rights": "Alle rechten voorbehouden",

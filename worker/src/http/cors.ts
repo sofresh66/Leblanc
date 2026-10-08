@@ -46,7 +46,10 @@ export function handleCorsPreflight(request: Request, env?: Env): Response {
   // Si l'origine n'est pas autorisée, on renvoie tout de même 204 sans autorisations CORS
   const headers: Record<string, string> = {
     ...corsHeaders,
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    // POST : uniquement pour /api/v1/csp-report (rapports envoyés par le navigateur).
+    'Access-Control-Allow-Methods': new URL(request.url).pathname.replace(/\/+$/, '') === '/api/v1/csp-report'
+      ? 'POST, OPTIONS'
+      : 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Accept',
     'Access-Control-Max-Age': '86400',
   };

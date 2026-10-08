@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLocalizedPath } from '../hooks/useLocalizedPath';
 import { prefetchPage } from '../routes/pageImports';
+import { useRouteFocus } from '../hooks/useRouteFocus';
 
 function prefetchLink(event: FocusEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>) {
   if (!(event.target instanceof Element)) return;
@@ -18,6 +19,8 @@ export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const firstMobileLink = useRef<HTMLAnchorElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  useRouteFocus(mainRef);
 
   const navItems = [
     { to: getLocalizedPath('home'), label: t('nav:home'), end: true },
@@ -55,6 +58,10 @@ export function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-sable-50 text-gray-900" onMouseOver={prefetchLink} onFocus={prefetchLink}>
+      {/* Premier élément focalisable : saute l'en-tête et la navigation (RGAA 12.7). */}
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:font-semibold focus:text-brenne-900 focus:shadow-lg">
+        {t('common:actions.skipToContent')}
+      </a>
       <header className="sticky top-0 z-50 border-b border-brenne-900/10 bg-white/90 backdrop-blur-xl shadow-[0_4px_20px_rgba(27,50,13,0.04)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[72px] flex items-center justify-between gap-4 max-[360px]:gap-1">
           <NavLink
@@ -138,7 +145,7 @@ export function Layout() {
         )}
       </header>
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main id="main" ref={mainRef} tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 focus:outline-none">
         <Suspense fallback={<div role="status" className="py-12 text-center">{t('common:actions.loading')}</div>}>
           <Outlet />
         </Suspense>

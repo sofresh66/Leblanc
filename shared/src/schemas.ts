@@ -56,6 +56,8 @@ export const RawEventSchema = z.object({
   currency: z.string().default(DEFAULT_CURRENCY),
   publicUrl: z.string().url().nullable(),
   source: z.string().min(1),
+  // Dernière mise à jour du contenu (source, sinon création) : lastmod du sitemap.
+  updatedAt: z.string().datetime({ offset: true }).optional(),
 });
 
 // Schéma d'événement résolu pour le client (titre/description résolus selon la langue avec repli)
@@ -261,6 +263,8 @@ export const PlaceSchema = RawPlaceSchema.safeExtend({
   isFallback: z.boolean(),
   distance: z.number().nonnegative().nullable(),
   source: z.string().min(1),
+  // Dernière mise à jour du contenu (source, sinon création) : lastmod du sitemap.
+  updatedAt: z.string().datetime({ offset: true }).optional(),
 });
 
 export const PlaceSourceRecordSchema = z.object({

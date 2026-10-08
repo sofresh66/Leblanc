@@ -7,7 +7,8 @@
     "view": "Ver",
     "close": "Cerrar",
     "loading": "Cargando...",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "skipToContent": "Ir al contenido"
   },
   "footer": {
     "rights": "Todos los derechos reservados",

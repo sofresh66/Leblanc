@@ -19,9 +19,11 @@ interface PageSeoProps {
   descriptionOverride?: string;
   canonicalPath?: string;
   imageOverride?: string;
+  /** Nom de la page dans le fil d'Ariane (sans le nom du site). */
+  breadcrumbName?: string;
 }
 
-export function PageSeo({ section, event, noindex = false, titleOverride, descriptionOverride, canonicalPath, imageOverride }: PageSeoProps) {
+export function PageSeo({ section, event, noindex = false, titleOverride, descriptionOverride, canonicalPath, imageOverride, breadcrumbName }: PageSeoProps) {
   const { t, i18n } = useTranslation(['seo', 'nav']);
   const { id } = useParams<{ id: string }>();
   const { pathname } = useLocation();
@@ -49,7 +51,7 @@ export function PageSeo({ section, event, noindex = false, titleOverride, descri
     if (event) breadcrumbs.push({ name: event.title, item: canonical });
   } else if (section === 'places') {
     breadcrumbs.push({ name: t('nav:eat'), item: absolute(buildLocalizedPath('eat', lang)) });
-    breadcrumbs.push({ name: titleOverride ?? t('nav:eat'), item: canonical });
+    breadcrumbs.push({ name: breadcrumbName ?? titleOverride ?? t('nav:eat'), item: canonical });
   } else if (section !== 'home' && section !== 'notFound') {
     breadcrumbs.push({ name: t(`nav:${section}`), item: canonical });
   }

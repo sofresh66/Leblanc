@@ -97,4 +97,5 @@ jobs:
       - name: Publier sur Cloudflare Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: npx --no-install wrangler pages deploy frontend/dist --project-name leblanc-et-moi --branch main
+        # Depuis frontend/ : wrangler y trouve le dossier functions/ (middleware SEO, 404, en-têtes).
+        run: npm exec --workspace=@leblanc/frontend -- wrangler pages deploy dist --project-name leblanc-et-moi --branch main

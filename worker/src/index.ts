@@ -9,6 +9,7 @@ import {
 } from './http/responses.js';
 import { handleCategories } from './routes/categories.js';
 import { handleCities } from './routes/cities.js';
+import { handleCspReport } from './routes/cspReport.js';
 import { handleEventGeo, handleGetEventById, handleListEvents } from './routes/events.js';
 import { handleHealth } from './routes/health.js';
 import { handleGetPlaceById, handleListPlaces, handlePlaceCategories } from './routes/places.js';
@@ -32,12 +33,13 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
     const isCities = pathname === '/api/v1/cities';
     const isEventsList = pathname === '/api/v1/events';
     const isEventGeo = pathname === '/api/v1/events/geo';
+    const isCspReport = pathname === '/api/v1/csp-report';
     const isEventDetail = pathname.startsWith('/api/v1/events/') && pathname.split('/').length === 5 && !isEventGeo;
     const isPlacesList = pathname === '/api/v1/places';
     const isPlaceCategories = pathname === '/api/v1/places/categories';
     const isPlaceDetail = pathname.startsWith('/api/v1/places/') && pathname.split('/').length === 5 && !isPlaceCategories;
 
-    const isKnownRoute = isHealth || isCategories || isCities || isEventsList || isEventGeo || isEventDetail ||
+    const isKnownRoute = isHealth || isCategories || isCities || isEventsList || isEventGeo || isEventDetail || isCspReport ||
       isPlacesList || isPlaceCategories || isPlaceDetail;
 
     if (!isKnownRoute) {
@@ -47,6 +49,14 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
 
     if (method === 'OPTIONS') {
       response = handleCorsPreflight(request, env);
+      return response;
+    }
+
+    // Seule route en écriture : les navigateurs y envoient les violations de la CSP.
+    if (isCspReport) {
+      response = method === 'POST'
+        ? await handleCspReport(request, env, requestId)
+        : methodNotAllowedResponse(request, env, ['POST', 'OPTIONS'], requestId);
       return response;
     }
 

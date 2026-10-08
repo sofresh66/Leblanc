@@ -62,7 +62,8 @@ export function PlacePage() {
     return (
       <div>
         <div role="status" className="mx-auto mt-8 max-w-3xl rounded-xl border border-brenne-200 bg-brenne-50 px-6 py-5 text-center text-brenne-950">
-          <h1 className="font-display text-2xl font-bold">{t('places:detail.notFound.title')}</h1>
+          {/* Le h1 est celui de NotFoundPage, rendue juste en dessous. */}
+          <h2 className="font-display text-2xl font-bold">{t('places:detail.notFound.title')}</h2>
           <p className="mt-2 text-sm">{t('places:detail.notFound.description')}</p>
         </div>
         <NotFoundPage />
@@ -108,6 +109,7 @@ export function PlacePage() {
       <PageSeo
         section="places"
         titleOverride={`${place.title} — Le Blanc & Moi`}
+        breadcrumbName={place.title}
         descriptionOverride={place.description || t('places:detail.noDescription')}
         canonicalPath={pathname}
         {...(place.imageUrl ? { imageOverride: place.imageUrl } : {})}

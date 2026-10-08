@@ -23,13 +23,16 @@ export async function generateSitemap(
   siteUrl: string,
   apiUrl: string,
   fetcher: typeof fetch = fetch,
+  buildDate: Date = new Date(),
 ) {
   const site = siteUrl.replace(/\/+$/, '');
-  const urls = SUPPORTED_LANGUAGES.flatMap((lang) =>
-    MAIN_SECTIONS.map((section) => `${site}${buildLocalizedPath(section, lang)}`),
+  // lastmod : date du build pour les pages fixes, mise à jour du contenu pour les fiches.
+  const day = (iso: string) => iso.slice(0, 10);
+  const urls: { loc: string; lastmod: string }[] = SUPPORTED_LANGUAGES.flatMap((lang) =>
+    MAIN_SECTIONS.map((section) => ({ loc: `${site}${buildLocalizedPath(section, lang)}`, lastmod: day(buildDate.toISOString()) })),
   );
-  const eventIds = new Set<string>();
-  const placeIds = new Set<string>();
+  const eventIds = new Map<string, string>();
+  const placeIds = new Map<string, string>();
   let partial = false;
   try {
     const base = new URL(apiUrl || '/api', `${site}/`).href.replace(/\/+$/, '');
@@ -45,7 +48,7 @@ export async function generateSitemap(
       const response = await fetcher(endpoint, { signal, headers: { Accept: 'application/json' } });
       if (!response.ok) throw new Error(`API HTTP ${response.status}`);
       const page = EventListResponseSchema.parse(await response.json());
-      page.items.forEach((event) => eventIds.add(event.id));
+      page.items.forEach((event) => eventIds.set(event.id, day(event.updatedAt ?? buildDate.toISOString())));
       cursor = page.nextCursor;
       if (cursor) {
         if (cursors.has(cursor) || cursors.size >= 1000) throw new Error('Pagination invalide');
@@ -69,7 +72,8 @@ export async function generateSitemap(
       const response = await fetcher(endpoint, { signal, headers: { Accept: 'application/json' } });
       if (!response.ok) throw new Error(`API HTTP ${response.status}`);
       const page = PlaceApiListResponseSchema.parse(await response.json());
-      page.items.filter((place) => place.status === 'published').forEach((place) => placeIds.add(place.id));
+      page.items.filter((place) => place.status === 'published')
+        .forEach((place) => placeIds.set(place.id, day(place.updatedAt ?? buildDate.toISOString())));
       cursor = page.nextCursor;
       if (cursor) {
         if (cursors.has(cursor) || cursors.size >= 1000) throw new Error('Pagination invalide');
@@ -80,18 +84,18 @@ export async function generateSitemap(
     partial = true;
     placeIds.clear();
   }
-  for (const id of [...eventIds].sort()) {
+  for (const [id, lastmod] of [...eventIds].sort(([a], [b]) => a.localeCompare(b))) {
     for (const lang of SUPPORTED_LANGUAGES)
-      urls.push(`${site}${buildLocalizedPath('events', lang, id)}`);
+      urls.push({ loc: `${site}${buildLocalizedPath('events', lang, id)}`, lastmod });
   }
-  for (const id of [...placeIds].sort()) {
+  for (const [id, lastmod] of [...placeIds].sort(([a], [b]) => a.localeCompare(b))) {
     for (const lang of SUPPORTED_LANGUAGES)
-      urls.push(`${site}${buildLocalizedPath('places', lang, id)}`);
+      urls.push({ loc: `${site}${buildLocalizedPath('places', lang, id)}`, lastmod });
   }
   return {
     partial,
     count: urls.length,
-    xml: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${escapeXml(url)}</loc></url>`).join('\n')}\n</urlset>\n`,
+    xml: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${escapeXml(url.loc)}</loc><lastmod>${url.lastmod}</lastmod></url>`).join('\n')}\n</urlset>\n`,
     robots: `User-agent: *\nAllow: /\nDisallow: /admin\n${SUPPORTED_LANGUAGES.map((lang) => `Disallow: /${lang}/admin`).join('\n')}\n\nSitemap: ${site}/sitemap.xml\n`,
   };
 }

@@ -1,0 +1,112 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it, vi } from 'vitest';
+import { securityHeaders, type EventDetail, type SupportedLanguage } from '@leblanc/shared';
+import { placeFixture } from '../../src/components/places/__tests__/fixture';
+import { planPage, type PlanDeps } from './page-plan';
+
+const LOCALES = join(__dirname, '../../public/locales');
+const locale = (lang: SupportedLanguage, namespace: string) =>
+  JSON.parse(readFileSync(join(LOCALES, lang, `${namespace}.json`), 'utf8')) as Record<string, unknown>;
+
+const eventId = 'df0d2109-8eba-4b52-a0cf-4704fccd4314';
+const event: EventDetail = {
+  id: eventId, title_i18n: { fr: 'Musique ! <script>alert("x")</script>' }, description_i18n: { fr: 'Une exposition' },
+  category: 'culture', startDate: '2026-10-01T12:00:00.000Z', endDate: '2026-11-10T16:30:00.000Z',
+  timezone: 'Europe/Paris', allDay: false, venueName: 'Château Naillac', address: null, postalCode: '36300',
+  city: 'Le Blanc', latitude: 46.63, longitude: 1.06, imageUrl: 'https://centre.media.tourinsoft.eu/musique.jpg',
+  isFree: false, priceMin: 3.5, currency: 'EUR', publicUrl: null, source: 'datatourisme',
+  title: 'Musique ! <script>alert("x")</script>', description: '<p>Une exposition   sur les pratiques musicales.</p>',
+  contentLanguage: 'fr', descriptionLanguage: 'fr', isFallback: false, distance: 1700, occurrences: [],
+};
+
+function deps(api: (path: string) => { status: number; body: unknown } | Promise<never>): PlanDeps & { fetchApi: ReturnType<typeof vi.fn> } {
+  return {
+    siteUrl: 'https://leblanc-et-moi.pages.dev',
+    loadLocale: (lang, namespace) => Promise.resolve(locale(lang, namespace)),
+    fetchApi: vi.fn((path: string) => Promise.resolve(api(path))),
+  };
+}
+
+describe('planPage', () => {
+  it('sert la racine telle quelle (redirection côté client)', async () => {
+    expect(await planPage('/', deps(() => ({ status: 200, body: null })))).toBeNull();
+  });
+
+  it('pose le titre, la description, canonical et hreflang ×6 + x-default d’une page statique', async () => {
+    const plan = await planPage('/de/karte', deps(() => ({ status: 200, body: null })));
+    expect(plan).toMatchObject({ status: 200, lang: 'de' });
+    expect(plan?.head.title).toBe(locale('de', 'seo').map && (locale('de', 'seo').map as { title: string }).title);
+    const html = plan?.head.tagsHtml ?? '';
+    expect(html.match(/rel="alternate"/g)).toHaveLength(7);
+    expect(html).toContain('hreflang="fr" href="https://leblanc-et-moi.pages.dev/fr/carte"');
+    expect(html).toContain('hreflang="x-default" href="https://leblanc-et-moi.pages.dev/fr/carte"');
+    expect(html).toContain('rel="canonical" href="https://leblanc-et-moi.pages.dev/de/karte"');
+    expect(html).toContain('content="index, follow"');
+    expect(html).toContain('property="og:locale" content="de_DE"');
+    expect(html.split('data-rh="true"').length - 1).toBe(html.split('<').length - 1 - (html.match(/<\/script>/g)?.length ?? 0));
+  });
+
+  it.each(['/fr/page-inconnue', '/xx/carte', '/fr/evenements', '/fr/evenements/pas-un-uuid', '/fr/lieux/123'])(
+    'répond 404 noindex pour %s sans appeler l’API', async (path) => {
+      const d = deps(() => ({ status: 200, body: null }));
+      const plan = await planPage(path, d);
+      expect(plan?.status).toBe(404);
+      expect(plan?.head.robots).toBe('noindex, follow');
+      expect(plan?.head.tagsHtml).not.toContain('hreflang');
+      expect(plan?.head.tagsHtml).not.toContain('BreadcrumbList');
+      expect(d.fetchApi).not.toHaveBeenCalled();
+    });
+
+  it('répond 404 quand l’API ne connaît pas la fiche', async () => {
+    const plan = await planPage(`/fr/evenements/${eventId}`, deps(() => ({ status: 404, body: null })));
+    expect(plan?.status).toBe(404);
+  });
+
+  it('sert le HTML générique (fail-open) quand l’API est en panne', async () => {
+    expect(await planPage(`/fr/evenements/${eventId}`, deps(() => ({ status: 503, body: null })))).toBeNull();
+    const broken = deps(() => Promise.reject(new Error('réseau')));
+    await expect(planPage(`/fr/lieux/${placeFixture.id}`, broken)).rejects.toThrow('réseau');
+  });
+
+  it('construit le <head> d’un événement : titre, image, JSON-LD Event, valeurs échappées', async () => {
+    const d = deps((path) => ({ status: path.startsWith(`/v1/events/${eventId}?lang=en`) ? 200 : 500, body: event }));
+    const plan = await planPage(`/en/events/${eventId}`, d);
+    expect(plan?.status).toBe(200);
+    expect(plan?.head.title).toBe('Musique ! <script>alert("x")</script> — Le Blanc & Moi');
+    const html = plan?.head.tagsHtml ?? '';
+    expect(html).not.toContain('<script>alert');
+    expect(html).toContain('property="og:title" content="Musique ! &lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt; — Le Blanc &amp; Moi"');
+    expect(html).toContain('name="description" content="Une exposition sur les pratiques musicales."');
+    expect(html).toContain('property="og:image" content="https://centre.media.tourinsoft.eu/musique.jpg"');
+    const jsonLd = JSON.parse(/<script data-rh="true" type="application\/ld\+json">(.*)<\/script>/.exec(html)?.[1] ?? '{}') as { '@graph': { '@type': string; name?: string }[] };
+    expect(jsonLd['@graph'].map((node) => node['@type'])).toEqual(['Organization', 'BreadcrumbList', 'Event']);
+    expect(d.fetchApi).toHaveBeenCalledWith(`/v1/events/${eventId}?lang=en`);
+  });
+
+  it('nomme le lieu seul dans le fil d’Ariane et sert un Restaurant sans @context imbriqué', async () => {
+    const plan = await planPage(`/it/luoghi/${placeFixture.id}`, deps(() => ({ status: 200, body: placeFixture })));
+    const html = plan?.head.tagsHtml ?? '';
+    const jsonLd = JSON.parse(/application\/ld\+json">(.*)<\/script>/.exec(html)?.[1] ?? '{}') as { '@graph': Record<string, unknown>[] };
+    const breadcrumb = jsonLd['@graph'].find((node) => node['@type'] === 'BreadcrumbList') as { itemListElement: { name: string }[] };
+    expect(breadcrumb.itemListElement.at(-1)?.name).toBe('La Table');
+    const restaurant = jsonLd['@graph'].find((node) => node['@type'] === 'Restaurant');
+    expect(restaurant).toMatchObject({ name: 'La Table' });
+    expect(restaurant).not.toHaveProperty('@context');
+    expect(plan?.head.title).toBe('La Table — Le Blanc & Moi');
+  });
+});
+
+describe('_headers', () => {
+  it('reprend exactement les en-têtes de sécurité du middleware et le cache immuable des assets', () => {
+    const file = readFileSync(join(__dirname, '../../public/_headers'), 'utf8');
+    expect(file).toContain('/assets/*\n  Cache-Control: public, max-age=31536000, immutable');
+    for (const [name, value] of Object.entries(securityHeaders())) expect(file).toContain(`  ${name}: ${value}\n`);
+  });
+
+  it('exclut les fichiers statiques du middleware', () => {
+    const routes = JSON.parse(readFileSync(join(__dirname, '../../public/_routes.json'), 'utf8')) as { include: string[]; exclude: string[] };
+    expect(routes.include).toEqual(['/*']);
+    expect(routes.exclude).toEqual(expect.arrayContaining(['/assets/*', '/images/*', '/fonts/*', '/locales/*', '/sitemap.xml', '/robots.txt', '/favicon.svg']));
+  });
+});

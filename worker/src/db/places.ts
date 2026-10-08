@@ -25,6 +25,7 @@ const PLACE_COLUMNS = `
 const RELATED_COLUMNS = `
   (SELECT string_agg(DISTINCT psr.source, ', ' ORDER BY psr.source)
    FROM place_source_records psr WHERE psr.place_id = p.id) AS source,
+  COALESCE((SELECT max(psr.source_updated_at) FROM place_source_records psr WHERE psr.place_id = p.id), p.created_at) AS content_updated_at,
   (SELECT COALESCE(jsonb_agg(jsonb_build_object(
     'id', poh.id, 'placeId', poh.place_id,
     'validFrom', poh.valid_from, 'validThrough', poh.valid_through,

@@ -10,6 +10,7 @@ export interface CommonResource {
     close: string;
     loading: string;
     retry: string;
+    skipToContent: string;
   };
   footer: {
     madeBy: string;

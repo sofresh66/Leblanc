@@ -5,6 +5,7 @@ export default defineConfig({
     include: [
       'shared/src/**/*.test.ts',
       'frontend/src/**/*.test.{ts,tsx}',
+      'frontend/functions/**/*.test.ts',
       'scripts/**/*.test.{ts,js,mjs}',
       'worker/src/**/*.test.ts',
     ],

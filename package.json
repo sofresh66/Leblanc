@@ -16,7 +16,7 @@
     "dev": "npm run dev --workspace=@leblanc/frontend",
     "dev:deps": "npm run build --workspace=@leblanc/shared",
     "build": "npm run build --workspace=@leblanc/shared && npm run build --workspace=@leblanc/frontend",
-    "typecheck": "npm run pretypecheck --workspace=@leblanc/worker && tsc --build --pretty && tsc --noEmit -p frontend",
+    "typecheck": "npm run pretypecheck --workspace=@leblanc/worker && tsc --build --pretty && tsc --noEmit -p frontend && tsc --noEmit -p frontend/functions",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "npm run build --workspace=@leblanc/shared && vitest run",

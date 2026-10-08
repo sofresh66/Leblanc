@@ -135,6 +135,7 @@ export async function listEventsFromDb(
       e.translation_status,
       (SELECT string_agg(DISTINCT sr.source, ', ' ORDER BY sr.source)
        FROM source_records sr WHERE sr.event_id = e.id) AS source,
+      COALESCE((SELECT max(sr.source_updated_at) FROM source_records sr WHERE sr.event_id = e.id), e.created_at) AS content_updated_at,
       e.venue_name,
       e.address,
       e.postal_code,

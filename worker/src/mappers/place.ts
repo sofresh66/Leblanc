@@ -41,6 +41,7 @@ export interface PlaceDbRow {
   distance_m: number | string | null;
   opening_hours: unknown;
   opening_hours_raw?: string | null;
+  content_updated_at?: string | Date | null;
 }
 
 // Un JSON mal formé donne undefined : la validation zod qui suit le rejette.
@@ -204,6 +205,7 @@ export function mapDbRowToPlace(row: PlaceDbRow, lang: SupportedLanguage, now: D
     isFallback: description.value !== '' && description.language !== lang,
     distance: row.distance_m === null ? null : Math.round(numberValue(row.distance_m)),
     source: row.source || 'unknown',
+    ...(row.content_updated_at ? { updatedAt: new Date(row.content_updated_at).toISOString() } : {}),
     openingHours,
     isOpenNow: computeIsOpenNow(openingHours, now),
     ...(row.opening_hours_raw !== undefined ? { openingHoursRaw: row.opening_hours_raw } : {}),

@@ -43,6 +43,12 @@
   :focus-visible {
     @apply outline-none ring-2 ring-creuse-700 ring-offset-2;
   }
+
+  /* Titre ou <main> focalisé par programme après une navigation : pas d'anneau. */
+  h1[tabindex='-1']:focus,
+  main[tabindex='-1']:focus {
+    @apply outline-none ring-0;
+  }
 }
 
 @layer components {

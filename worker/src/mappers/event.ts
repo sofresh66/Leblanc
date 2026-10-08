@@ -38,6 +38,7 @@ export interface EventDbRow {
   ends_at: string | Date | null;
   timezone?: string | null | undefined;
   all_day?: boolean | null | undefined;
+  content_updated_at?: string | Date | null | undefined;
   distance: number | string;
 }
 
@@ -104,6 +105,7 @@ export function mapDbRowToEvent(row: EventDbRow, lang: SupportedLanguage): Event
     currency: (row.currency || DEFAULT_CURRENCY).trim(),
     publicUrl: row.public_url,
     source: row.source || 'unknown',
+    ...(row.content_updated_at ? { updatedAt: toIsoString(row.content_updated_at) } : {}),
     ...content,
     distance: typeof row.distance === 'string' ? Math.round(parseFloat(row.distance)) : Math.round(row.distance),
   };

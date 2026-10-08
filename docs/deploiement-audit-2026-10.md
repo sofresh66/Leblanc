@@ -89,6 +89,18 @@ Dans l'ordre, toujours la simulation d'abord :
 
 ## 4. Déploiement du front (en dernier)
 
+Le front embarque désormais un middleware Pages Functions (`frontend/functions/_middleware.ts`) : balises `<head>` par page, vraies 404 et en-têtes de sécurité. Le workflow le publie depuis `frontend/` (`npm exec --workspace=@leblanc/frontend -- wrangler pages deploy dist …`). Variables Pages facultatives : `API_URL` (défaut : `https://leblanc-api.elharchdenis.workers.dev/api`) et `SITE_URL` (défaut : `https://leblanc-et-moi.pages.dev`).
+
+**Avant la production, une preview** (avec accord) :
+
+```bash
+SITEMAP_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_SITE_URL=https://leblanc-et-moi.pages.dev npm run build
+npm exec --workspace=@leblanc/frontend -- wrangler pages deploy dist --project-name leblanc-et-moi --branch audit-preview
+bash scripts/check-seo.sh https://audit-preview.leblanc-et-moi.pages.dev
+```
+
+Réussite : « tous les contrôles sont passés » (statuts 200/404, balises Open Graph, en-têtes de sécurité, cache immuable des assets).
+
 Pousser `main` puis lancer le workflow (ou attendre 3 h) :
 
 ```bash
@@ -106,6 +118,13 @@ Réussite : toutes les étapes du workflow sont vertes (tests, migrations déjà
 
 Les anciens curseurs encore en mémoire dans un navigateur reçoivent `400 CURSOR_EXPIRED` ; la liste repart d'elle-même de la première page.
 
+Après la mise en production : `bash scripts/check-seo.sh https://leblanc-et-moi.pages.dev`, puis tester un aperçu de partage (outil de débogage de partage de Facebook ou envoi d'un lien dans WhatsApp).
+
+## CSP en mode rapport
+
+- La politique est envoyée en `Content-Security-Policy-Report-Only` : rien n'est bloqué. Les violations arrivent sur `POST /api/v1/csp-report` et se lisent avec `cd worker && npx wrangler tail leblanc-api --search csp_violation`.
+- Après une semaine sans violation légitime, passer en mode bloquant : remplacer `Content-Security-Policy-Report-Only` par `Content-Security-Policy` dans `shared/src/securityHeaders.ts`, régénérer `frontend/public/_headers` (un test vérifie qu'ils concordent) et redéployer.
+
 ## Diagnostic
 
 - `docs/sql/events-visibility-breakdown.sql` (lecture seule) : ventile les événements en base selon leur motif d'exclusion de la liste.
@@ -121,4 +140,4 @@ Les anciens curseurs encore en mémoire dans un navigateur reçoivent `400 CURSO
 
 ## Code
 
-- Commits sur `main` en local, non poussés : lot 1 (`746dff5`), lot 4 (`66d9044`), lot 3 (`51b3af7`, `f576880`), lot 2 (`761750d`, `3d23b6f`, `b3fa4c3`, `cafe3e6`), lot 5 (`3a1c6b0`), lot 6 (carte).
+- Commits sur `main` en local, non poussés : lot 1 (`746dff5`), lot 4 (`66d9044`), lot 3 (`51b3af7`, `f576880`), lot 2 (`761750d`, `3d23b6f`, `b3fa4c3`, `cafe3e6`), lot 5 (`3a1c6b0`), lot 6 (`b744d2b`), lot 7 (SEO, 404, en-têtes).
