@@ -106,6 +106,24 @@ describe('Mappers de données DB (worker/src/mappers/event.ts)', () => {
     expect(detail.occurrences[0]?.allDay).toBe(true);
   });
 
+  it('ne sert aucune description traduite sans description française (no_reference)', () => {
+    const row: EventDbRow = {
+      ...sampleRow,
+      title_i18n: { fr: 'Moins de voiture, plus d’aventure !', en: 'Less car, more adventure!' },
+      description_i18n: { fr: '', en: 'Symbols of strength, baobabs…', de: 'Baobabs…' },
+      translation_status: {
+        en: { status: 'ok', titleStatus: 'ok', descriptionStatus: 'rejected', reason: 'no_reference' },
+        de: { status: 'ok', descriptionStatus: 'rejected', reason: 'no_reference' },
+      },
+    };
+    for (const lang of ['fr', 'en', 'de'] as const) {
+      const event = mapDbRowToEvent(row, lang);
+      expect(event.description).toBe('');
+      expect(event.description_i18n).toEqual({ fr: '' });
+    }
+    expect(mapDbRowToEvent(row, 'en').title).toBe('Less car, more adventure!');
+  });
+
   it('ne sert pas une langue rejetée ni un titre recopié du français', () => {
     const row: EventDbRow = {
       ...sampleRow,

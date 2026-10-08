@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { indexOverrides } from './translation-validator.mjs';
+import { indexAllowlist, indexOverrides } from './translation-validator.mjs';
 
 /** Charge data/translation-overrides.json (absent = aucun override). */
 export async function loadTranslationOverrides(file) {
@@ -12,6 +12,19 @@ export async function loadTranslationOverrides(file) {
   }
 }
 
+/**
+ * Charge data/translation-allowlist.json : fiches relues, exemptées des règles
+ * automatiques au niveau de la fiche (record_mismatch, no_reference).
+ */
+export async function loadTranslationAllowlist(file) {
+  try {
+    return indexAllowlist(JSON.parse(await fs.readFile(file, 'utf8')));
+  } catch (error) {
+    if (error.code === 'ENOENT') return new Set();
+    throw error;
+  }
+}
+
 /** Une ligne par langue rejetée, ignorée ou signalée. */
 export function reportRows({ eventId = '', externalId, titleFr }, status, { rescore = false } = {}) {
   // Contenu source modifié depuis un rejet record_mismatch : à rescorer.
@@ -19,7 +32,7 @@ export function reportRows({ eventId = '', externalId, titleFr }, status, { resc
     titleStatus: '', descriptionStatus: '', warnings: '' }] : [];
   return rescoreRow.concat(Object.entries(status).flatMap(([lang, entry]) => {
     const ignored = [entry.titleStatus, entry.descriptionStatus].includes('ignored_identical');
-    if (entry.status === 'ok' && !ignored && !entry.warnings?.length) return [];
+    if (entry.status === 'ok' && !ignored && entry.descriptionStatus !== 'rejected' && !entry.warnings?.length) return [];
     return [{
       eventId, externalId, lang, titleFr,
       status: entry.status,
@@ -49,6 +62,8 @@ export function summarize(rows) {
     ignoredDescriptions: rows.filter((row) => row.descriptionStatus === 'ignored_identical').length,
     warnings: rows.filter((row) => row.warnings).length,
     rescoreNeeded: rows.filter((row) => row.reason === 'rescore_needed').length,
+    // Descriptions retirées faute de description française (le titre reste servi).
+    rejectedDescriptions: rows.filter((row) => row.descriptionStatus === 'rejected').length,
   };
 }
 
@@ -66,6 +81,7 @@ export async function writeTranslationReport(rows, csvFile) {
       `- Descriptions identiques au français ignorées : ${summary.ignoredDescriptions}`,
       `- Signalements (rapport seulement) : ${summary.warnings}`,
       `- Fiches à rescorer (contenu source modifié) : ${summary.rescoreNeeded}`,
+      `- Descriptions retirées faute de description française : ${summary.rejectedDescriptions}`,
       reasons ? `\n| Raison | Langues |\n| --- | --- |\n${reasons}` : '',
       '',
     ].join('\n'), 'utf8');

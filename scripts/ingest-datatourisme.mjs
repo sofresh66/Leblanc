@@ -5,9 +5,10 @@ import pg from 'pg';
 import { createDatatourismeClient, DatatourismePageError } from './lib/datatourisme-client.mjs';
 import { normalizeDatatourismeEvent } from './lib/datatourisme-normalizer.mjs';
 import { carryRecordMismatch, contentFingerprint, validateTranslations } from './lib/translation-validator.mjs';
-import { loadTranslationOverrides, reportRows, writeTranslationReport } from './lib/translation-report.mjs';
+import { loadTranslationAllowlist, loadTranslationOverrides, reportRows, writeTranslationReport } from './lib/translation-report.mjs';
 
 const OVERRIDES_FILE = new URL('../data/translation-overrides.json', import.meta.url);
+const ALLOWLIST_FILE = new URL('../data/translation-allowlist.json', import.meta.url);
 const REPORT_FILE = new URL('../artifacts/translation-report.csv', import.meta.url);
 
 const SOURCE = 'datatourisme';
@@ -188,6 +189,7 @@ async function main() {
     throw new Error('DATABASE_URL_DIRECT et DATATOURISME_API_KEY requis');
   const api = createDatatourismeClient({ apiKey });
   const overrides = await loadTranslationOverrides(OVERRIDES_FILE);
+  const allowlist = await loadTranslationAllowlist(ALLOWLIST_FILE);
   const translationRows = [];
   const client = new pg.Client({
     connectionString: databaseUrl,
@@ -265,7 +267,7 @@ async function main() {
       for (const item of valid) {
         item.translationStatus = validateTranslations(
           { titleI18n: item.event.titleI18n, descriptionI18n: item.event.descriptionI18n },
-          { source: SOURCE, externalId: item.externalId, overrides },
+          { source: SOURCE, externalId: item.externalId, overrides, allowlist },
         );
       }
       counts.rejected += accepted.length - valid.length;

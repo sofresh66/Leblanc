@@ -53,6 +53,20 @@ describe('Historique des séances sur la fiche événement', () => {
     expect(screen.queryByText('details.fallbackNotice')).toBeNull();
   });
 
+  it('affiche « Description non disponible » quand aucune description n’est servie', async () => {
+    const repository = new MockEventsRepository();
+    const first = (await repository.listEvents({ lang: 'fr', limit: 1 })).items[0]!;
+    const detail = (await repository.getEventById(first.id, 'fr'))!;
+    const translations = { title_i18n: { fr: 'Moins de voiture, plus d’aventure !' }, description_i18n: { fr: '' } };
+    mockedUseEvent.mockReturnValue({
+      data: { ...detail, ...translations, ...resolveEventContent(translations, 'en') },
+      isLoading: false, isError: false, error: null, refetch: vi.fn(),
+    });
+    render(<HelmetProvider><MemoryRouter><EventPage /></MemoryRouter></HelmetProvider>);
+    expect(screen.getByText('details.noDescription')).toBeTruthy();
+    expect(screen.queryByText('details.fallbackNotice')).toBeNull();
+  });
+
   it('affiche la mention de repli quand la description retombe sur le français', async () => {
     const repository = new MockEventsRepository();
     const first = (await repository.listEvents({ lang: 'fr', limit: 1 })).items[0]!;

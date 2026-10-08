@@ -263,9 +263,13 @@ export const EventPage: React.FC = () => {
               {t('event.title', { ns: 'pages' })}
             </h2>
 
-            <div lang={event.descriptionLanguage} className="text-gray-700 whitespace-pre-line leading-loose text-base break-words [overflow-wrap:anywhere]">
-              {event.description}
-            </div>
+            {event.description.trim() ? (
+              <div lang={event.descriptionLanguage} className="text-gray-700 whitespace-pre-line leading-loose text-base break-words [overflow-wrap:anywhere]">
+                {event.description}
+              </div>
+            ) : (
+              <p className="text-gray-600">{t('details.noDescription', { ns: 'events' })}</p>
+            )}
 
             {website && (
               <div className="pt-4 border-t border-gray-100">

@@ -117,6 +117,7 @@ export interface EventsResource {
     occurrencePast: string;
     occurrenceFuture: string;
     fallbackNotice: string;
+    noDescription: string;
   };
   list: {
     loadMore: string;

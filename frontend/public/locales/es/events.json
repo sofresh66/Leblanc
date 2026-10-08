@@ -26,7 +26,8 @@
     "occurrencesTitle": "Todas las fechas",
     "occurrencePast": "Pasada",
     "occurrenceFuture": "Próxima",
-    "fallbackNotice": "Descripción disponible en {{language}}."
+    "fallbackNotice": "Descripción disponible en {{language}}.",
+    "noDescription": "Descripción no disponible"
   },
   "list": {
     "loadMore": "Cargar más eventos",

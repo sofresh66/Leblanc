@@ -26,7 +26,8 @@
     "occurrencesTitle": "Alle datums",
     "occurrencePast": "Voorbij",
     "occurrenceFuture": "Komend",
-    "fallbackNotice": "Beschrijving beschikbaar in het {{language}}."
+    "fallbackNotice": "Beschrijving beschikbaar in het {{language}}.",
+    "noDescription": "Beschrijving niet beschikbaar"
   },
   "list": {
     "loadMore": "Meer evenementen laden",

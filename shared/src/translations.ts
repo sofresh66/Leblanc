@@ -6,13 +6,15 @@ import type { EventI18nDescription, EventI18nTitle } from './types.js';
 const TranslationStatusEntrySchema = z.object({
   status: z.enum(['ok', 'rejected', 'machine']),
   titleStatus: z.enum(['ok', 'ignored_identical']).optional(),
-  descriptionStatus: z.enum(['ok', 'ignored_identical']).optional(),
+  // rejected : description non vérifiable (aucune description française de référence).
+  descriptionStatus: z.enum(['ok', 'ignored_identical', 'rejected']).optional(),
 });
 
 /**
  * Retire les traductions non validées avant la résolution de langue :
  * une langue rejetée perd titre et description, une traduction identique au
- * français est ignorée champ par champ. Le français n'est jamais retiré.
+ * français est ignorée champ par champ, une description rejetée seule est
+ * retirée. Le français n'est jamais retiré.
  */
 export function applyTranslationStatus(
   content: { title_i18n: EventI18nTitle; description_i18n: EventI18nDescription },
@@ -28,7 +30,8 @@ export function applyTranslationStatus(
     if (!language.success || language.data === 'fr' || !entry.success) continue;
     const lang = language.data;
     if (entry.data.status === 'rejected' || entry.data.titleStatus === 'ignored_identical') delete title_i18n[lang];
-    if (entry.data.status === 'rejected' || entry.data.descriptionStatus === 'ignored_identical') {
+    if (entry.data.status === 'rejected' || entry.data.descriptionStatus === 'ignored_identical'
+      || entry.data.descriptionStatus === 'rejected') {
       delete description_i18n[lang];
     }
   }

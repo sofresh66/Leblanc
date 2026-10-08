@@ -12,5 +12,12 @@
     "status": "ok",
     "reason": "manual_review_ok",
     "note": "Exposition « Histoire d’œufs, Histoire d’eux » : traductions relues, score bas dû à une traduction courte"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "a3d459d8-2437-3b91-adb2-065f576fcd5a",
+    "status": "ok",
+    "reason": "no_reference_reviewed",
+    "note": "Marché hebdomadaire : description française absente dans la source, traductions relues et conformes (marché sous les toiles colorées)"
   }
 ]

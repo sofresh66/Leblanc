@@ -8,12 +8,13 @@ import pg from 'pg';
 import {
   carryRecordMismatch, comparableStatus, contentFingerprint, validateTranslations,
 } from './lib/translation-validator.mjs';
-import { loadTranslationOverrides, reportRows, summarize, toCsv } from './lib/translation-report.mjs';
+import { loadTranslationAllowlist, loadTranslationOverrides, reportRows, summarize, toCsv } from './lib/translation-report.mjs';
 import fs from 'node:fs/promises';
 
 const SOURCE = 'datatourisme';
 const APPLY = process.argv.includes('--apply');
 const OVERRIDES_FILE = new URL('../data/translation-overrides.json', import.meta.url);
+const ALLOWLIST_FILE = new URL('../data/translation-allowlist.json', import.meta.url);
 const REPORT_FILE = fileURLToPath(new URL('../artifacts/translation-revalidation.csv', import.meta.url));
 
 const databaseUrl = process.env.DATABASE_URL_DIRECT;
@@ -21,6 +22,7 @@ if (!databaseUrl) throw new Error('DATABASE_URL_DIRECT est requis');
 console.error(`Base : ${new URL(databaseUrl).hostname} (${APPLY ? 'ÉCRITURE' : 'lecture seule'})`);
 
 const overrides = await loadTranslationOverrides(OVERRIDES_FILE);
+const allowlist = await loadTranslationAllowlist(ALLOWLIST_FILE);
 const client = new pg.Client({ connectionString: databaseUrl, connectionTimeoutMillis: 30000 });
 await client.connect();
 try {
@@ -35,7 +37,7 @@ try {
   for (const row of rows) {
     const { status: next, rescore } = carryRecordMismatch(validateTranslations(
       { titleI18n: row.title_i18n, descriptionI18n: row.description_i18n },
-      { source: SOURCE, externalId: row.external_id, overrides, checkedAt },
+      { source: SOURCE, externalId: row.external_id, overrides, allowlist, checkedAt },
     ), row.translation_status, contentFingerprint(row.title_i18n, row.description_i18n));
     report.push(...reportRows({ eventId: row.id, externalId: row.external_id, titleFr: row.title_i18n.fr }, next, { rescore })
       .map((line) => ({ ...line, eventStatus: row.status })));
@@ -50,6 +52,8 @@ try {
     changed: changes.length,
     ...summary,
     rejected: rejected.map(({ eventId, lang, reason, titleFr, eventStatus }) => ({ eventId, lang, reason, eventStatus, titleFr })),
+    descriptionRejected: report.filter((line) => line.descriptionStatus === 'rejected')
+      .map(({ eventId, lang, reason, titleFr, eventStatus }) => ({ eventId, lang, reason, eventStatus, titleFr })),
     ignoredTitlesByLang: countBy(report.filter((line) => line.titleStatus === 'ignored_identical'), 'lang'),
     ignoredDescriptionsByLang: countBy(report.filter((line) => line.descriptionStatus === 'ignored_identical'), 'lang'),
     warningsByType: countBy(report.flatMap((line) => line.warnings ? line.warnings.split('|').map((warning) => ({ warning })) : []), 'warning'),

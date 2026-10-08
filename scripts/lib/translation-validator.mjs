@@ -88,10 +88,13 @@ export function indexOverrides(overrides) {
  * présentes dans le titre ou la description.
  */
 export function validateTranslations({ titleI18n, descriptionI18n }, {
-  source, externalId, overrides = new Map(), checkedAt = new Date().toISOString(),
+  source, externalId, overrides = new Map(), allowlist = new Set(), checkedAt = new Date().toISOString(),
 } = {}) {
   const frTitle = titleI18n?.fr ?? '';
   const frDescription = descriptionI18n?.fr ?? '';
+  // Sans description française, aucune traduction ne peut être contrôlée : elles
+  // ne sont pas servies (no_reference), sauf fiche relue (liste blanche).
+  const noReference = !frDescription.trim() && !allowlist.has(`${source}|${externalId}`);
   const result = {};
   for (const lang of TRANSLATED_LANGUAGES) {
     const title = titleI18n?.[lang]?.trim() ?? '';
@@ -99,13 +102,18 @@ export function validateTranslations({ titleI18n, descriptionI18n }, {
     if (!title && !description) continue;
     const entry = { status: 'ok', checkedAt };
     if (title) entry.titleStatus = sameText(title, frTitle) ? 'ignored_identical' : 'ok';
-    if (description) entry.descriptionStatus = sameText(description, frDescription) ? 'ignored_identical' : 'ok';
+    if (description) {
+      entry.descriptionStatus = noReference ? 'rejected' : sameText(description, frDescription) ? 'ignored_identical' : 'ok';
+    }
 
     const override = overrides.get(`${source}|${externalId}|${lang}`);
     const detected = description && entry.descriptionStatus === 'ok' ? detectLanguage(description) : null;
     if (override) {
       entry.status = 'rejected';
       entry.reason = `override:${override.reason}`;
+    } else if (entry.descriptionStatus === 'rejected') {
+      // Seule la description est retirée ; le titre suit les règles habituelles.
+      entry.reason = 'no_reference';
     } else if (detected && detected !== lang) {
       entry.status = 'rejected';
       entry.reason = 'language_mismatch';

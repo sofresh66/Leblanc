@@ -53,7 +53,7 @@ try {
   const events = dbRows.map((row) => ({
     ...row, externalId: row.external_id, titleI18n: row.title_i18n, descriptionI18n: row.description_i18n,
     translationStatus: validateTranslations({ titleI18n: row.title_i18n, descriptionI18n: row.description_i18n },
-      { source: SOURCE, externalId: row.external_id, overrides, checkedAt }),
+      { source: SOURCE, externalId: row.external_id, overrides, allowlist, checkedAt }),
   }));
   const scores = await scoreTranslations(events, embed);
 
