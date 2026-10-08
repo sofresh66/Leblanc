@@ -28,5 +28,7 @@
     "label": "Suchen",
     "placeholder": "Titel, Ort oder Veranstaltungsort",
     "clear": "Suche löschen"
-  }
+  },
+  "toggle": "Filter",
+  "toggleCount": "Filter ({{count}})"
 }

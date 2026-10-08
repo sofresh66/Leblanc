@@ -12,6 +12,7 @@ import {
   type EventI18nTitle,
   type EventOccurrence,
   type SupportedLanguage,
+  type EventGeoPoint,
 } from '@leblanc/shared';
 
 export interface EventDbRow {
@@ -132,4 +133,28 @@ export function mapDbRowToEventDetail(
     ...baseEvent,
     occurrences,
   });
+}
+
+export type GeoDbRow = Pick<EventDbRow,
+  'id' | 'category' | 'title_i18n' | 'description_i18n' | 'translation_status' | 'city'
+  | 'latitude' | 'longitude' | 'starts_at' | 'ends_at' | 'timezone' | 'all_day'>;
+
+/** Point de carte : titre résolu avec les mêmes règles de langue que la liste. */
+export function mapDbRowToGeoPoint(row: GeoDbRow, lang: SupportedLanguage): EventGeoPoint {
+  const translations = applyTranslationStatus({
+    title_i18n: ensureObject<EventI18nTitle>(row.title_i18n),
+    description_i18n: ensureObject<EventI18nDescription>(row.description_i18n),
+  }, typeof row.translation_status === 'string' ? JSON.parse(row.translation_status) as unknown : row.translation_status);
+  return {
+    id: row.id,
+    lat: typeof row.latitude === 'string' ? parseFloat(row.latitude) : row.latitude,
+    lng: typeof row.longitude === 'string' ? parseFloat(row.longitude) : row.longitude,
+    category: row.category as EventCategory,
+    title: resolveEventContent(translations, lang).title,
+    city: row.city,
+    startDate: toIsoString(row.starts_at),
+    endDate: row.ends_at ? toIsoString(row.ends_at) : null,
+    timezone: row.timezone || DEFAULT_TIMEZONE,
+    allDay: row.all_day === true,
+  };
 }

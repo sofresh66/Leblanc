@@ -1,6 +1,7 @@
 import {
   ApiErrorSchema,
   CategoryCountSchema,
+  EventGeoResponseSchema,
   EventDetailSchema,
   EventListParamsSchema,
   EventListResponseSchema,
@@ -8,6 +9,7 @@ import {
   resolveEventContent,
   type CategoryCount,
   type EventDetail,
+  type EventGeoResponse,
   type EventListParams,
   type EventListParamsInput,
   type EventListResponse,
@@ -250,6 +252,17 @@ export class ApiEventsRepository implements EventsRepository {
       if (error instanceof ApiError && error.status === 404) return null;
       throw error;
     }
+  }
+
+  /** GET /api/v1/events/geo : tous les événements visibles pour la carte. */
+  async listEventGeo(params: Omit<EventListParamsInput, 'cursor' | 'limit'>): Promise<EventGeoResponse> {
+    const parsed = EventListParamsSchema.parse({ ...params, limit: 1 });
+    const searchParams = serializeEventListParams(parsed);
+    searchParams.delete('limit');
+    const payload = await getJson('/v1/events/geo', searchParams);
+    const response = EventGeoResponseSchema.safeParse(payload);
+    if (!response.success) throw invalidResponseError('/v1/events/geo', response.error);
+    return response.data;
   }
 
   /** GET /api/v1/categories : catégories avec leur nombre d'événements visibles. */

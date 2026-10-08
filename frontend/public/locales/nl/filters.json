@@ -28,5 +28,7 @@
     "label": "Zoeken",
     "placeholder": "Titel, plaats of locatie",
     "clear": "Zoekopdracht wissen"
-  }
+  },
+  "toggle": "Filters",
+  "toggleCount": "Filters ({{count}})"
 }

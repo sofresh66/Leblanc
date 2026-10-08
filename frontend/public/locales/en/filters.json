@@ -28,5 +28,7 @@
     "label": "Search",
     "placeholder": "Title, town or venue",
     "clear": "Clear search"
-  }
+  },
+  "toggle": "Filters",
+  "toggleCount": "Filters ({{count}})"
 }

@@ -47,6 +47,15 @@ export function useEvents(params: EventListParamsInput) {
   });
 }
 
+/** Points de la carte : tous les événements visibles, sans pagination. */
+export function useEventsGeo(params: Omit<EventListParamsInput, 'cursor' | 'limit'>) {
+  const normalizedKey = normalizeEventListParams({ ...params, limit: 0 });
+  return useQuery({
+    queryKey: ['events', 'geo', normalizedKey],
+    queryFn: () => eventsRepository.listEventGeo(params),
+  });
+}
+
 export function useInfiniteEvents(params: Omit<EventListParamsInput, 'cursor'>) {
   const normalizedKey = normalizeEventListParams(params);
   const queryClient = useQueryClient();

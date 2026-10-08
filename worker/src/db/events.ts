@@ -1,13 +1,16 @@
 import {
   LE_BLANC_CENTER,
   type Event,
+  type EventGeoPoint,
   type EventDetail,
   type SupportedLanguage,
 } from '@leblanc/shared';
 import {
   mapDbRowToEvent,
   mapDbRowToEventDetail,
+  mapDbRowToGeoPoint,
   type EventDbRow,
+  type GeoDbRow,
   type OccurrenceDbRow,
 } from '../mappers/event.js';
 import { encodeCursor } from '../validation/cursor.js';
@@ -19,6 +22,88 @@ export interface EventListDbResult {
   nextCursor: string | null;
 }
 
+/** Borne de sécurité de l'endpoint carte (environ 125 événements aujourd'hui). */
+export const EVENT_GEO_MAX = 1000;
+
+interface EventVisibilitySql {
+  params: unknown[];
+  /** Sous-requête latérale « o » : première occurrence qui chevauche la période. */
+  lateral: string;
+  /** Conditions sur « e » (statut, rayon, catégorie, ville, tarif, recherche). */
+  where: string;
+  asOf: string;
+}
+
+/**
+ * Conditions de visibilité communes à la liste et à la carte. $1/$2 : centre,
+ * $3 : date de référence (asOf), $4 : début de période, $5 : rayon.
+ */
+function eventVisibilitySql(query: ParsedEventListQuery, nowIso: string): EventVisibilitySql {
+  // Date de référence fixée à la première page puis reprise du curseur : now()
+  // change entre deux pages et casserait l'ordre (doublons ou trous).
+  const asOf = query.decodedCursor?.a ?? nowIso;
+  const params: unknown[] = [
+    LE_BLANC_CENTER.lng, // $1
+    LE_BLANC_CENTER.lat, // $2
+    asOf,                // $3
+    query.from ? query.from : asOf, // $4
+    query.maxDistance ? Math.min(query.maxDistance, 20000) : 20000, // $5
+  ];
+
+  let sqlTo = '';
+  if (query.to) {
+    params.push(query.to);
+    sqlTo = `AND o1.starts_at ${query.toExclusive ? '<' : '<='} $${params.length}::timestamptz`;
+  }
+
+  const conditions: string[] = [];
+  if (query.categories && query.categories.length > 0) {
+    params.push(query.categories);
+    conditions.push(`AND e.category = ANY($${params.length})`);
+  }
+  if (query.city) {
+    params.push(query.city);
+    conditions.push(`AND LOWER(e.city) = LOWER($${params.length})`);
+  }
+  if (query.isFree === null) {
+    conditions.push('AND e.is_free IS NULL');
+  } else if (query.isFree !== undefined) {
+    params.push(query.isFree);
+    conditions.push(`AND e.is_free = $${params.length}`);
+  }
+  if (query.q) {
+    params.push(`%${escapeLikePattern(query.q)}%`);
+    const pattern = `unaccent(lower($${params.length}))`;
+    conditions.push(`AND (
+      EXISTS (SELECT 1 FROM jsonb_each_text(e.title_i18n) t WHERE unaccent(lower(t.value)) LIKE ${pattern} ESCAPE '\\')
+      OR unaccent(lower(coalesce(e.city, ''))) LIKE ${pattern} ESCAPE '\\'
+      OR unaccent(lower(coalesce(e.venue_name, ''))) LIKE ${pattern} ESCAPE '\\'
+    )`);
+  }
+
+  const lateral = `
+    CROSS JOIN LATERAL (
+      -- Chevauchement avec la période : une exposition en cours reste visible.
+      -- Clé de tri : début de l'occurrence, ramené au début de la période
+      -- (asOf ou from) pour qu'un événement en cours ne passe pas en tête.
+      SELECT o1.starts_at, o1.ends_at, o1.timezone, o1.all_day,
+        GREATEST(o1.starts_at, GREATEST($4::timestamptz, $3::timestamptz)) AS sort_at
+      FROM event_occurrences o1
+      WHERE o1.event_id = e.id
+        AND o1.status = 'scheduled'
+        AND COALESCE(o1.ends_at, o1.starts_at) >= GREATEST($4::timestamptz, $3::timestamptz)
+        AND o1.starts_at <= ($3::timestamptz + interval '90 days')
+        ${sqlTo}
+      ORDER BY o1.starts_at ASC, o1.id ASC
+      LIMIT 1
+    ) o`;
+  const where = `
+    WHERE e.status = 'published'
+      AND ST_DWithin(e.location, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $5)
+      ${conditions.join('\n      ')}`;
+  return { params, lateral, where, asOf };
+}
+
 /**
  * Récupère la liste paginée et filtrée des événements depuis Neon PostgreSQL.
  */
@@ -27,60 +112,7 @@ export async function listEventsFromDb(
   query: ParsedEventListQuery,
   nowIso: string
 ): Promise<EventListDbResult> {
-  const centerLng = LE_BLANC_CENTER.lng; // 1.0622
-  const centerLat = LE_BLANC_CENTER.lat; // 46.6339
-
-  // Date de référence fixée à la première page puis reprise du curseur : now()
-  // change entre deux pages et casserait l'ordre (doublons ou trous).
-  const asOf = query.decodedCursor?.a ?? nowIso;
-  const params: unknown[] = [
-    centerLng, // $1
-    centerLat, // $2
-    asOf,      // $3
-  ];
-
-  const startTime = query.from ? query.from : asOf;
-  params.push(startTime); // $4
-
-  const maxDistance = query.maxDistance ? Math.min(query.maxDistance, 20000) : 20000;
-  params.push(maxDistance); // $5
-
-  let sqlTo = '';
-  if (query.to) {
-    params.push(query.to);
-    sqlTo = `AND o1.starts_at ${query.toExclusive ? '<' : '<='} $${params.length}::timestamptz`;
-  }
-
-  let sqlCat = '';
-  if (query.categories && query.categories.length > 0) {
-    params.push(query.categories);
-    sqlCat = `AND e.category = ANY($${params.length})`;
-  }
-
-  let sqlCity = '';
-  if (query.city) {
-    params.push(query.city);
-    sqlCity = `AND LOWER(e.city) = LOWER($${params.length})`;
-  }
-
-  let sqlFree = '';
-  if (query.isFree === null) {
-    sqlFree = 'AND e.is_free IS NULL';
-  } else if (query.isFree !== undefined) {
-    params.push(query.isFree);
-    sqlFree = `AND e.is_free = $${params.length}`;
-  }
-
-  let sqlSearch = '';
-  if (query.q) {
-    params.push(`%${escapeLikePattern(query.q)}%`);
-    const pattern = `unaccent(lower($${params.length}))`;
-    sqlSearch = `AND (
-      EXISTS (SELECT 1 FROM jsonb_each_text(e.title_i18n) t WHERE unaccent(lower(t.value)) LIKE ${pattern} ESCAPE '\\')
-      OR unaccent(lower(coalesce(e.city, ''))) LIKE ${pattern} ESCAPE '\\'
-      OR unaccent(lower(coalesce(e.venue_name, ''))) LIKE ${pattern} ESCAPE '\\'
-    )`;
-  }
+  const { params, lateral, where, asOf } = eventVisibilitySql(query, nowIso);
 
   let sqlCursor = '';
   if (query.decodedCursor) {
@@ -91,8 +123,7 @@ export async function listEventsFromDb(
     sqlCursor = `AND ((o.sort_at > $${dateParamIndex}::timestamptz) OR (o.sort_at = $${dateParamIndex}::timestamptz AND e.id > $${idParamIndex}::uuid))`;
   }
 
-  const limitPlusOne = query.limit + 1;
-  params.push(limitPlusOne);
+  params.push(query.limit + 1);
   const sqlLimit = `LIMIT $${params.length}`;
 
   const sql = `
@@ -122,27 +153,8 @@ export async function listEventsFromDb(
       to_char(o.sort_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS cursor_date,
       ROUND(ST_Distance(e.location, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography))::integer AS distance
     FROM events e
-    CROSS JOIN LATERAL (
-      -- Chevauchement avec la période : une exposition en cours reste visible.
-      -- Clé de tri : début de l'occurrence, ramené au début de la période
-      -- (asOf ou from) pour qu'un événement en cours ne passe pas en tête.
-      SELECT o1.starts_at, o1.ends_at, o1.timezone, o1.all_day,
-        GREATEST(o1.starts_at, GREATEST($4::timestamptz, $3::timestamptz)) AS sort_at
-      FROM event_occurrences o1
-      WHERE o1.event_id = e.id
-        AND o1.status = 'scheduled'
-        AND COALESCE(o1.ends_at, o1.starts_at) >= GREATEST($4::timestamptz, $3::timestamptz)
-        AND o1.starts_at <= ($3::timestamptz + interval '90 days')
-        ${sqlTo}
-      ORDER BY o1.starts_at ASC, o1.id ASC
-      LIMIT 1
-    ) o
-    WHERE e.status = 'published'
-      AND ST_DWithin(e.location, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $5)
-      ${sqlCat}
-      ${sqlCity}
-      ${sqlFree}
-      ${sqlSearch}
+    ${lateral}
+    ${where}
       ${sqlCursor}
     ORDER BY o.sort_at ASC, e.id ASC
     ${sqlLimit};
@@ -170,6 +182,31 @@ export async function listEventsFromDb(
     items,
     nextCursor,
   };
+}
+
+/**
+ * Tous les événements visibles (mêmes filtres que la liste, sans pagination),
+ * réduits aux champs utiles à la carte. Titre résolu comme dans la liste.
+ */
+export async function listEventGeoFromDb(
+  databaseUrl: string,
+  query: ParsedEventListQuery,
+  nowIso: string
+): Promise<{ items: EventGeoPoint[]; truncated: boolean }> {
+  const { params, lateral, where } = eventVisibilitySql({ ...query, decodedCursor: undefined }, nowIso);
+  params.push(EVENT_GEO_MAX + 1);
+  const sql = `
+    SELECT e.id, e.category, e.title_i18n, e.description_i18n, e.translation_status, e.city,
+      e.latitude, e.longitude, o.starts_at, o.ends_at, o.timezone, o.all_day
+    FROM events e
+    ${lateral}
+    ${where}
+    ORDER BY o.sort_at ASC, e.id ASC
+    LIMIT $${params.length};
+  `;
+  const rows = await executeQuery<GeoDbRow>(databaseUrl, sql, params);
+  const items = rows.slice(0, EVENT_GEO_MAX).map((row) => mapDbRowToGeoPoint(row, query.lang));
+  return { items, truncated: rows.length > EVENT_GEO_MAX };
 }
 
 /**

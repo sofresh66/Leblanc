@@ -51,5 +51,7 @@
     "sources": { "datatourisme_places": "DATAtourisme", "openstreetmap": "OpenStreetMap", "manuel": "Redactionele invoer", "other": "andere bron" },
     "noDescription": "Beschrijving niet beschikbaar", "addressUnknown": "Adres onbekend", "addressNotMapped": "Adres niet op de kaart gevonden",
     "fallbackNotice": "Beschrijving beschikbaar in het {{language}}.", "mapLoading": "Kaart wordt geladen…"
-  }
+  },
+  "view": { "label": "Weergave", "list": "Lijst", "map": "Kaart" },
+  "map": { "noLocation_other": "{{count}} adressen zonder positie op de kaart:", "noLocation_one": "{{count}} adres zonder positie op de kaart:" }
 }

@@ -15,9 +15,9 @@
     "title": "Event Map",
     "subtitle": "Easily locate activities and festivals around Le Blanc (20 km radius)",
     "placeholder": "Interactive map displaying upcoming events.",
-    "limitBanner": "{{count}} events displayed (map limit). Refine your filters to see the others.",
-    "limitBannerWithTotal": "{{count}} of {{total}} events displayed. Refine your filters to see the others.",
     "results": "{{count}} events on the map",
+    "listLink": "View these results as a list",
+    "truncated": "Only the first {{count}} events are shown on the map.",
     "showOnMap": "Show on map",
     "selected": "Selected on the map",
     "selectEvent": "Show {{title}} on the map"

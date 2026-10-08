@@ -90,6 +90,26 @@ export type EventListParamsInput = z.input<typeof EventListParamsSchema>;
 // Output = ce que le repository reçoit après parsing (limit garanti)
 export type EventListParams = z.output<typeof EventListParamsSchema>;
 
+// GET /v1/events/geo : point léger pour la carte (tous les événements visibles).
+export const EventGeoPointSchema = z.object({
+  id: z.string().uuid(),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  category: EventCategorySchema,
+  title: z.string().min(1),
+  city: z.string().nullable(),
+  startDate: z.string().datetime({ offset: true }),
+  endDate: z.string().datetime({ offset: true }).nullable(),
+  timezone: z.string().default(DEFAULT_TIMEZONE),
+  allDay: z.boolean(),
+});
+
+export const EventGeoResponseSchema = z.object({
+  items: z.array(EventGeoPointSchema),
+  truncated: z.boolean(),
+  generatedAt: z.string(),
+});
+
 // GET /v1/categories : nombre d'événements visibles par catégorie.
 export const CategoryCountSchema = z.object({
   key: EventCategorySchema,

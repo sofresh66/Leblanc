@@ -77,7 +77,7 @@ export interface PagesResource {
     viewAll: string;
     viewMap: string;
   };
-  map: { title: string; subtitle?: string; placeholder: string; limitBanner: string };
+  map: { title: string; subtitle?: string; placeholder: string; results: string; listLink: string; truncated: string; showOnMap: string; selected: string; selectEvent: string };
   list: { title: string; subtitle?: string; placeholder: string };
   event: { title: string; placeholder: string; notFound: string };
   about: { title: string; description: string };
@@ -128,6 +128,8 @@ export interface EventsResource {
 
 export interface FiltersResource {
   title: string;
+  toggle: string;
+  toggleCount: string;
   dates: {
     label: string;
     from: string;
@@ -235,6 +237,8 @@ export interface PlacesResource {
     fallbackNotice: string;
     mapLoading: string;
   };
+  view: { label: string; list: string; map: string };
+  map: { noLocation_one: string; noLocation_other: string };
 }
 
 declare module 'react-i18next' {

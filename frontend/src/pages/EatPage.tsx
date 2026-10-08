@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { Suspense, lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { PageSeo } from '../components/PageSeo';
@@ -7,7 +7,12 @@ import { PlaceFilters } from '../components/places/PlaceFilters';
 import { PlaceList } from '../components/places/PlaceList';
 import { readPlaceFilterParams, writePlaceFilterParams } from '../components/places/placeFilterParams';
 import { usePlaceCategories } from '../hooks/usePlaceCategories';
+import { usePlacesForMap } from '../hooks/usePlaces';
+import { ErrorState } from '../components/common/ErrorState';
 import { DEFAULT_LANGUAGE, isSupportedLanguage } from '../i18n/languages';
+
+// Leaflet n'est chargé que si la vue carte est demandée.
+const PlacesMapView = lazy(() => import('../components/places/PlacesMapView'));
 
 export function EatPage() {
   const { t, i18n } = useTranslation('places');
@@ -27,6 +32,16 @@ export function EatPage() {
       ...(values.maxDistanceKm < 20 ? { maxDistance: values.maxDistanceKm * 1000 } : {}),
     };
   }, [lang, searchParams]);
+
+  const view = searchParams.get('view') === 'map' ? 'map' : 'list';
+  const mapPlaces = usePlacesForMap(filters, view === 'map');
+  const setView = (next: 'list' | 'map') => {
+    const params = new URLSearchParams(searchParams);
+    if (next === 'map') params.set('view', 'map');
+    else params.delete('view');
+    params.delete('cursor');
+    setSearchParams(params, { replace: true });
+  };
 
   const resetFilters = () => {
     setSearchParams(writePlaceFilterParams(searchParams, {
@@ -56,7 +71,30 @@ export function EatPage() {
             clearLabel={t('filters.search.clear')}
             resetParams={['cursor']}
           />
-          <PlaceList filters={filters} onResetFilters={resetFilters} />
+          <div role="group" aria-label={t('view.label')} className="mb-6 inline-flex rounded-lg border border-gray-200 bg-white p-1">
+            {(['list', 'map'] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={view === option}
+                onClick={() => setView(option)}
+                className={`min-h-10 rounded-md px-4 text-sm font-semibold ${view === option ? 'bg-brenne-700 text-white' : 'text-brenne-900 hover:bg-brenne-50'}`}
+              >
+                {t(`view.${option}`)}
+              </button>
+            ))}
+          </div>
+          {view === 'list' ? (
+            <PlaceList filters={filters} onResetFilters={resetFilters} />
+          ) : mapPlaces.isError ? (
+            <ErrorState error={mapPlaces.error} onRetry={() => void mapPlaces.refetch()} />
+          ) : mapPlaces.data ? (
+            <Suspense fallback={<div role="status" aria-busy="true" className="h-[70vh] rounded-2xl bg-brenne-100 animate-pulse">{t('detail.mapLoading')}</div>}>
+              <PlacesMapView places={mapPlaces.data} lang={lang} />
+            </Suspense>
+          ) : (
+            <div role="status" aria-busy="true" className="h-[70vh] rounded-2xl bg-brenne-100 animate-pulse">{t('detail.mapLoading')}</div>
+          )}
         </section>
       </div>
     </div>

@@ -78,7 +78,13 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
   });
 
   const formId = useId();
+  const categoryId = `${formId}-category`;
+  const distanceId = `${formId}-distance`;
   const watchedDistance = watch('maxDistanceKm', 20);
+  const initial = getInitialValues();
+  const activeFilterCount = [
+    initial.from, initial.to, initial.category, initial.priceType !== 'all', initial.maxDistanceKm < 20,
+  ].filter(Boolean).length;
 
   // Emit filter params to parent
   const applyFilters = (data: FilterFormValues) => {
@@ -164,24 +170,19 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
 
   return (
     <div className={`bg-white rounded-2xl border border-brenne-900/5 shadow-md p-5 sm:p-6 ${className}`}>
-      {/* Mobile Header Toggle */}
-      <div className="flex items-center justify-between gap-3 lg:hidden mb-2">
-        <h2 className="min-w-0 flex-1 [overflow-wrap:anywhere] font-display text-2xl font-bold text-brenne-950 flex items-center gap-2">
-          <svg className="w-5 h-5 shrink-0 text-brenne-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          {t('title', { ns: 'filters' })}
-        </h2>
-        <button
-          type="button"
-          onClick={() => setIsOpenMobile(!isOpenMobile)}
-          className="max-w-[45%] shrink-0 break-words text-sm font-semibold text-brenne-700 hover:text-brenne-900 min-h-11 py-2 px-3 rounded-lg bg-brenne-50"
-          aria-expanded={isOpenMobile}
-          aria-controls={formId}
-        >
-          {isOpenMobile ? t('actions.close', { ns: 'common' }) : t('title', { ns: 'filters' })}
-        </button>
-      </div>
+      {/* Mobile : un seul bouton pleine largeur ouvre le tiroir des filtres. */}
+      <button
+        type="button"
+        onClick={() => setIsOpenMobile(!isOpenMobile)}
+        className={`lg:hidden w-full min-h-12 flex items-center justify-center gap-2 rounded-lg bg-brenne-50 px-4 text-sm font-semibold text-brenne-800 hover:text-brenne-950 ${isOpenMobile ? 'mb-4' : ''}`}
+        aria-expanded={isOpenMobile}
+        aria-controls={formId}
+      >
+        <svg className="w-5 h-5 shrink-0 text-brenne-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        {activeFilterCount > 0 ? t('toggleCount', { ns: 'filters', count: activeFilterCount }) : t('toggle', { ns: 'filters' })}
+      </button>
 
       <form
         id={formId}
@@ -226,11 +227,11 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
 
         {/* Categories */}
         <div>
-          <label htmlFor="category-select" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+          <label htmlFor={categoryId} className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
             {t('categories.label', { ns: 'filters' })}
           </label>
           <select
-            id="category-select"
+            id={categoryId}
             {...register('category')}
             className="w-full min-h-11 text-sm rounded-lg border border-gray-300 bg-sable-50 focus:border-brenne-700 py-2 px-3"
           >
@@ -274,7 +275,7 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
         {/* Distance Slider */}
         <div>
           <div className="flex justify-between items-center mb-1.5">
-            <label htmlFor="distance-range" className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
+            <label htmlFor={distanceId} className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
               {t('distance.label', { ns: 'filters' })}
             </label>
             <span className="text-xs font-bold text-brenne-700">
@@ -286,7 +287,7 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
             name="maxDistanceKm"
             render={({ field }) => (
               <input
-                id="distance-range"
+                id={distanceId}
                 type="range"
                 min="1"
                 max="20"

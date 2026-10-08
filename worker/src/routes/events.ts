@@ -3,7 +3,7 @@ import {
   type EventListResponse,
 } from '@leblanc/shared';
 import { z } from 'zod';
-import { getEventByIdFromDb, listEventsFromDb } from '../db/events.js';
+import { getEventByIdFromDb, listEventGeoFromDb, listEventsFromDb } from '../db/events.js';
 import type { Env } from '../env.js';
 import {
   errorResponse,
@@ -47,6 +47,24 @@ export async function handleListEvents(
   return jsonResponse(request, env, responsePayload, {
     cacheProfile: 'eventsList',
   });
+}
+
+/** GET /api/v1/events/geo : tous les événements visibles, champs réduits pour la carte. */
+export async function handleEventGeo(
+  request: Request,
+  env: Env | undefined,
+  nowIso: string,
+  requestId?: string
+): Promise<Response> {
+  let query;
+  try {
+    query = parseEventListQuery(new URL(request.url), nowIso);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Paramètres de requête invalides';
+    return validationErrorResponse(request, env, message, requestId);
+  }
+  const { items, truncated } = await listEventGeoFromDb(env?.DATABASE_URL || '', query, nowIso);
+  return jsonResponse(request, env, { items, truncated, generatedAt: nowIso }, { cacheProfile: 'eventsGeo' });
 }
 
 export async function handleGetEventById(

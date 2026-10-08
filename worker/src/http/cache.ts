@@ -4,6 +4,8 @@
 export const CACHE_PROFILES = {
   /** Liste des événements (courte durée, rafraîchissement régulier) */
   eventsList: 'public, max-age=30, s-maxage=60, stale-while-revalidate=120',
+  // Carte : données mises à jour une fois par nuit.
+  eventsGeo: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=600',
 
   /** Détail d'un événement */
   eventDetail: 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',

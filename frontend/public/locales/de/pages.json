@@ -15,9 +15,9 @@
     "title": "Veranstaltungskarte",
     "subtitle": "Finden Sie Aktivitäten und Feste im 20-km-Umkreis",
     "placeholder": "Interaktive Karte der aktuellen Veranstaltungen.",
-    "limitBanner": "{{count}} Veranstaltungen angezeigt (Kartenlimit). Grenze die Filter ein, um weitere zu sehen.",
-    "limitBannerWithTotal": "{{count}} von {{total}} Veranstaltungen angezeigt. Grenze die Filter ein, um weitere zu sehen.",
     "results": "{{count}} Veranstaltungen auf der Karte",
+    "listLink": "Diese Ergebnisse als Liste anzeigen",
+    "truncated": "Auf der Karte werden nur die ersten {{count}} Veranstaltungen angezeigt.",
     "showOnMap": "Auf der Karte zeigen",
     "selected": "Auf der Karte ausgewählt",
     "selectEvent": "{{title}} auf der Karte anzeigen"

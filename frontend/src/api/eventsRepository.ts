@@ -8,6 +8,7 @@ import {
   SEARCH_RADIUS_METERS,
   type CategoryCount,
   type CursorPayload,
+  type EventGeoResponse,
   type Event,
   type EventDetail,
   type EventListParamsInput,
@@ -19,6 +20,8 @@ import rawEventsData from './__mocks__/events.json';
 export interface EventsRepository {
   listEvents(params: EventListParamsInput): Promise<EventListResponse>;
   getEventById(id: string, lang: string): Promise<EventDetail | null>;
+  /** Tous les événements visibles, réduits aux champs utiles à la carte. */
+  listEventGeo(params: Omit<EventListParamsInput, 'cursor' | 'limit'>): Promise<EventGeoResponse>;
   listCategories(): Promise<CategoryCount[]>;
   listCities(): Promise<string[]>;
 }
@@ -233,6 +236,21 @@ export class MockEventsRepository implements EventsRepository {
         },
       ],
     };
+  }
+
+  async listEventGeo(params: Omit<EventListParamsInput, 'cursor' | 'limit'>): Promise<EventGeoResponse> {
+    const items: EventGeoResponse['items'] = [];
+    let cursor: string | null = null;
+    do {
+      const page: EventListResponse = await this.listEvents({ ...params, limit: 50, ...(cursor ? { cursor } : {}) });
+      items.push(...page.items.map((event) => ({
+        id: event.id, lat: event.latitude, lng: event.longitude, category: event.category, title: event.title,
+        city: event.city, startDate: event.startDate, endDate: event.endDate, timezone: event.timezone,
+        allDay: event.allDay ?? false,
+      })));
+      cursor = page.nextCursor;
+    } while (cursor);
+    return { items, truncated: false, generatedAt: new Date().toISOString() };
   }
 
   async listCategories(): Promise<CategoryCount[]> {

@@ -61,7 +61,7 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
     await expect(page.locator('h1')).toContainText('Agenda complet des événements');
 
     // Sélectionner la catégorie "culture"
-    const categorySelect = page.locator('#category-select');
+    const categorySelect = page.getByLabel('Catégories');
     await categorySelect.selectOption('culture');
 
     // Appliquer les filtres
@@ -89,7 +89,7 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
     await freeRadio.check({ force: true });
 
     // Régler le curseur de distance à 10 km
-    const distanceRange = page.locator('#distance-range');
+    const distanceRange = page.getByLabel('Rayon de recherche');
     await distanceRange.fill('10');
 
     await page.getByRole('button', { name: 'Appliquer' }).click();
@@ -154,7 +154,7 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
     const mapContainer = page.locator('.leaflet-container');
     await expect(mapContainer).toBeVisible();
 
-    // Vérifier la présence des marqueurs
+    // Vérifier la présence des marqueurs (individuels ou regroupés)
     const marker = page.locator('.leaflet-marker-icon').first();
     await expect(marker).toBeVisible();
   });
@@ -163,7 +163,8 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
     await page.route('**/tile.openstreetmap.org/**', (route) => route.abort());
 
     await page.goto('/fr/carte');
-    const marker = page.locator('.leaflet-marker-icon').first();
+    // Un marqueur individuel (hors groupe) ouvre directement sa popup.
+    const marker = page.locator('.custom-event-marker').first();
     await expect(marker).toBeVisible();
     await marker.click();
 

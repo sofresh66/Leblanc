@@ -15,9 +15,9 @@
     "title": "Mapa de eventos",
     "subtitle": "Encuentre fácilmente actividades y festivales alrededor de Le Blanc",
     "placeholder": "Mapa interactivo con los eventos actuales.",
-    "limitBanner": "{{count}} eventos mostrados (límite del mapa). Ajusta los filtros para ver los demás.",
-    "limitBannerWithTotal": "{{count}} de {{total}} eventos mostrados. Ajusta los filtros para ver los demás.",
     "results": "{{count}} eventos en el mapa",
+    "listLink": "Ver estos resultados en lista",
+    "truncated": "Solo se muestran en el mapa los {{count}} primeros eventos.",
     "showOnMap": "Ver en el mapa",
     "selected": "Seleccionado en el mapa",
     "selectEvent": "Mostrar {{title}} en el mapa"

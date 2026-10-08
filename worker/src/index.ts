@@ -9,7 +9,7 @@ import {
 } from './http/responses.js';
 import { handleCategories } from './routes/categories.js';
 import { handleCities } from './routes/cities.js';
-import { handleGetEventById, handleListEvents } from './routes/events.js';
+import { handleEventGeo, handleGetEventById, handleListEvents } from './routes/events.js';
 import { handleHealth } from './routes/health.js';
 import { handleGetPlaceById, handleListPlaces, handlePlaceCategories } from './routes/places.js';
 
@@ -31,12 +31,13 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
     const isCategories = pathname === '/api/v1/categories';
     const isCities = pathname === '/api/v1/cities';
     const isEventsList = pathname === '/api/v1/events';
-    const isEventDetail = pathname.startsWith('/api/v1/events/') && pathname.split('/').length === 5;
+    const isEventGeo = pathname === '/api/v1/events/geo';
+    const isEventDetail = pathname.startsWith('/api/v1/events/') && pathname.split('/').length === 5 && !isEventGeo;
     const isPlacesList = pathname === '/api/v1/places';
     const isPlaceCategories = pathname === '/api/v1/places/categories';
     const isPlaceDetail = pathname.startsWith('/api/v1/places/') && pathname.split('/').length === 5 && !isPlaceCategories;
 
-    const isKnownRoute = isHealth || isCategories || isCities || isEventsList || isEventDetail ||
+    const isKnownRoute = isHealth || isCategories || isCities || isEventsList || isEventGeo || isEventDetail ||
       isPlacesList || isPlaceCategories || isPlaceDetail;
 
     if (!isKnownRoute) {
@@ -66,6 +67,8 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
       response = await handleCities(request, env, nowIso);
     } else if (isEventsList) {
       response = await handleListEvents(request, env, nowIso, requestId);
+    } else if (isEventGeo) {
+      response = await handleEventGeo(request, env, nowIso, requestId);
     } else if (isEventDetail) {
       const id = pathname.slice('/api/v1/events/'.length);
       response = await handleGetEventById(request, env, id, nowIso, requestId);

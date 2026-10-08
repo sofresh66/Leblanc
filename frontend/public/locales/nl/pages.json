@@ -15,9 +15,9 @@
     "title": "Evenementenkaart",
     "subtitle": "Vind gemakkelijk activiteiten en feesten rond Le Blanc",
     "placeholder": "Interactieve kaart met actuele evenementen.",
-    "limitBanner": "{{count}} evenementen weergegeven (kaartlimiet). Verfijn de filters om de andere te zien.",
-    "limitBannerWithTotal": "{{count}} van {{total}} evenementen weergegeven. Verfijn de filters om de andere te zien.",
     "results": "{{count}} evenementen op de kaart",
+    "listLink": "Deze resultaten als lijst bekijken",
+    "truncated": "Alleen de eerste {{count}} evenementen worden op de kaart getoond.",
     "showOnMap": "Toon op de kaart",
     "selected": "Geselecteerd op de kaart",
     "selectEvent": "Toon {{title}} op de kaart"

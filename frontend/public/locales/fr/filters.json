@@ -28,5 +28,7 @@
     "label": "Rechercher",
     "placeholder": "Titre, ville ou lieu",
     "clear": "Effacer la recherche"
-  }
+  },
+  "toggle": "Filtres",
+  "toggleCount": "Filtres ({{count}})"
 }

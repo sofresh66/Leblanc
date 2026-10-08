@@ -141,3 +141,39 @@ describe('Curseur stable (asOf)', () => {
     expect(page3.nextCursor).toBeNull();
   });
 });
+
+describe('GET /api/v1/events/geo', () => {
+  const env = { DATABASE_URL: 'db', ALLOWED_ORIGINS: '' };
+  const geoRow = (id: string) => ({
+    id, category: 'culture', title_i18n: { fr: `Titre ${id.slice(-1)}`, de: 'Falsch' }, description_i18n: { fr: '' },
+    translation_status: { de: { status: 'rejected' } }, city: 'Le Blanc', latitude: '46.63', longitude: 1.08,
+    starts_at: '2026-10-12T08:00:00.000Z', ends_at: null, timezone: 'Europe/Paris', all_day: true,
+  });
+
+  it('renvoie tous les points visibles avec les filtres de la liste, sans pagination', async () => {
+    executeQuery.mockResolvedValueOnce(ids.map(geoRow));
+    const response = await handleRequest(new Request('https://api.example.test/api/v1/events/geo?category=culture&q=concert&isFree=unknown&lang=de'), env);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Cache-Control')).toContain('s-maxage=3600');
+    const body = await response.json() as { items: { id: string; lat: number; title: string; allDay: boolean }[]; truncated: boolean };
+    expect(body.truncated).toBe(false);
+    expect(body.items).toHaveLength(6);
+    expect(body.items[0]).toMatchObject({ id: ids[0], lat: 46.63, title: 'Titre 1', allDay: true });
+    const [, sql, params] = executeQuery.mock.calls[0] as [string, string, unknown[]];
+    expect(sql).toContain('AND e.category = ANY(');
+    expect(sql).toContain('AND e.is_free IS NULL');
+    expect(sql).toContain('COALESCE(o1.ends_at, o1.starts_at) >=');
+    expect(sql).not.toContain('o.sort_at >');
+    expect(params[params.length - 1]).toBe(1001);
+  });
+
+  it('signale la troncature au-delà de 1 000 points et laisse la fiche détail intacte', async () => {
+    executeQuery.mockResolvedValueOnce(Array.from({ length: 1001 }, () => geoRow(ids[0] ?? '')));
+    const geo = await handleRequest(new Request('https://api.example.test/api/v1/events/geo'), env);
+    const body = await geo.json() as { items: unknown[]; truncated: boolean };
+    expect(body.items).toHaveLength(1000);
+    expect(body.truncated).toBe(true);
+    const detail = await handleRequest(new Request('https://api.example.test/api/v1/events/not-a-uuid'), env);
+    expect(detail.status).toBe(400);
+  });
+});

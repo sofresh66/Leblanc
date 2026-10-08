@@ -1,33 +1,29 @@
-import { PriceBadge } from '../events/PriceBadge';
 import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import type { Event } from '@leblanc/shared';
-import { LE_BLANC_CENTER, SEARCH_RADIUS_METERS } from '@leblanc/shared';
+import type { EventGeoPoint } from '@leblanc/shared';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../../i18n/languages';
 import { buildLocalizedPath } from '../../routes/routeMapping';
-import { formatVenueCity } from '../../utils/eventLocation';
+import { formatEventDate } from '../../utils/eventDates';
+import { BaseMap, DECLUSTER_ZOOM, MarkerClusterGroup } from './BaseMap';
 
-// NOTE : Pour un trafic important (>10k vues/jour), basculer vers un 
-// fournisseur de tuiles dédié (Stadia Maps, MapTiler) ou auto-héberger 
-// les tuiles. Les tuiles OSM publiques ne sont pas dimensionnées pour 
-// un site à fort trafic.
+const CATEGORY_COLORS: Record<string, string> = {
+  culture: '#2d6a4f',
+  sport: '#059669',
+  fete: '#d97706',
+  association: '#4f46e5',
+  autre: '#4b5563',
+};
 
-// Icône Leaflet personnalisée élégante et robuste sans dépendance d'actifs externes
-const createEventMarkerIcon = (category: string) => {
-  const categoryColor: Record<string, string> = {
-    culture: '#2d6a4f',
-    sport: '#059669',
-    fete: '#d97706',
-    association: '#4f46e5',
-    autre: '#4b5563',
-  };
-  const color = categoryColor[category] || '#2d6a4f';
-
-  return L.divIcon({
+// Une icône par catégorie, créée une seule fois (pas à chaque rendu).
+const iconCache = new Map<string, L.DivIcon>();
+export function eventMarkerIcon(category: string): L.DivIcon {
+  const cached = iconCache.get(category);
+  if (cached) return cached;
+  const color = CATEGORY_COLORS[category] ?? '#2d6a4f';
+  const icon = L.divIcon({
     className: 'leaflet-marker-icon custom-event-marker',
     html: `
       <div style="background-color: ${color}; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);">
@@ -38,130 +34,69 @@ const createEventMarkerIcon = (category: string) => {
     iconAnchor: [15, 30],
     popupAnchor: [0, -30],
   });
-};
-
-interface MapControllerProps {
-  events: Event[];
-  selectedEventId?: string | undefined;
+  iconCache.set(category, icon);
+  return icon;
 }
 
-const MapController: React.FC<MapControllerProps> = ({ events, selectedEventId }) => {
+const MapController: React.FC<{ points: EventGeoPoint[]; selectedEventId?: string | undefined }> = ({ points, selectedEventId }) => {
   const map = useMap();
-
   useEffect(() => {
-    if (selectedEventId) {
-      const selected = events.find((e) => e.id === selectedEventId);
-      if (selected) {
-        map.setView([selected.latitude, selected.longitude], 14, { animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches });
-      }
+    const selected = selectedEventId ? points.find((point) => point.id === selectedEventId) : undefined;
+    if (selected) {
+      // Au zoom de dégroupement, le marqueur sélectionné est visible hors de son groupe.
+      map.setView([selected.lat, selected.lng], DECLUSTER_ZOOM, { animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches });
     }
-  }, [selectedEventId, events, map]);
-
+  }, [selectedEventId, points, map]);
   return null;
 };
 
 export interface EventMapProps {
-  events: Event[];
+  points: EventGeoPoint[];
   selectedEventId?: string | undefined;
-  onSelectEvent?: ((event: Event) => void) | undefined;
+  onSelectEvent?: ((id: string) => void) | undefined;
   className?: string | undefined;
 }
 
-export const EventMap: React.FC<EventMapProps> = ({
-  events,
-  selectedEventId,
-  onSelectEvent,
-  className = 'h-[500px] lg:h-[650px] w-full',
-}) => {
+export const EventMap: React.FC<EventMapProps> = ({ points, selectedEventId, onSelectEvent, className }) => {
   const { t, i18n } = useTranslation(['events', 'common']);
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
+  const dateLabels = {
+    allDay: t('dates.allDay', { ns: 'events' }),
+    until: (date: string) => t('dates.until', { ns: 'events', date }),
+  };
 
   return (
-    <div className={`relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 ${className}`}>
-      <MapContainer
-        center={[LE_BLANC_CENTER.lat, LE_BLANC_CENTER.lng]}
-        zoom={11}
-        scrollWheelZoom={true}
-        className="h-full w-full z-0"
-      >
-        {/* Tuiles OpenStreetMap officielles avec attribution obligatoire */}
-        <TileLayer
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          maxZoom={19}
-        />
-
-        {/* Cercle délimitant le rayon de recherche de 20 km autour du Blanc */}
-        <Circle
-          center={[LE_BLANC_CENTER.lat, LE_BLANC_CENTER.lng]}
-          radius={SEARCH_RADIUS_METERS}
-          pathOptions={{
-            color: '#2d6a4f',
-            fillColor: '#52b788',
-            fillOpacity: 0.06,
-            weight: 1.5,
-            dashArray: '6, 6',
-          }}
-        />
-
-        {/* Marqueurs d'événements */}
-        {events.map((event) => {
-          const detailUrl = buildLocalizedPath('events', currentLang, event.id);
-          // Lieu et ville sont nullables : la ligne est masquée si les deux sont absents.
-          const venueCity = formatVenueCity(event);
-
-          return (
-            <Marker
-              key={event.id}
-              alt={event.title}
-              title={event.title}
-              position={[event.latitude, event.longitude]}
-              icon={createEventMarkerIcon(event.category)}
-              eventHandlers={{
-                click: () => {
-                  if (onSelectEvent) {
-                    onSelectEvent(event);
-                  }
-                },
-              }}
-            >
-              <Popup className="custom-leaflet-popup">
-                <div className="p-1 max-w-xs space-y-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brenne-100 text-brenne-800 uppercase tracking-wide">
-                      {t(`categories.${event.category}`, { ns: 'events' })}
-                    </span>
-                    {event.isFallback && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-800 text-white">
-                        {(event.descriptionLanguage ?? event.contentLanguage).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-
-                  <h4 lang={event.contentLanguage} className="font-bold text-sm text-gray-900 leading-snug line-clamp-2">
-                    {event.title}
-                  </h4>
-
-                  {venueCity && <p className="text-xs text-gray-600 truncate">{venueCity}</p>}
-
-                  <div className="pt-2 border-t border-gray-100 flex flex-wrap gap-2 items-center justify-between">
-                    <PriceBadge event={event} />
-                    <Link
-                      to={detailUrl}
-                      className="text-xs font-bold text-brenne-700 hover:text-brenne-900 underline"
-                    >
-                      {t('actions.view', { ns: 'common' })}
-                    </Link>
-                  </div>
+    <BaseMap {...(className ? { className } : {})}>
+      <MarkerClusterGroup>
+        {points.map((point) => (
+          <Marker
+            key={point.id}
+            alt={point.title}
+            title={point.title}
+            position={[point.lat, point.lng]}
+            icon={eventMarkerIcon(point.category)}
+            eventHandlers={{ click: () => onSelectEvent?.(point.id) }}
+          >
+            <Popup className="custom-leaflet-popup">
+              <div className="p-1 max-w-xs space-y-2">
+                <span className="inline-block text-[11px] font-bold px-2 py-0.5 rounded-full bg-brenne-100 text-brenne-800 uppercase tracking-wide">
+                  {t(`categories.${point.category}`, { ns: 'events' })}
+                </span>
+                <h4 className="font-bold text-sm text-gray-900 leading-snug line-clamp-2">{point.title}</h4>
+                <p className="text-xs font-semibold text-brenne-800">{formatEventDate(point, currentLang, 'short', dateLabels)}</p>
+                {point.city && <p className="text-xs text-gray-600 truncate">{point.city}</p>}
+                <div className="pt-2 border-t border-gray-100 text-right">
+                  <Link to={buildLocalizedPath('events', currentLang, point.id)} className="text-xs font-bold text-brenne-700 hover:text-brenne-900 underline">
+                    {t('actions.view', { ns: 'common' })}
+                  </Link>
                 </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-
-        <MapController events={events} selectedEventId={selectedEventId} />
-      </MapContainer>
-    </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
+      <MapController points={points} selectedEventId={selectedEventId} />
+    </BaseMap>
   );
 };
 

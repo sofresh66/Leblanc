@@ -51,5 +51,7 @@
     "sources": { "datatourisme_places": "DATAtourisme", "openstreetmap": "OpenStreetMap", "manuel": "Redacción propia", "other": "otra fuente" },
     "noDescription": "Descripción no disponible", "addressUnknown": "Dirección no disponible", "addressNotMapped": "Dirección no localizada en el mapa",
     "fallbackNotice": "Descripción disponible en {{language}}.", "mapLoading": "Cargando mapa…"
-  }
+  },
+  "view": { "label": "Vista", "list": "Lista", "map": "Mapa" },
+  "map": { "noLocation_other": "{{count}} direcciones sin posición en el mapa:", "noLocation_one": "{{count}} dirección sin posición en el mapa:" }
 }
