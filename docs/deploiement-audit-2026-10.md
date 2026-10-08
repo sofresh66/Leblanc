@@ -138,6 +138,19 @@ Après la mise en production : `bash scripts/check-seo.sh https://leblanc-et-moi
 - Planifier `node scripts/score-translations.mjs --apply` chaque semaine dans GitHub Actions (secrets `CLOUDFLARE_ACCOUNT_ID` et `CLOUDFLARE_AI_TOKEN`), pour contrôler les nouvelles fiches et rescorer celles dont le contenu a changé.
 - Fin de chantier : supprimer la branche Neon de test, avec `npx neonctl branches delete audit-fixes-2026-10 --project-id still-feather-70001673`, puis `npx neonctl auth --logout` si la session n'est plus utile.
 
-## Code
+## Mise en production (8 octobre 2026)
 
-- Commits sur `main` en local, non poussés : lot 1 (`746dff5`), lot 4 (`66d9044`), lot 3 (`51b3af7`, `f576880`), lot 2 (`761750d`, `3d23b6f`, `b3fa4c3`, `cafe3e6`), lot 5 (`3a1c6b0`), lot 6 (`b744d2b`), lot 7 (SEO, 404, en-têtes).
+| Élément | En production | Retour arrière |
+| --- | --- | --- |
+| Base Neon | migrations 009–011 et scripts de données appliqués | branche `prod-avant-audit-2026-10-08` (`br-crimson-water-b254j02n`), créée avant les migrations |
+| Worker `leblanc-api` | version `d1b04b10-4c84-4214-af37-8b09958d6306` | `cd worker && npx wrangler rollback e00670e9-e9c2-4674-b59a-0d5cd2a0aad9` |
+| Pages `leblanc-et-moi` | déploiement `e74b1756` (commit `0223a0e`, run GitHub 37822234145) | déploiement `8fd6b244-6713-433c-b644-7a007429b537` (tableau de bord Pages, « Rollback to this deployment ») |
+
+`main` est poussé jusqu'à `0223a0e`. `scripts/check-seo.sh https://leblanc-et-moi.pages.dev` passe tous ses contrôles ; aucun en-tête `x-robots-tag` en production.
+
+## Reste à faire
+
+- Relire les 43 fiches signalées (`artifacts/signalement-*.csv`) et les transmettre à Destination Brenne et BERRY.
+- Après une semaine de rapports CSP sans violation légitime, passer la CSP en mode bloquant (voir plus haut).
+- Planifier `score-translations --apply` chaque semaine (suite possible ci-dessus) : la nuit, seule l'ingestion tourne, les nouvelles fiches ne sont pas encore scorées.
+- Nettoyage : supprimer la branche de test (`npx neonctl branches delete audit-fixes-2026-10 --project-id still-feather-70001673`) et la preview `audit-preview` ; garder `prod-avant-audit-2026-10-08` quelques semaines ; `npx neonctl auth --logout`.
