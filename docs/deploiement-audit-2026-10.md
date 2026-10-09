@@ -122,8 +122,10 @@ Après la mise en production : `bash scripts/check-seo.sh https://leblanc-et-moi
 
 ## CSP en mode rapport
 
-- La politique est envoyée en `Content-Security-Policy-Report-Only` : rien n'est bloqué. Les violations arrivent sur `POST /api/v1/csp-report` et se lisent avec `cd worker && npx wrangler tail leblanc-api --search csp_violation`.
-- Après une semaine sans violation légitime, passer en mode bloquant : remplacer `Content-Security-Policy-Report-Only` par `Content-Security-Policy` dans `shared/src/securityHeaders.ts`, régénérer `frontend/public/_headers` (un test vérifie qu'ils concordent) et redéployer.
+- La politique est envoyée en `Content-Security-Policy-Report-Only` : rien n'est bloqué. Les violations arrivent sur `POST /api/v1/csp-report`, qui écrit une ligne `csp_violation` par violation dans les journaux du Worker.
+- **Conservation des rapports (constat du 9 octobre)** : l'observabilité du Worker n'est pas activée (`observability` absent de `worker/wrangler.jsonc`, `null` côté Cloudflare). Les rapports ne sont donc visibles qu'en direct (`cd worker && npx wrangler tail leblanc-api --search csp_violation`) ; ceux reçus depuis le 8 octobre sont perdus. Activer Workers Logs (`"observability": { "enabled": true }`) demande un redéploiement du Worker ; rétention de 3 jours sur l'offre gratuite (7 jours en payant), à relire dans le tableau de bord (Workers › leblanc-api › Observability, filtre `csp_violation`).
+- Passage en mode bloquant préparé sur la branche locale `csp-enforce` (commit `39dd114`, non poussé, non déployé) : `Content-Security-Policy` au lieu de `-Report-Only` dans `shared/src/securityHeaders.ts` et `frontend/public/_headers` (un test vérifie qu'ils concordent), `report-uri` conservé, `scripts/check-seo.sh` adapté. Pour l'appliquer : fusionner la branche dans `main`, pousser, lancer le workflow de production, puis `bash scripts/check-seo.sh https://leblanc-et-moi.pages.dev`.
+- **Vers le 15 octobre : relire les rapports CSP, puis basculer en bloquant.**
 
 ## Diagnostic
 
@@ -135,8 +137,7 @@ Après la mise en production : `bash scripts/check-seo.sh https://leblanc-et-moi
 
 ## Suites possibles
 
-- Planifier `node scripts/score-translations.mjs --apply` chaque semaine dans GitHub Actions (secrets `CLOUDFLARE_ACCOUNT_ID` et `CLOUDFLARE_AI_TOKEN`), pour contrôler les nouvelles fiches et rescorer celles dont le contenu a changé.
-- Fin de chantier : supprimer la branche Neon de test, avec `npx neonctl branches delete audit-fixes-2026-10 --project-id still-feather-70001673`, puis `npx neonctl auth --logout` si la session n'est plus utile.
+- Contrôle hebdomadaire des traductions : voir la section dédiée ci-dessous.
 
 ## Mise en production (8 octobre 2026)
 
@@ -154,9 +155,20 @@ Après la mise en production : `bash scripts/check-seo.sh https://leblanc-et-moi
 - Statut appliqué en production par `revalidate-translations --apply` ; l'ingestion de nuit applique la règle (`rejectedDescriptions` dans son résumé).
 - Les CSV de signalement ont une colonne `motif` (« traductions d'un autre événement » ou « description française absente ») : 44 fiches Destination Brenne, 1 BERRY.
 
+## Contrôle hebdomadaire des traductions
+
+- Workflow `.github/workflows/translations-weekly.yml` : chaque lundi à 05:00 (heure de Paris) et à la demande (`gh workflow run translations-weekly.yml`, champ facultatif `max_new_rejections`).
+- Exécute `node scripts/score-translations.mjs --apply` sur la production : règle de fiche (`record_mismatch`, seuil 0,50), liste blanche, overrides et empreintes, comme en local.
+- Même groupe de concurrence que `production.yml` (`leblanc-production`) : il attend la fin d'une ingestion en cours. Une ingestion qui démarre pendant ce contrôle l'annule (`cancel-in-progress` côté production) ; l'écriture se fait en une seule transaction, donc rien n'est écrit à moitié, et le contrôle se relance à la main.
+- Garde-fou : si plus de 10 fiches passeraient **nouvellement** en rejet, rien n'est écrit, le run échoue et la liste est publiée dans le résumé du run. Après vérification, relancer avec un `max_new_rejections` plus élevé.
+- Résumé dans l'onglet du run ; CSV de signalement et scores en artefact (90 jours).
+- Secrets : `DATABASE_URL_DIRECT` (existant) et `CLOUDFLARE_AI_TOKEN` (token dédié limité au compte, permissions « Workers AI : Read » et « Workers AI : Edit », exigées par la documentation pour un token personnalisé) ; `CLOUDFLARE_ACCOUNT_ID` est déjà une variable du dépôt.
+- Lecture seule du 9 octobre sur la production : 223 fiches, 42 en rejet, dont 2 nouvelles (« Une épopée municipale », « Musique ! Une histoire des pratiques musicales amateurs ») : sous le seuil du garde-fou.
+
 ## Reste à faire
 
 - Relire les 45 fiches signalées (`artifacts/signalement-*.csv`) et les transmettre à Destination Brenne et BERRY.
-- Après une semaine de rapports CSP sans violation légitime, passer la CSP en mode bloquant (voir plus haut).
-- Planifier `score-translations --apply` chaque semaine (suite possible ci-dessus) : la nuit, seule l'ingestion tourne, les nouvelles fiches ne sont pas encore scorées.
-- Nettoyage : supprimer la branche de test (`npx neonctl branches delete audit-fixes-2026-10 --project-id still-feather-70001673`) et la preview `audit-preview` ; garder `prod-avant-audit-2026-10-08` quelques semaines ; `npx neonctl auth --logout`.
+- Vers le 15 octobre : relire les rapports CSP, puis basculer en bloquant (branche `csp-enforce`, voir plus haut).
+- Avant le 8 novembre (expiration du token actuel) : vérifier que le contrôle hebdomadaire tourne avec le token durable `CLOUDFLARE_AI_TOKEN`.
+- **Branche de sauvegarde `prod-avant-audit-2026-10-08` (`br-crimson-water-b254j02n`) : conservée jusqu'au 5 novembre 2026**, puis supprimable avec `npx neonctl branches delete br-crimson-water-b254j02n --project-id still-feather-70001673`.
+- Nettoyage : preview `audit-preview` (déploiement `d7830937`) ; branche Neon `audit-fixes-2026-10` (`br-withered-river-b2iplez9`, hôte `ep-falling-breeze-b23mlam0`) à renommer `dev` et à garder comme base de développement locale ; `npx neonctl auth --logout` en fin de chantier.
