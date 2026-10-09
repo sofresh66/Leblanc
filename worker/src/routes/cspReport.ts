@@ -1,8 +1,8 @@
 import type { Env } from '../env.js';
 import { errorResponse } from '../http/responses.js';
 
-// Collecte des violations de la CSP en mode rapport (Content-Security-Policy-
-// Report-Only du site). Rien n'est stocké : une ligne épurée par violation
+// Collecte des violations de la CSP du site (Content-Security-Policy, avec
+// report-uri). Rien n'est stocké : une ligne épurée par violation
 // dans les journaux Workers, sans IP ni paramètres d'URL.
 
 export const CSP_REPORT_MAX_BYTES = 8 * 1024;
