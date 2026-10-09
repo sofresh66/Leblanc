@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 # Même groupe que production.yml : jamais en même temps que l'ingestion.
-# Ce workflow n'annule jamais la production ; il attend qu'elle se termine.
+# Aucun des deux n'annule l'autre : les runs se mettent en file.
 concurrency:
   group: leblanc-production
   cancel-in-progress: false

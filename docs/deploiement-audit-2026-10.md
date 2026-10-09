@@ -159,11 +159,19 @@ Après la mise en production : `bash scripts/check-seo.sh https://leblanc-et-moi
 
 - Workflow `.github/workflows/translations-weekly.yml` : chaque lundi à 05:00 (heure de Paris) et à la demande (`gh workflow run translations-weekly.yml`, champ facultatif `max_new_rejections`).
 - Exécute `node scripts/score-translations.mjs --apply` sur la production : règle de fiche (`record_mismatch`, seuil 0,50), liste blanche, overrides et empreintes, comme en local.
-- Même groupe de concurrence que `production.yml` (`leblanc-production`) : il attend la fin d'une ingestion en cours. Une ingestion qui démarre pendant ce contrôle l'annule (`cancel-in-progress` côté production) ; l'écriture se fait en une seule transaction, donc rien n'est écrit à moitié, et le contrôle se relance à la main.
+- Même groupe de concurrence que `production.yml` (`leblanc-production`), `cancel-in-progress: false` des deux côtés : un run qui démarre pendant l'autre se met en file et attend. Limite de GitHub : un groupe n'a qu'un seul run en attente ; si un troisième arrive, le run en attente le plus ancien est annulé (cas rare : relancer à la main). L'écriture se fait en une seule transaction, donc jamais à moitié.
 - Garde-fou : si plus de 10 fiches passeraient **nouvellement** en rejet, rien n'est écrit, le run échoue et la liste est publiée dans le résumé du run. Après vérification, relancer avec un `max_new_rejections` plus élevé.
 - Résumé dans l'onglet du run ; CSV de signalement et scores en artefact (90 jours).
 - Secrets : `DATABASE_URL_DIRECT` (existant) et `CLOUDFLARE_AI_TOKEN` (token dédié limité au compte, permissions « Workers AI : Read » et « Workers AI : Edit », exigées par la documentation pour un token personnalisé) ; `CLOUDFLARE_ACCOUNT_ID` est déjà une variable du dépôt.
 - Lecture seule du 9 octobre sur la production : 223 fiches, 42 en rejet, dont 2 nouvelles (« Une épopée municipale », « Musique ! Une histoire des pratiques musicales amateurs ») : sous le seuil du garde-fou.
+
+## Workflows programmés désactivés après 60 jours sans commit
+
+Le dépôt est public : GitHub désactive automatiquement les workflows programmés (`schedule`) après 60 jours sans activité sur le dépôt (aucun commit). Cela concerne l'ingestion de nuit (`production.yml`) comme le contrôle hebdomadaire (`translations-weekly.yml`) ; le site reste en ligne mais ses données ne sont plus actualisées.
+
+- **Détecter** : GitHub envoie un courriel d'avertissement au propriétaire avant la désactivation. `gh workflow list --all` affiche alors l'état `disabled_inactivity` au lieu de `active`, et l'onglet Actions montre un bandeau « This scheduled workflow is disabled because there hasn't been activity in this repository for at least 60 days ». Autre signe : `gh run list --event schedule --limit 1` ne montre plus de run récent.
+- **Réactiver** : `gh workflow enable production.yml` et `gh workflow enable translations-weekly.yml` (ou le bouton « Enable workflow » dans l'onglet Actions). Un commit sur `main` remet aussi le compteur à zéro, mais ne réactive pas un workflow déjà désactivé.
+- **Prévenir** : pousser au moins un commit tous les deux mois (par exemple la relecture des signalements) ou surveiller le courriel d'avertissement.
 
 ## Reste à faire
 

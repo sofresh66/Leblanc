@@ -9,9 +9,10 @@ on:
 permissions:
   contents: read
 
+# Partagé avec translations-weekly.yml : les runs se mettent en file, sans annulation.
 concurrency:
   group: leblanc-production
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   production:
