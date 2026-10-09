@@ -1,0 +1,82 @@
+name: Contrôle hebdomadaire des traductions
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+      timezone: Europe/Paris
+  workflow_dispatch:
+    inputs:
+      max_new_rejections:
+        description: Nombre maximal de NOUVELLES fiches rejetées avant blocage (rien n'est écrit au-delà)
+        required: false
+        default: '10'
+
+permissions:
+  contents: read
+
+# Même groupe que production.yml : jamais en même temps que l'ingestion.
+# Ce workflow n'annule jamais la production ; il attend qu'elle se termine.
+concurrency:
+  group: leblanc-production
+  cancel-in-progress: false
+
+jobs:
+  translations:
+    if: github.repository == 'sofresh66/Leblanc' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      MAX_NEW_REJECTIONS: ${{ inputs.max_new_rejections || '10' }}
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Installer Node.js 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Vérifier la configuration sans afficher les secrets
+        env:
+          DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+          CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
+        run: |
+          node --input-type=module <<'NODE'
+          if (process.env.CLOUDFLARE_ACCOUNT_ID !== 'f3fbcbb1368768039312d4877ac6d48c') {
+            throw new Error('Variable absente ou incorrecte : CLOUDFLARE_ACCOUNT_ID');
+          }
+          for (const name of ['DATABASE_URL_DIRECT', 'CLOUDFLARE_AI_TOKEN']) {
+            if (!process.env[name]?.trim()) throw new Error(`Secret manquant : ${name}`);
+          }
+          if (!/^\d+$/.test(process.env.MAX_NEW_REJECTIONS)) throw new Error('max_new_rejections doit être un entier');
+          console.log('Configuration présente.');
+          NODE
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Tester les règles de traduction
+        run: |
+          npm run build --workspace=@leblanc/shared
+          npx vitest run scripts/__tests__/translation-
+
+      - name: Scorer et appliquer les rejets de fiche (garde-fou inclus)
+        env:
+          DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+          CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
+        run: node scripts/score-translations.mjs --apply --max-new-rejections="$MAX_NEW_REJECTIONS"
+
+      - name: Publier le signalement et les scores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: signalement-traductions-${{ github.run_id }}
+          path: |
+            artifacts/signalement-*.csv
+            artifacts/translation-scores.csv
+          if-no-files-found: ignore
+          retention-days: 90

@@ -4,8 +4,10 @@
 // descriptions traduites ont un score < 0,50 (record_mismatch), hors liste
 // blanche, avec l'empreinte du contenu ; lève ce rejet si la fiche ne remplit
 // plus la condition. Écrit aussi le CSV de signalement par producteur.
+// Garde-fou : si plus de N fiches (10 par défaut) passeraient NOUVELLEMENT en
+// rejet, rien n'est écrit et le script échoue (dérive du modèle ou du seuil).
 // Variables : DATABASE_URL_DIRECT, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AI_TOKEN.
-// Usage : node scripts/score-translations.mjs [--apply] [--limit=N]
+// Usage : node scripts/score-translations.mjs [--apply] [--limit=N] [--max-new-rejections=N]
 import 'dotenv/config';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -15,6 +17,7 @@ import {
 } from './lib/translation-validator.mjs';
 import { loadTranslationOverrides } from './lib/translation-report.mjs';
 import { createWorkersAiEmbedder, scoreDistribution, scoreTranslations } from './lib/translation-scoring.mjs';
+import { checkRejectionGuard, parseMaxNewRejections, weeklySummaryMarkdown } from './lib/translation-guard.mjs';
 
 const SOURCE = 'datatourisme';
 const THRESHOLD = 0.5;
@@ -25,6 +28,7 @@ const CSV_FILE = fileURLToPath(new URL('../artifacts/translation-scores.csv', im
 const limitArg = process.argv.find((arg) => arg.startsWith('--limit='));
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : null;
 if (APPLY && limit) throw new Error('--apply ne peut pas être combiné avec --limit');
+const maxNewRejections = parseMaxNewRejections(process.argv);
 
 const databaseUrl = process.env.DATABASE_URL_DIRECT;
 if (!databaseUrl) throw new Error('DATABASE_URL_DIRECT est requis');
@@ -108,7 +112,9 @@ try {
     reportFiles.push({ producer, fiches: lines.length, file });
   }
 
-  if (APPLY && changes.length) {
+  const guard = checkRejectionGuard(decisions, maxNewRejections);
+  const write = APPLY && !guard.blocked;
+  if (write && changes.length) {
     await client.query('BEGIN');
     try {
       for (const { event, status } of changes) {
@@ -124,8 +130,19 @@ try {
   console.log(JSON.stringify({
     step: APPLY ? 'apply' : 'scores', events: events.length, pairs: scores.length, threshold: THRESHOLD,
     recordMismatch: flagged.length, allowlisted: allowlist.size, lifted: lifted.length,
-    written: APPLY ? changes.length : 0, reportFiles, ...scoreDistribution(scores, [0.45, THRESHOLD, 0.55, 0.6]),
+    written: write ? changes.length : 0, newRejections: guard.newRejections.length, maxNewRejections, guardBlocked: guard.blocked, reportFiles, ...scoreDistribution(scores, [0.45, THRESHOLD, 0.55, 0.6]),
   }, (key, value) => (key === 'belowThreshold' ? Object.fromEntries(Object.entries(value).map(([t, list]) => [t, list.length])) : value), 2));
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    await fs.appendFile(process.env.GITHUB_STEP_SUMMARY, weeklySummaryMarkdown({
+      apply: APPLY, guard, events: events.length, flagged: flagged.length, lifted: lifted.length,
+      written: write ? changes.length : 0, reportFiles: reportFiles.map(({ producer, fiches }) => ({ producer, fiches })),
+    }));
+  }
+  if (guard.blocked) {
+    console.error(`Garde-fou : ${guard.newRejections.length} nouvelles fiches en rejet (maximum ${maxNewRejections}), rien n'a été écrit.`);
+    for (const { event, max } of guard.newRejections) console.error(`- ${event.title_i18n.fr} (${event.external_id}, score max ${max?.toFixed(3)})`);
+    process.exitCode = 1;
+  }
 } finally {
   await client.end();
 }
