@@ -173,10 +173,22 @@ Le dépôt est public : GitHub désactive automatiquement les workflows programm
 - **Réactiver** : `gh workflow enable production.yml` et `gh workflow enable translations-weekly.yml` (ou le bouton « Enable workflow » dans l'onglet Actions). Un commit sur `main` remet aussi le compteur à zéro, mais ne réactive pas un workflow déjà désactivé.
 - **Prévenir** : pousser au moins un commit tous les deux mois (par exemple la relecture des signalements) ou surveiller le courriel d'avertissement.
 
+## Mises à jour du 9 octobre (soir)
+
+| Élément | En production | Retour arrière |
+| --- | --- | --- |
+| Worker `leblanc-api` | version `fca49825-70c4-4101-a78f-2624345db03f` : Workers Logs activé, `console.log` conservés, sans journal par requête (`invocation_logs: false`) | `cd worker && npx wrangler rollback 1670ef08-6177-4231-b54c-fcf191211e75` (Workers Logs avec journaux par requête), puis `31b80495-1789-4073-8ea7-cd442e0b3687` (sans observabilité) |
+| Pages `leblanc-et-moi` | déploiement `dc49c166` (commit `2d4bb0f`, run GitHub 37977752479) : statut des dates sur l'heure de fin, dates passées masquées, 5 dates puis « Voir les N autres dates » | déploiement `4f037222` |
+| Base Neon | contrôle hebdomadaire, run 37979260705 : 227 fiches, 41 en rejet, 3 écrites (2 nouveaux rejets), garde-fou non déclenché | relancer `revalidate-translations` ou restaurer depuis `prod-avant-audit-2026-10-08` |
+
+- Branche Neon `audit-fixes-2026-10` renommée `dev` et réinitialisée depuis la production (même hôte `ep-falling-breeze-b23mlam0`, `.env` inchangé).
+- Preview `audit-preview` : déploiement `d7830937` supprimé. L'alias `audit-preview.leblanc-et-moi.pages.dev` sert encore l'ancien build (`noindex`) ; à supprimer si besoin depuis le tableau de bord Pages.
+
 ## Reste à faire
 
 - Relire les 45 fiches signalées (`artifacts/signalement-*.csv`) et les transmettre à Destination Brenne et BERRY.
 - Vers le 15 octobre : relire les rapports CSP, puis basculer en bloquant (branche `csp-enforce`, voir plus haut).
 - Avant le 8 novembre (expiration du token actuel) : vérifier que le contrôle hebdomadaire tourne avec le token durable `CLOUDFLARE_AI_TOKEN`.
 - **Branche de sauvegarde `prod-avant-audit-2026-10-08` (`br-crimson-water-b254j02n`) : conservée jusqu'au 5 novembre 2026**, puis supprimable avec `npx neonctl branches delete br-crimson-water-b254j02n --project-id still-feather-70001673`.
-- Nettoyage : preview `audit-preview` (déploiement `d7830937`) ; branche Neon `audit-fixes-2026-10` (`br-withered-river-b2iplez9`, hôte `ep-falling-breeze-b23mlam0`) à renommer `dev` et à garder comme base de développement locale ; `npx neonctl auth --logout` en fin de chantier.
+- Alias `audit-preview.leblanc-et-moi.pages.dev` encore servi (ancien build, `noindex`) : vérifier sa disparition, sinon le retirer depuis le tableau de bord Pages.
+- `npx neonctl auth --logout` en fin de chantier.
