@@ -42,3 +42,29 @@ export function formatEventDate(
   }
   return `${dateFormatter.format(start)} - ${dateFormatter.format(end ?? start)}`;
 }
+
+export type OccurrenceStatus = 'past' | 'today' | 'ongoing' | 'upcoming';
+
+interface OccurrenceTiming {
+  startDate: string;
+  endDate?: string | null | undefined;
+  allDay?: boolean | undefined;
+  timezone?: string | undefined;
+}
+
+/**
+ * Statut d'une séance, calculé sur sa FIN dans son fuseau (Europe/Paris par défaut).
+ * Une séance « toute la journée » ou sans heure de fin dure jusqu'au soir de son dernier jour.
+ */
+export function occurrenceStatus(occurrence: OccurrenceTiming, now: Date = new Date()): OccurrenceStatus {
+  const timeZone = occurrence.timezone || DEFAULT_TIMEZONE;
+  const start = new Date(occurrence.startDate);
+  const end = occurrence.endDate ? new Date(occurrence.endDate) : null;
+  const today = calendarDay(now, timeZone);
+  const startDay = calendarDay(start, timeZone);
+  const endDay = calendarDay(end ?? start, timeZone);
+  const ended = occurrence.allDay || !end ? endDay < today : end.getTime() < now.getTime();
+  if (ended) return 'past';
+  if (start.getTime() > now.getTime()) return 'upcoming';
+  return startDay === today && endDay === today ? 'today' : 'ongoing';
+}

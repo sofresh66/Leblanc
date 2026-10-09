@@ -1,6 +1,6 @@
 import { PriceBadge } from '../components/events/PriceBadge';
 import { PageSeo } from '../components/PageSeo';
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ErrorState } from '../components/common/ErrorState';
@@ -9,10 +9,21 @@ import { useLanguageDisplayName } from '../hooks/useLanguageDisplayName';
 import { useLocalizedDate } from '../hooks/useLocalizedDate';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
-import { formatEventDate } from '../utils/eventDates';
+import { formatEventDate, occurrenceStatus, type OccurrenceStatus } from '../utils/eventDates';
 import { officialWebsite } from '../utils/officialWebsite';
 import { formatVenueCity } from '../utils/eventLocation';
 import { downloadIcsFile } from '../utils/ics';
+import type { EventOccurrence } from '@leblanc/shared';
+
+/** Dates à venir affichées avant le bouton « Voir les N autres dates ». */
+const UPCOMING_PREVIEW = 5;
+
+const STATUS_LABEL_KEYS = {
+  past: 'details.occurrencePast',
+  today: 'details.occurrenceToday',
+  ongoing: 'details.occurrenceOngoing',
+  upcoming: 'details.occurrenceFuture',
+} as const satisfies Record<OccurrenceStatus, string>;
 
 export const EventPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +31,10 @@ export const EventPage: React.FC = () => {
   const languageName = useLanguageDisplayName();
   const [copied, setCopied] = useState(false);
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
+  const [showPastDates, setShowPastDates] = useState(false);
+  const [showAllDates, setShowAllDates] = useState(false);
+  const pastListId = useId();
+  const upcomingListId = useId();
   const { formatDate } = useLocalizedDate();
 
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
@@ -113,6 +128,48 @@ export const EventPage: React.FC = () => {
     allDay: t('dates.allDay', { ns: 'events' }),
     until: (date) => t('dates.until', { ns: 'events', date }),
   });
+
+  // Séances triées par l'API ; le statut se calcule sur l'heure de fin (heure de Paris).
+  // Les dates passées ne sont masquées que s'il reste au moins une date à venir.
+  const now = new Date();
+  const withStatus = event.occurrences.map((occurrence) => ({ occurrence, status: occurrenceStatus(occurrence, now) }));
+  const hasUpcoming = withStatus.some(({ status }) => status !== 'past');
+  const visibleOccurrences = {
+    past: hasUpcoming ? withStatus.filter(({ status }) => status === 'past') : [],
+    upcoming: hasUpcoming ? withStatus.filter(({ status }) => status !== 'past') : withStatus,
+  };
+  const renderOccurrence = ({ occurrence, status }: { occurrence: EventOccurrence; status: OccurrenceStatus }) => {
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      dateStyle: 'full',
+      timeZone: occurrence.timezone,
+    };
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      dateStyle: undefined,
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: occurrence.timezone,
+    };
+    const startDay = formatDate(occurrence.startDate, dateOptions);
+    const endDay = occurrence.endDate ? formatDate(occurrence.endDate, dateOptions) : null;
+    // Journée entière : pas d'heure inventée (00:00 – 23:59).
+    const startTime = occurrence.allDay ? t('dates.allDay', { ns: 'events' }) : formatDate(occurrence.startDate, timeOptions);
+    const endTime = occurrence.endDate && !occurrence.allDay ? formatDate(occurrence.endDate, timeOptions) : null;
+    const endDaySuffix = occurrence.allDay && endDay && endDay !== startDay ? ` – ${endDay}` : '';
+
+    return (
+      <li key={occurrence.id} data-testid="event-occurrence" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-l-4 border-brenne-200 bg-sable-50 px-4 py-4">
+        <div className="text-sm text-gray-800">
+          <time dateTime={occurrence.startDate} className="font-semibold capitalize">{startDay}</time>
+          <span className="block text-gray-600">
+            {startTime}{endTime ? ` – ${endDay !== startDay ? `${endDay} ` : ''}${endTime}` : endDaySuffix}
+          </span>
+        </div>
+        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${status === 'past' ? 'bg-gray-200 text-gray-700' : 'bg-brenne-100 text-brenne-900'}`}>
+          {t(STATUS_LABEL_KEYS[status], { ns: 'events' })}
+        </span>
+      </li>
+    );
+  };
 
   // Format distance
   const distanceKm =
@@ -290,41 +347,40 @@ export const EventPage: React.FC = () => {
 
           <section aria-label={t('details.occurrencesTitle', { ns: 'events' })} className="bg-white rounded-2xl p-6 sm:p-8 border border-brenne-900/5 shadow-md space-y-6">
             <h2 className="font-display text-[28px] sm:text-[32px] font-bold text-brenne-950">{t('details.occurrencesTitle', { ns: 'events' })}</h2>
-            <ol className="space-y-2">
-              {event.occurrences.map((occurrence) => {
-                const isPast = new Date(occurrence.startDate).getTime() < Date.now();
-                const dateOptions: Intl.DateTimeFormatOptions = {
-                  dateStyle: 'full',
-                  timeZone: occurrence.timezone,
-                };
-                const timeOptions: Intl.DateTimeFormatOptions = {
-                  dateStyle: undefined,
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  timeZone: occurrence.timezone,
-                };
-                const startDay = formatDate(occurrence.startDate, dateOptions);
-                const endDay = occurrence.endDate ? formatDate(occurrence.endDate, dateOptions) : null;
-                // Journée entière : pas d'heure inventée (00:00 – 23:59).
-                const startTime = occurrence.allDay ? t('dates.allDay', { ns: 'events' }) : formatDate(occurrence.startDate, timeOptions);
-                const endTime = occurrence.endDate && !occurrence.allDay ? formatDate(occurrence.endDate, timeOptions) : null;
-                const endDaySuffix = occurrence.allDay && endDay && endDay !== startDay ? ` – ${endDay}` : '';
-
-                return (
-                  <li key={occurrence.id} data-testid="event-occurrence" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-l-4 border-brenne-200 bg-sable-50 px-4 py-4">
-                    <div className="text-sm text-gray-800">
-                      <time dateTime={occurrence.startDate} className="font-semibold capitalize">{startDay}</time>
-                      <span className="block text-gray-600">
-                        {startTime}{endTime ? ` – ${endDay !== startDay ? `${endDay} ` : ''}${endTime}` : endDaySuffix}
-                      </span>
-                    </div>
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isPast ? 'bg-gray-200 text-gray-700' : 'bg-brenne-100 text-brenne-900'}`}>
-                      {t(isPast ? 'details.occurrencePast' : 'details.occurrenceFuture', { ns: 'events' })}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
+            {visibleOccurrences.past.length > 0 && (
+              <button
+                type="button"
+                aria-expanded={showPastDates}
+                aria-controls={pastListId}
+                onClick={() => setShowPastDates((value) => !value)}
+                className="text-sm font-semibold text-gray-600 underline-offset-4 hover:underline"
+              >
+                {showPastDates
+                  ? t('details.hidePastDates', { ns: 'events' })
+                  : t('details.showPastDates', { ns: 'events', count: visibleOccurrences.past.length })}
+              </button>
+            )}
+            {showPastDates && visibleOccurrences.past.length > 0 && (
+              <ul id={pastListId} className="space-y-2">
+                {visibleOccurrences.past.map(renderOccurrence)}
+              </ul>
+            )}
+            <ul id={upcomingListId} className="space-y-2">
+              {(showAllDates ? visibleOccurrences.upcoming : visibleOccurrences.upcoming.slice(0, UPCOMING_PREVIEW)).map(renderOccurrence)}
+            </ul>
+            {visibleOccurrences.upcoming.length > UPCOMING_PREVIEW && (
+              <button
+                type="button"
+                aria-expanded={showAllDates}
+                aria-controls={upcomingListId}
+                onClick={() => setShowAllDates((value) => !value)}
+                className="btn-secondary min-h-11 text-sm"
+              >
+                {showAllDates
+                  ? t('details.showFewerDates', { ns: 'events' })
+                  : t('details.showMoreDates', { ns: 'events', count: visibleOccurrences.upcoming.length - UPCOMING_PREVIEW })}
+              </button>
+            )}
           </section>
         </div>
 

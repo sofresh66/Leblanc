@@ -116,6 +116,14 @@ export interface EventsResource {
     occurrencesTitle: string;
     occurrencePast: string;
     occurrenceFuture: string;
+    occurrenceToday: string;
+    occurrenceOngoing: string;
+    showPastDates_one: string;
+    showPastDates_other: string;
+    hidePastDates: string;
+    showMoreDates_one: string;
+    showMoreDates_other: string;
+    showFewerDates: string;
     fallbackNotice: string;
     noDescription: string;
   };
