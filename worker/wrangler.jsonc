@@ -3,6 +3,10 @@
   "account_id": "f3fbcbb1368768039312d4877ac6d48c",
   "main": "src/index.ts",
   "compatibility_date": "2026-09-01",
+  // Workers Logs : console.log conservés (rapports CSP), 3 jours sur l'offre gratuite.
+  "observability": {
+    "enabled": true
+  },
   "vars": {
     "ALLOWED_ORIGINS": "http://localhost:5173,https://leblanc-et-moi.pages.dev"
   }
