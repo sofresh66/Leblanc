@@ -7,4 +7,4 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=()
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tile.openstreetmap.org https://*.media.tourinsoft.eu; font-src 'self'; connect-src 'self' https://leblanc-api.elharchdenis.workers.dev https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; report-uri https://leblanc-api.elharchdenis.workers.dev/api/v1/csp-report
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://tile.openstreetmap.org https://*.media.tourinsoft.eu; font-src 'self'; connect-src 'self' https://leblanc-api.elharchdenis.workers.dev https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; report-uri https://leblanc-api.elharchdenis.workers.dev/api/v1/csp-report

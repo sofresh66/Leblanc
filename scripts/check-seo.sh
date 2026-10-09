@@ -44,10 +44,10 @@ check "Open Graph et Twitter" 'grep -q "property=\"og:title\"" "$TMP/static.html
 check "robots index" 'grep -q "name=\"robots\" content=\"index, follow\"" "$TMP/static.html"'
 
 echo "En-têtes de sécurité (HTML servi par le middleware)"
-for header in Strict-Transport-Security X-Frame-Options X-Content-Type-Options Referrer-Policy Permissions-Policy Content-Security-Policy-Report-Only; do
+for header in Strict-Transport-Security X-Frame-Options X-Content-Type-Options Referrer-Policy Permissions-Policy Content-Security-Policy; do
   check "$header" "has_header static $header"
 done
-check "CSP : tuiles tile.openstreetmap.org et images tourinsoft autorisées, report-uri" 'grep -i "^Content-Security-Policy-Report-Only:" "$TMP/static.headers" | grep -q "https://tile.openstreetmap.org" && grep -i "^Content-Security-Policy-Report-Only:" "$TMP/static.headers" | grep -q "media.tourinsoft.eu" && grep -i "^Content-Security-Policy-Report-Only:" "$TMP/static.headers" | grep -q "report-uri"'
+check "CSP : tuiles tile.openstreetmap.org et images tourinsoft autorisées, report-uri" 'grep -i "^Content-Security-Policy:" "$TMP/static.headers" | grep -q "https://tile.openstreetmap.org" && grep -i "^Content-Security-Policy:" "$TMP/static.headers" | grep -q "media.tourinsoft.eu" && grep -i "^Content-Security-Policy:" "$TMP/static.headers" | grep -q "report-uri"'
 
 echo "Fiche événement : $EVENT_PATH"
 fetch "$EVENT_PATH" event
