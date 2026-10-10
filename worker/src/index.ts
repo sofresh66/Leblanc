@@ -13,6 +13,13 @@ import { handleCspReport } from './routes/cspReport.js';
 import { handleEventGeo, handleGetEventById, handleListEvents } from './routes/events.js';
 import { handleHealth } from './routes/health.js';
 import { handleGetPlaceById, handleListPlaces, handlePlaceCategories } from './routes/places.js';
+import {
+  handleGetTrailById,
+  handleGetTrailGpx,
+  handleGetTrailNearby,
+  handleListTrails,
+  handleTrailGeo,
+} from './routes/routes.js';
 
 /**
  * Routeur principal du Cloudflare Worker pour l'API Le Blanc & Moi.
@@ -38,9 +45,17 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
     const isPlacesList = pathname === '/api/v1/places';
     const isPlaceCategories = pathname === '/api/v1/places/categories';
     const isPlaceDetail = pathname.startsWith('/api/v1/places/') && pathname.split('/').length === 5 && !isPlaceCategories;
+    // Parcours : /routes/geo est reconnu avant /routes/:id et n'est jamais un identifiant.
+    const routeSegments = pathname.split('/');
+    const isTrailsList = pathname === '/api/v1/routes';
+    const isTrailGeo = pathname === '/api/v1/routes/geo';
+    const isTrailDetail = pathname.startsWith('/api/v1/routes/') && routeSegments.length === 5 && !isTrailGeo;
+    const isTrailGpx = pathname.startsWith('/api/v1/routes/') && routeSegments.length === 6 && routeSegments[5] === 'gpx';
+    const isTrailNearby = pathname.startsWith('/api/v1/routes/') && routeSegments.length === 6 && routeSegments[5] === 'nearby';
 
     const isKnownRoute = isHealth || isCategories || isCities || isEventsList || isEventGeo || isEventDetail || isCspReport ||
-      isPlacesList || isPlaceCategories || isPlaceDetail;
+      isPlacesList || isPlaceCategories || isPlaceDetail ||
+      isTrailsList || isTrailGeo || isTrailDetail || isTrailGpx || isTrailNearby;
 
     if (!isKnownRoute) {
       response = notFoundResponse(request, env, 'Route introuvable', requestId);
@@ -89,6 +104,16 @@ export async function handleRequest(request: Request, env?: Env): Promise<Respon
     } else if (isPlaceDetail) {
       const id = pathname.slice('/api/v1/places/'.length);
       response = await handleGetPlaceById(request, env, id, nowIso, requestId);
+    } else if (isTrailsList) {
+      response = await handleListTrails(request, env, nowIso, requestId);
+    } else if (isTrailGeo) {
+      response = await handleTrailGeo(request, env, nowIso, requestId);
+    } else if (isTrailDetail) {
+      response = await handleGetTrailById(request, env, routeSegments[4] ?? '', requestId);
+    } else if (isTrailGpx) {
+      response = await handleGetTrailGpx(request, env, routeSegments[4] ?? '', requestId);
+    } else if (isTrailNearby) {
+      response = await handleGetTrailNearby(request, env, routeSegments[4] ?? '', nowIso, requestId);
     } else {
       response = notFoundResponse(request, env, 'Route introuvable', requestId);
     }

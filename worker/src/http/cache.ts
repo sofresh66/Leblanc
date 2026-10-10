@@ -23,6 +23,13 @@ export const CACHE_PROFILES = {
   placesOpenNow: 'public, max-age=30, s-maxage=30',
   placeDetail: 'public, max-age=120, s-maxage=120',
   placeCategories: 'public, max-age=3600, s-maxage=3600',
+
+  // Parcours : données mises à jour une fois par nuit, comme la carte des événements.
+  routesList: 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+  routesGeo: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=600',
+  routeDetail: 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
+  // Événements à venir autour du départ : même fraîcheur que la liste des événements.
+  routeNearby: 'public, max-age=30, s-maxage=60, stale-while-revalidate=120',
 } as const;
 
 export type CacheProfileKey = keyof typeof CACHE_PROFILES;

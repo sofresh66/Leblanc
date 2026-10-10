@@ -160,6 +160,38 @@ export async function getPlaceByIdFromDb(
   return row ? mapDbRowToPlace(row, lang, now) : null;
 }
 
+/**
+ * Lieux publiés à `radiusM` au plus d'un point (départ d'un parcours), du plus
+ * proche au plus éloigné. Le rayon de 20 km autour du Blanc reste exigé pour que
+ * la fiche du lieu soit accessible. `distance` est mesurée depuis ce point.
+ */
+export async function listPlacesNearFromDb(
+  databaseUrl: string,
+  point: { lng: number; lat: number },
+  radiusM: number,
+  limit: number,
+  lang: SupportedLanguage,
+  now: Date,
+): Promise<PlaceApi[]> {
+  const sql = `
+    SELECT ${PLACE_COLUMNS},
+      ST_Distance(p.location, ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography) AS distance_m,
+      ${RELATED_COLUMNS}
+    FROM places p
+    WHERE p.status = 'published' AND p.location IS NOT NULL
+      AND ST_DWithin(p.location, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, 20000)
+      AND ST_DWithin(p.location, ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography, $5)
+    ORDER BY distance_m ASC, p.id ASC
+    LIMIT $6;
+  `;
+  const rows = await executeQuery<PlaceDbRow>(databaseUrl, sql,
+    [LE_BLANC_CENTER.lng, LE_BLANC_CENTER.lat, point.lng, point.lat, radiusM, limit]);
+  return rows.flatMap((row) => {
+    const place = mapDbRowToPlace(row, lang, now);
+    return place ? [place] : [];
+  });
+}
+
 interface PlaceCategoriesRow {
   types: unknown;
   cuisines: unknown;

@@ -25,6 +25,13 @@ export interface EventListDbResult {
 /** Borne de sécurité de l'endpoint carte (environ 125 événements aujourd'hui). */
 export const EVENT_GEO_MAX = 1000;
 
+/** Restreint la liste à un rayon autour d'un point (départ d'un parcours). */
+export interface EventNearFilter {
+  lng: number;
+  lat: number;
+  radiusM: number;
+}
+
 interface EventVisibilitySql {
   params: unknown[];
   /** Sous-requête latérale « o » : première occurrence qui chevauche la période. */
@@ -38,7 +45,7 @@ interface EventVisibilitySql {
  * Conditions de visibilité communes à la liste et à la carte. $1/$2 : centre,
  * $3 : date de référence (asOf), $4 : début de période, $5 : rayon.
  */
-function eventVisibilitySql(query: ParsedEventListQuery, nowIso: string): EventVisibilitySql {
+function eventVisibilitySql(query: ParsedEventListQuery, nowIso: string, near?: EventNearFilter): EventVisibilitySql {
   // Date de référence fixée à la première page puis reprise du curseur : now()
   // change entre deux pages et casserait l'ordre (doublons ou trous).
   const asOf = query.decodedCursor?.a ?? nowIso;
@@ -57,6 +64,13 @@ function eventVisibilitySql(query: ParsedEventListQuery, nowIso: string): EventV
   }
 
   const conditions: string[] = [];
+  if (near) {
+    // En plus du rayon de 20 km autour du Blanc : la fiche doit rester accessible.
+    params.push(near.lng, near.lat, near.radiusM);
+    const [lng, lat, radius] = [params.length - 2, params.length - 1, params.length];
+    conditions.push(`AND ST_DWithin(e.location,
+      ST_SetSRID(ST_MakePoint($${lng}::double precision, $${lat}::double precision), 4326)::geography, $${radius}::double precision)`);
+  }
   if (query.categories && query.categories.length > 0) {
     params.push(query.categories);
     conditions.push(`AND e.category = ANY($${params.length})`);
@@ -110,9 +124,10 @@ function eventVisibilitySql(query: ParsedEventListQuery, nowIso: string): EventV
 export async function listEventsFromDb(
   databaseUrl: string,
   query: ParsedEventListQuery,
-  nowIso: string
+  nowIso: string,
+  near?: EventNearFilter
 ): Promise<EventListDbResult> {
-  const { params, lateral, where, asOf } = eventVisibilitySql(query, nowIso);
+  const { params, lateral, where, asOf } = eventVisibilitySql(query, nowIso, near);
 
   let sqlCursor = '';
   if (query.decodedCursor) {
