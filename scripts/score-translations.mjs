@@ -20,6 +20,7 @@ import { loadTranslationOverrides } from './lib/translation-report.mjs';
 import { createWorkersAiEmbedder, scoreDistribution, scoreTranslations } from './lib/translation-scoring.mjs';
 import { checkRejectionGuard, parseMaxNewRejections, weeklySummaryMarkdown } from './lib/translation-guard.mjs';
 import { parseEntity } from './lib/translation-entities.mjs';
+import { hasEncodingDefect, manualTranslationIssues } from './lib/producer-report.mjs';
 
 const SOURCE = 'datatourisme';
 const THRESHOLD = 0.5;
@@ -51,7 +52,8 @@ try {
   await client.query('BEGIN TRANSACTION READ ONLY');
   const { rows: dbRows } = await client.query(`
     SELECT e.id, sr.external_id, sr.source_url, sr.source_updated_at, sr.raw_excerpt->>'producer' AS producer,
-      e.title_i18n, e.description_i18n, e.translation_status
+      e.title_i18n, e.description_i18n, e.translation_status,
+      ${ENTITY.name === 'routes' ? 'e.image_credit' : 'NULL::text'} AS image_credit
     FROM ${ENTITY.table} e JOIN ${ENTITY.sourceTable} sr ON sr.${ENTITY.foreignKey} = e.id AND sr.source = $1
     WHERE e.status = 'published' ORDER BY e.id ${limit ? 'LIMIT ' + Math.max(1, Math.floor(limit)) : ''}`, [SOURCE]);
   await client.query('ROLLBACK');
@@ -106,6 +108,16 @@ try {
       const en = String(event.descriptionI18n.en ?? '').replace(/\s+/g, ' ').slice(0, 90);
       reportLine(event, 'description française absente', '', en);
     }
+  }
+  // Traductions d'une autre fiche relevées à la main (overrides) : la source reste à corriger.
+  for (const event of events) {
+    for (const issue of manualTranslationIssues({ source: SOURCE, externalId: event.external_id, titleI18n: event.title_i18n }, overrides)) {
+      reportLine(event, issue.motif, '', issue.extrait);
+    }
+  }
+  // Crédit photo mal encodé chez le producteur (parcours uniquement : seule table qui le stocke).
+  for (const event of events) {
+    if (hasEncodingDefect(event.image_credit)) reportLine(event, `crédit photo mal encodé : « ${event.image_credit} »`, '', '');
   }
   const reportFiles = [];
   for (const [producer, lines] of Object.entries(reports)) {
