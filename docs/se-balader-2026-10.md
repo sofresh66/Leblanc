@@ -163,16 +163,37 @@ H=$(DOTENV_CONFIG_PATH=.env.production-backup node -r dotenv/config -e 'process.
   - SQL en commentaire de la migration, dans une transaction (sans risque tant que le Worker ne lit pas ces tables) : `BEGIN; DROP TABLE IF EXISTS route_source_records; DROP TABLE IF EXISTS routes; DELETE FROM schema_migrations WHERE version = '012_routes.sql'; COMMIT;`, puis `scripts/verify-migration-012.mjs`, qui doit afficher « Migration : ABSENTE » et « Tables : aucune » ;
   - restauration de `production` depuis `prod-avant-routes-2026-10-10` (`br-long-credit-b2uwy63r`) dans la console Neon. Cela perd toute écriture postérieure au 10 octobre 2026 à 15:51 UTC (ingestions de nuit comprises) : à réserver au cas où le SQL ne suffirait pas.
 
+- **Fait le 10 octobre 2026 à 15:56:48 UTC.** `012_routes.sql` est appliquée (1 nouvelle migration, code de sortie 0). `scripts/verify-migration-012.mjs` en production est identique à la référence dev, sauf les lignes (0 et 0). L'API alors en ligne n'est pas affectée : `/health`, `/events` et `/places` répondent 200, `/routes` 404 (route encore inconnue du Worker `fca49825`).
+
 ### 3. Déploiement du Worker
+
+Avant (lecture seule, fait le 10 octobre 2026) :
+- compte Cloudflare `f3fbcbb1368768039312d4877ac6d48c` ;
+- version active `fca49825-70c4-4101-a78f-2624345db03f` (100 %) ;
+- secret `DATABASE_URL` présent ;
+- `npx wrangler deploy --dry-run` : 186 KiB gzip, variable `ALLOWED_ORIGINS`.
+
+Le déploiement part de la copie locale de `main` : API des parcours et acceptation des previews du projet (CORS).
 
 ```bash
 cd worker && npx wrangler deploy && cd ..
 ```
 
-Ce déploiement inclut l'API des parcours et l'acceptation des previews du projet (CORS).
+- Réussite : wrangler affiche `https://leblanc-api.elharchdenis.workers.dev` et un nouvel identifiant de version (à noter).
+- Vérifications, en lecture seule :
 
-- Vérifications : `curl -s https://leblanc-api.elharchdenis.workers.dev/health` ; `…/api/v1/routes?limit=1` doit renvoyer 200 (liste vide avant l'ingestion) ; `…/api/v1/routes/geo` doit renvoyer 200 ; `…/api/v1/events?limit=1` doit rester inchangé ; `curl -s -o /dev/null -D - -H 'Origin: https://routes-preview.leblanc-et-moi.pages.dev' …/api/v1/routes?limit=1 | grep -i access-control-allow-origin` doit renvoyer l'origine, et rien pour `http://routes-preview…` ou `https://evil-leblanc-et-moi.pages.dev`.
-- Retour arrière : `cd worker && npx wrangler rollback fca49825-70c4-4101-a78f-2624345db03f`.
+  ```bash
+  bash scripts/verify-worker-deploy.sh https://leblanc-api.elharchdenis.workers.dev vide
+  npx wrangler deployments list --name leblanc-api
+  ```
+
+  Le script vérifie :
+  - anciennes routes : `/health`, `/events`, `/events/geo`, `/events/:id`, `/categories`, `/places`, `/places/:id` en 200, avec des données ;
+  - parcours : `/routes` en 200 avec une liste vide et sans curseur, `/routes/geo` vide, 404 pour un identifiant inconnu, 400 pour un identifiant ou un mode invalide ;
+  - CORS : le site de production est autorisé sur `/events` et `/routes`, ainsi que `https://routes-preview.leblanc-et-moi.pages.dev`. Sont refusés `http://…`, `evil-leblanc-et-moi.pages.dev`, `a.b.leblanc-et-moi.pages.dev` et `…pages.dev.evil.com`. Le prévol OPTIONS répond 204.
+
+  Attendu : « tous les contrôles sont passés » (20 contrôles, validés sur le Worker local).
+- Retour arrière : `cd worker && npx wrangler rollback fca49825-70c4-4101-a78f-2624345db03f && cd ..`. Ensuite, `npx wrangler deployments list --name leblanc-api` doit montrer `fca49825` à 100 %, et `/routes` répondre de nouveau 404. Les tables vides de l'étape 2 sont sans effet sur l'ancien Worker.
 
 ### 4. Ingestion des parcours en production
 
