@@ -99,10 +99,16 @@ Publier les relations OSM qui n'ont pas de fiche DATAtourisme : voie verte Étoi
 
 ## Plan de mise en production
 
-**À ne lancer qu'avec l'accord explicite du propriétaire, étape par étape.** Chaque commande de production s'exécute dans un sous-shell qui charge `.env.production-backup` pour cette seule commande ; l'URL n'est ni affichée ni conservée dans le shell. Contrôle de l'hôte avant chaque écriture :
+**À ne lancer qu'avec l'accord explicite du propriétaire, étape par étape.**
+
+Chaque commande de production lit `.env.production-backup` **par dotenv**, pour cette seule commande (`DOTENV_CONFIG_PATH=.env.production-backup`). L'URL n'est ni affichée ni exportée dans le shell.
+
+**Ne pas utiliser `set -a; . ./.env.production-backup`.** Les URL Neon ne sont pas entre guillemets et contiennent `&`, que le shell interprète comme un lancement en arrière-plan. La variable resterait vide, et les scripts, via `dotenv/config`, retomberaient sur `.env`, c'est-à-dire la base **dev** (constaté le 10 octobre 2026).
+
+Contrôle de l'hôte avant chaque écriture :
 
 ```bash
-( set -a; . ./.env.production-backup; set +a; node -e 'console.log(new URL(process.env.DATABASE_URL_DIRECT).hostname)' )
+DOTENV_CONFIG_PATH=.env.production-backup node -r dotenv/config -e 'console.log(new URL(process.env.DATABASE_URL_DIRECT).hostname)'
 ```
 
 Attendu : `ep-jolly-dawn-b2ezqckv.c-6.eu-central-1.aws.neon.tech`.
@@ -125,23 +131,37 @@ npx neonctl branches list --project-id still-feather-70001673 --output table
 - `--no-secrets` : la sortie n'affiche pas les identifiants de connexion (affichés par défaut).
 - `--no-compute` : pas de calcul actif pour une sauvegarde ; on en ajoute un seulement pour la consulter ou la restaurer.
 - Vérification : `prod-avant-routes-2026-10-10` apparaît dans la liste ; noter son identifiant (`br-…`).
+- **Fait le 10 octobre 2026 à 15:51 UTC** : `br-long-credit-b2uwy63r`, parente `br-jolly-glitter-b2egbt3q` (`production`), état `ready`, point de branche LSN `0/6B97930` (15:51:26 UTC).
 - Retour arrière : c'est le point de restauration des étapes suivantes (console Neon › Branches › Restore). Suppression ultérieure : `npx neonctl branches delete <id> --project-id still-feather-70001673`.
 
 ### 2. Migration 012
 
+La migration ne part que si l'hôte lu est celui de la production :
+
 ```bash
-( set -a; . ./.env.production-backup; set +a; npm run db:migrate )
+H=$(DOTENV_CONFIG_PATH=.env.production-backup node -r dotenv/config -e 'process.stdout.write(new URL(process.env.DATABASE_URL_DIRECT).hostname)'); echo "Hôte : $H"; [ "$H" = "ep-jolly-dawn-b2ezqckv.c-6.eu-central-1.aws.neon.tech" ] && DOTENV_CONFIG_PATH=.env.production-backup npm run db:migrate
 ```
 
-- Réussite : `012_routes.sql` en `[APPLIQUÉE]`, « Migrations terminées avec succès ».
-- Vérification :
+- Réussite : `001` à `011` en `[DÉJÀ APPLIQUÉE]`, `012_routes.sql` en `[APPLIQUÉE]`, « 1 nouvelle(s) migration(s) appliquée(s) ». La migration s'exécute dans une transaction : en cas d'erreur, rien n'est écrit.
+- Vérification (lecture seule) :
 
   ```bash
-  ( set -a; . ./.env.production-backup; set +a; node -e "const pg=require('pg');const c=new pg.Client({connectionString:process.env.DATABASE_URL_DIRECT});c.connect().then(()=>c.query(\"SELECT (SELECT count(*) FROM schema_migrations WHERE version='012_routes.sql') m, to_regclass('public.routes') t\")).then(r=>{console.log(r.rows);return c.end()})" )
+  DOTENV_CONFIG_PATH=.env.production-backup node scripts/verify-migration-012.mjs
   ```
 
-  Attendu : `m = 1`, `t = routes`. Seules deux tables sont créées : le Worker et le front actuels ne sont pas affectés.
-- Retour arrière : le SQL en commentaire de la migration (`DROP TABLE route_source_records; DROP TABLE routes; DELETE FROM schema_migrations WHERE version = '012_routes.sql';`).
+  Attendu, comme sur `dev` (référence du 10 octobre 2026), à l'exception du nombre de lignes :
+  - `Hôte : ep-jolly-dawn-b2ezqckv…` ; migration présente, checksum identique au fichier ;
+  - tables `route_source_records, routes` ; `track geography(MultiLineString,4326)`, `track_simplified geometry(MultiLineString,4326)`, `start_location geography(Point,4326)` ;
+  - colonnes : routes 32, route_source_records 8 ;
+  - 9 index : `idx_routes_list_order`, `idx_routes_modes`, `idx_routes_start_location`, `idx_routes_status`, `idx_routes_track`, `routes_pkey`, `idx_route_source_records_route_id`, `route_source_records_pkey`, `route_source_records_source_external_id_key` ;
+  - contraintes : `routes.c=17 routes.n=15 routes.p=1 route_source_records.c=1 route_source_records.f=1 route_source_records.n=5 route_source_records.p=1 route_source_records.u=1` ;
+  - clé étrangère `ON DELETE CASCADE` ; déclencheur `trg_routes_updated_at` ;
+  - **0 ligne** dans les deux tables.
+
+  Seules deux tables sont créées : le Worker et le front actuels ne sont pas affectés.
+- Retour arrière, au choix :
+  - SQL en commentaire de la migration, dans une transaction (sans risque tant que le Worker ne lit pas ces tables) : `BEGIN; DROP TABLE IF EXISTS route_source_records; DROP TABLE IF EXISTS routes; DELETE FROM schema_migrations WHERE version = '012_routes.sql'; COMMIT;`, puis `scripts/verify-migration-012.mjs`, qui doit afficher « Migration : ABSENTE » et « Tables : aucune » ;
+  - restauration de `production` depuis `prod-avant-routes-2026-10-10` (`br-long-credit-b2uwy63r`) dans la console Neon. Cela perd toute écriture postérieure au 10 octobre 2026 à 15:51 UTC (ingestions de nuit comprises) : à réserver au cas où le SQL ne suffirait pas.
 
 ### 3. Déploiement du Worker
 
@@ -157,9 +177,9 @@ Ce déploiement inclut l'API des parcours et l'acceptation des previews du proje
 ### 4. Ingestion des parcours en production
 
 ```bash
-( set -a; . ./.env.production-backup; set +a; node scripts/ingest-routes.mjs --dry-run )
-( set -a; . ./.env.production-backup; set +a; node scripts/ingest-routes.mjs )
-( set -a; . ./.env.production-backup; set +a; node scripts/revalidate-translations.mjs --entity=routes )
+DOTENV_CONFIG_PATH=.env.production-backup node scripts/ingest-routes.mjs --dry-run
+DOTENV_CONFIG_PATH=.env.production-backup node scripts/ingest-routes.mjs
+DOTENV_CONFIG_PATH=.env.production-backup node scripts/revalidate-translations.mjs --entity=routes
 ```
 
 Attendu : environ 167 parcours, environ 26 tracés, « finished » en `success`. La revalidation (simulation) doit afficher `changed: 0`.
