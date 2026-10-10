@@ -268,21 +268,37 @@ DOTENV_CONFIG_PATH=.env.production-backup node scripts/clear-routes.mjs --apply 
 - Ensuite, `/routes` doit répondre de nouveau avec une liste vide.
 - Autres options : retour arrière de l'étape 2, ou restauration depuis `prod-avant-routes-2026-10-10`.
 
+**Fait le 10 octobre 2026 vers 16:23 UTC** (hôte contrôlé avant chaque commande : `ep-jolly-dawn-b2ezqckv…`).
+- Simulation : `fetched` 614, `pageErrors` 0, `excluded.motorised` 6, hors périmètre 441, `accepted` 167, `created` 167, `withTrack` 26, OSM disponible (71 relations), 1 rejet de traduction (`override:cross_record_translation`). Identique à la répétition sur `dev`.
+- Ingestion : run `1df7d5e4-f5f4-4150-adfd-f8cb655d7c70`, `status: success`, `created` 167, `withTrack` 26, `hidden` 0. Par mode : à pied 93, à cheval 50, vélo 26, VTT 6. Traductions : `rejected` 1, `rejectedDescriptions` 15.
+- Revalidation (lecture seule) : 167 parcours, `changed: 0`, `rescoreNeeded: 0`.
+- `verify-worker-deploy.sh … données` : 20 contrôles sur 20.
+- `/routes/geo` tous modes : 167 parcours, 26 tracés, 81 Ko non compressé ; vue par défaut (sans cheval) : 119. Liste paginée par curseur : 167, sans doublon ni manque.
+- Fiche avec tracé (`262dd712…`, « Itinéraire vélo n°8 », fr et en) : 200, `hasTrack` et `gpxAvailable` vrais, relation OSM 11805696, attributions Licence Ouverte 2.0 et ODbL 1.0. GPX : 200, `application/gpx+xml`, 857 points, `<copyright author="OpenStreetMap contributors">` et licence ODbL.
+- Fiche sans tracé (`5c18cc4c…`, « Balade à pied n°32 ») : 200, `track` nul, `gpxAvailable` faux, seule attribution Licence Ouverte 2.0 ; GPX en 404.
+- `/nearby` sur les deux fiches : 200, 6 événements et 6 lieux.
+
 ### 5. Preview depuis le poste local (vérifiée ensemble, avant tout push)
 
+Depuis la racine du dépôt, copie locale de `main` :
+
 ```bash
-SITEMAP_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_SITE_URL=https://leblanc-et-moi.pages.dev npm run build
+SITEMAP_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_SITE_URL=https://leblanc-et-moi.pages.dev VITE_USE_MOCK=false npm run build
 node scripts/verify-production-build.mjs
-npm exec --workspace=@leblanc/frontend -- wrangler pages deploy dist --project-name leblanc-et-moi --branch routes-preview
+npm exec --workspace=@leblanc/frontend -- wrangler pages deploy dist --project-name leblanc-et-moi --branch routes-preview --commit-dirty=true
 bash scripts/check-seo.sh https://routes-preview.leblanc-et-moi.pages.dev
 ```
 
+- **API de production au build.** Ce sont les valeurs exactes du workflow (contrôlées par son étape « Vérifier la configuration »). Vite lit `.env` à la racine (`envDir: '..'`), où `VITE_API_URL` est vide, mais les variables passées dans la commande sont prioritaires sur les fichiers `.env`. Le sitemap est généré pendant le build à partir de `SITEMAP_API_URL` : il contient donc les fiches parcours de production.
+- **Middleware.** En preview, il lit `API_URL` et `SITE_URL`, à défaut de quoi il prend l'API et le site de production (`frontend/functions/_middleware.ts`). Les balises canonical et hreflang pointent donc vers `leblanc-et-moi.pages.dev`, et la preview ne concurrence pas le site dans l'indexation. Cloudflare ajoute en outre `X-Robots-Tag: noindex` aux déploiements de preview.
+- **Déploiement.** `--branch routes-preview` n'est pas la branche de production (`main`) du projet Pages : c'est un déploiement de preview, sans effet sur le site. Le dossier `functions/` est envoyé avec `dist/` parce que `npm exec --workspace` s'exécute depuis `frontend/`. `--commit-dirty=true` évite seulement l'avertissement lié aux fichiers non suivis (`.claude/`, `docs/diagnostic-…`), qui ne sont pas dans le build.
+- **URL attendues** : l'alias de branche `https://routes-preview.leblanc-et-moi.pages.dev` et l'URL du déploiement `https://<hash>.leblanc-et-moi.pages.dev` (affichée par wrangler). Le CORS du Worker accepte les deux.
 - Réussite :
-  - le build est validé (environ 2 300 URL, dont environ 1 000 fiches parcours) ;
+  - le build est validé, avec des fiches parcours dans le sitemap (167 × 6 langues ≈ 1 000 URL) ;
   - `check-seo.sh` affiche « tous les contrôles sont passés » ;
   - la revue manuelle porte sur la liste, les filtres, la carte, une fiche avec tracé et GPX, une fiche sans tracé, les 6 langues et le mobile.
-- Le build part de la copie locale de `main` (10 commits d’avance sur `origin/main`) : rien n’est poussé à cette étape.
-- Retour arrière : supprimer le déploiement de preview (tableau de bord Pages).
+- Rien n'est poussé à cette étape.
+- Retour arrière : supprimer le déploiement de preview (tableau de bord Pages › leblanc-et-moi › Deployments). Il n'a de toute façon aucun effet sur la production.
 
 ### 6. Push de `main` et des tags (après validation de la preview)
 
