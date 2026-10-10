@@ -47,7 +47,19 @@ describe('planPage', () => {
     expect(html.split('data-rh="true"').length - 1).toBe(html.split('<').length - 1 - (html.match(/<\/script>/g)?.length ?? 0));
   });
 
-  it.each(['/fr/page-inconnue', '/xx/carte', '/fr/evenements', '/fr/evenements/pas-un-uuid', '/fr/lieux/123'])(
+  it('sert « Se balader » en 200 avec titre, fil d’Ariane et hreflang des six segments', async () => {
+    const d = deps(() => ({ status: 200, body: null }));
+    const plan = await planPage('/nl/routes', d);
+    expect(plan).toMatchObject({ status: 200, lang: 'nl', head: { title: 'Routes rond Le Blanc — Le Blanc & Moi' } });
+    const html = plan?.head.tagsHtml ?? '';
+    for (const path of ['/fr/se-balader', '/en/trails', '/es/rutas', '/de/touren', '/it/percorsi', '/nl/routes']) {
+      expect(html).toContain(`href="https://leblanc-et-moi.pages.dev${path}"`);
+    }
+    expect(html).toContain('"name":"Routes"');
+    expect(d.fetchApi).not.toHaveBeenCalled();
+  });
+
+  it.each(['/fr/page-inconnue', '/xx/carte', '/fr/evenements', '/fr/evenements/pas-un-uuid', '/fr/lieux/123', '/fr/se-balader/123'])(
     'répond 404 noindex pour %s sans appeler l’API', async (path) => {
       const d = deps(() => ({ status: 200, body: null }));
       const plan = await planPage(path, d);

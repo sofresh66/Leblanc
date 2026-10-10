@@ -26,6 +26,7 @@ export function Layout() {
     { to: getLocalizedPath('home'), label: t('nav:home'), end: true },
     { to: getLocalizedPath('map'), label: t('nav:map'), end: false },
     { to: getLocalizedPath('eat'), label: t('nav:eat'), end: false },
+    { to: getLocalizedPath('walks'), label: t('nav:walks'), end: false },
     { to: getLocalizedPath('list'), label: t('nav:list'), end: false },
     { to: getLocalizedPath('about'), label: t('nav:about'), end: false },
   ];

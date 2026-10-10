@@ -1,0 +1,89 @@
+{
+  "title": "Rutas",
+  "subtitle": "Senderismo, paseos en bicicleta y circuitos alrededor de Le Blanc y en el Parque Natural Regional de la Brenne. Las rutas con trazado aparecen primero.",
+  "count_one": "{{count}} ruta",
+  "count_other": "{{count}} rutas",
+  "modes": {
+    "foot": "A pie",
+    "bike": "Bicicleta",
+    "mtb": "BTT",
+    "horse": "A caballo"
+  },
+  "filters": {
+    "title": "Filtros",
+    "show": "Mostrar los filtros",
+    "hide": "Ocultar los filtros",
+    "modes": "Modo de desplazamiento",
+    "horseHint": "Oculto por defecto",
+    "modesRequired": "Elija al menos un modo.",
+    "track": "Trazado",
+    "withTrack": "Solo con trazado",
+    "loop": "Forma de la ruta",
+    "loopOnly": "Solo circuitos",
+    "distance": "Distancia",
+    "duration": "Duración máxima",
+    "any": "Indiferente",
+    "distances": {
+      "0-5": "Menos de 5 km",
+      "5-10": "De 5 a 10 km",
+      "10-20": "De 10 a 20 km",
+      "20+": "Más de 20 km"
+    },
+    "durations": {
+      "60": "1 h",
+      "120": "2 h",
+      "240": "4 h",
+      "1440": "Un día"
+    },
+    "apply": "Aplicar",
+    "reset": "Restablecer",
+    "search": {
+      "label": "Buscar una ruta",
+      "placeholder": "Nombre, municipio…",
+      "clear": "Borrar la búsqueda"
+    }
+  },
+  "card": {
+    "loop": "Circuito",
+    "oneWay": "Solo ida",
+    "trackAvailable": "Trazado disponible",
+    "trackUnavailable": "Trazado no disponible",
+    "officialLink": "Ficha oficial",
+    "officialLinkLabel": "{{title}}: ficha oficial (nueva pestaña)",
+    "fromLeBlanc": "Salida a {{distance}} km de Le Blanc",
+    "distanceKm": "{{distance}} km",
+    "hoursMinutes": "{{hours}} h {{minutes}}",
+    "hours": "{{hours}} h",
+    "minutes": "{{minutes}} min",
+    "days_one": "{{days}} día",
+    "days_other": "{{days}} días",
+    "halfDay": "Medio día",
+    "photoCredit": "Foto: {{credit}}",
+    "photoCreditLicense": "Foto: {{credit}} ({{license}})",
+    "source": "Fuente: DATAtourisme, {{producer}}",
+    "sourceUnknown": "Fuente: DATAtourisme",
+    "modesLabel": "Modos"
+  },
+  "view": {
+    "label": "Visualización",
+    "list": "Lista",
+    "map": "Mapa"
+  },
+  "list": {
+    "results": "Rutas",
+    "loadMore": "Ver más rutas",
+    "end": "Se muestran todas las rutas.",
+    "empty": "Ninguna ruta coincide",
+    "emptyDescription": "Pruebe a ampliar los filtros o a añadir un modo de desplazamiento."
+  },
+  "map": {
+    "loading": "Cargando el mapa…",
+    "osmAttribution": "Trazados © colaboradores de OpenStreetMap, ODbL",
+    "osmLink": "Licencia y colaboradores de OpenStreetMap",
+    "legendTrack": "Trazado de la ruta",
+    "legendStart": "Punto de salida",
+    "startsOnly_one": "{{count}} ruta sin trazado: solo se indica su punto de salida.",
+    "startsOnly_other": "{{count}} rutas sin trazado: solo se indica su punto de salida.",
+    "truncated": "Demasiadas rutas para el mapa: afine los filtros."
+  }
+}

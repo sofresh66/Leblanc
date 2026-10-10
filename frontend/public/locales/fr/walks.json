@@ -1,0 +1,89 @@
+{
+  "title": "Se balader",
+  "subtitle": "Randonnées, balades à vélo et circuits autour du Blanc et dans le Parc naturel régional de la Brenne. Les parcours avec tracé apparaissent en premier.",
+  "count_one": "{{count}} parcours",
+  "count_other": "{{count}} parcours",
+  "modes": {
+    "foot": "À pied",
+    "bike": "Vélo",
+    "mtb": "VTT",
+    "horse": "À cheval"
+  },
+  "filters": {
+    "title": "Filtres",
+    "show": "Afficher les filtres",
+    "hide": "Masquer les filtres",
+    "modes": "Mode de déplacement",
+    "horseHint": "Non affiché par défaut",
+    "modesRequired": "Choisissez au moins un mode.",
+    "track": "Tracé",
+    "withTrack": "Avec tracé uniquement",
+    "loop": "Forme du parcours",
+    "loopOnly": "Boucles uniquement",
+    "distance": "Distance",
+    "duration": "Durée maximale",
+    "any": "Indifférent",
+    "distances": {
+      "0-5": "Moins de 5 km",
+      "5-10": "5 à 10 km",
+      "10-20": "10 à 20 km",
+      "20+": "Plus de 20 km"
+    },
+    "durations": {
+      "60": "1 h",
+      "120": "2 h",
+      "240": "4 h",
+      "1440": "Une journée"
+    },
+    "apply": "Appliquer",
+    "reset": "Réinitialiser",
+    "search": {
+      "label": "Rechercher un parcours",
+      "placeholder": "Nom, commune…",
+      "clear": "Effacer la recherche"
+    }
+  },
+  "card": {
+    "loop": "Boucle",
+    "oneWay": "Aller simple",
+    "trackAvailable": "Tracé disponible",
+    "trackUnavailable": "Tracé non disponible",
+    "officialLink": "Fiche officielle",
+    "officialLinkLabel": "{{title}} : fiche officielle (nouvel onglet)",
+    "fromLeBlanc": "Départ à {{distance}} km du Blanc",
+    "distanceKm": "{{distance}} km",
+    "hoursMinutes": "{{hours}} h {{minutes}}",
+    "hours": "{{hours}} h",
+    "minutes": "{{minutes}} min",
+    "days_one": "{{days}} jour",
+    "days_other": "{{days}} jours",
+    "halfDay": "Une demi-journée",
+    "photoCredit": "Photo : {{credit}}",
+    "photoCreditLicense": "Photo : {{credit}} ({{license}})",
+    "source": "Source : DATAtourisme, {{producer}}",
+    "sourceUnknown": "Source : DATAtourisme",
+    "modesLabel": "Modes"
+  },
+  "view": {
+    "label": "Affichage",
+    "list": "Liste",
+    "map": "Carte"
+  },
+  "list": {
+    "results": "Parcours",
+    "loadMore": "Voir plus de parcours",
+    "end": "Tous les parcours sont affichés.",
+    "empty": "Aucun parcours ne correspond",
+    "emptyDescription": "Essayez d’élargir les filtres ou d’ajouter un mode de déplacement."
+  },
+  "map": {
+    "loading": "Chargement de la carte…",
+    "osmAttribution": "Tracés © contributeurs OpenStreetMap, ODbL",
+    "osmLink": "Licence et contributeurs OpenStreetMap",
+    "legendTrack": "Tracé du parcours",
+    "legendStart": "Point de départ",
+    "startsOnly_one": "{{count}} parcours sans tracé : seul son point de départ est indiqué.",
+    "startsOnly_other": "{{count}} parcours sans tracé : seul leur point de départ est indiqué.",
+    "truncated": "Trop de parcours pour la carte : affinez les filtres."
+  }
+}

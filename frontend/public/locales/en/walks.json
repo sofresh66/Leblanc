@@ -1,0 +1,89 @@
+{
+  "title": "Trails",
+  "subtitle": "Hikes, bike rides and routes around Le Blanc and in the Brenne Regional Nature Park. Routes with a GPS track are listed first.",
+  "count_one": "{{count}} route",
+  "count_other": "{{count}} routes",
+  "modes": {
+    "foot": "On foot",
+    "bike": "Bike",
+    "mtb": "Mountain bike",
+    "horse": "Horse riding"
+  },
+  "filters": {
+    "title": "Filters",
+    "show": "Show filters",
+    "hide": "Hide filters",
+    "modes": "Way of travel",
+    "horseHint": "Hidden by default",
+    "modesRequired": "Choose at least one way of travel.",
+    "track": "Track",
+    "withTrack": "With a track only",
+    "loop": "Route shape",
+    "loopOnly": "Loops only",
+    "distance": "Distance",
+    "duration": "Maximum duration",
+    "any": "Any",
+    "distances": {
+      "0-5": "Under 5 km",
+      "5-10": "5 to 10 km",
+      "10-20": "10 to 20 km",
+      "20+": "Over 20 km"
+    },
+    "durations": {
+      "60": "1 h",
+      "120": "2 h",
+      "240": "4 h",
+      "1440": "One day"
+    },
+    "apply": "Apply",
+    "reset": "Reset",
+    "search": {
+      "label": "Search for a route",
+      "placeholder": "Name, town…",
+      "clear": "Clear search"
+    }
+  },
+  "card": {
+    "loop": "Loop",
+    "oneWay": "One way",
+    "trackAvailable": "Track available",
+    "trackUnavailable": "Track not available",
+    "officialLink": "Official page",
+    "officialLinkLabel": "{{title}}: official page (new tab)",
+    "fromLeBlanc": "Starts {{distance}} km from Le Blanc",
+    "distanceKm": "{{distance}} km",
+    "hoursMinutes": "{{hours}} h {{minutes}}",
+    "hours": "{{hours}} h",
+    "minutes": "{{minutes}} min",
+    "days_one": "{{days}} day",
+    "days_other": "{{days}} days",
+    "halfDay": "Half a day",
+    "photoCredit": "Photo: {{credit}}",
+    "photoCreditLicense": "Photo: {{credit}} ({{license}})",
+    "source": "Source: DATAtourisme, {{producer}}",
+    "sourceUnknown": "Source: DATAtourisme",
+    "modesLabel": "Ways of travel"
+  },
+  "view": {
+    "label": "Display",
+    "list": "List",
+    "map": "Map"
+  },
+  "list": {
+    "results": "Routes",
+    "loadMore": "Show more routes",
+    "end": "All routes are shown.",
+    "empty": "No route matches",
+    "emptyDescription": "Try widening the filters or adding a way of travel."
+  },
+  "map": {
+    "loading": "Loading the map…",
+    "osmAttribution": "Tracks © OpenStreetMap contributors, ODbL",
+    "osmLink": "OpenStreetMap licence and contributors",
+    "legendTrack": "Route track",
+    "legendStart": "Starting point",
+    "startsOnly_one": "{{count}} route has no track: only its starting point is shown.",
+    "startsOnly_other": "{{count}} routes have no track: only their starting point is shown.",
+    "truncated": "Too many routes for the map: narrow the filters."
+  }
+}

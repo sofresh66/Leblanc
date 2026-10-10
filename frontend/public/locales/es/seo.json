@@ -35,5 +35,9 @@
   "eat": {
     "title": "Dónde comer cerca de Le Blanc — Le Blanc & Moi",
     "description": "Restaurantes, bares y lugares para comer en un radio de 20 km alrededor de Le Blanc (36300): horarios, contactos, mapa e itinerario."
+  },
+  "walks": {
+    "title": "Rutas alrededor de Le Blanc — Le Blanc & Moi",
+    "description": "Senderismo, paseos en bicicleta y circuitos alrededor de Le Blanc y en la Brenne: distancia, duración, trazado y punto de salida."
   }
 }

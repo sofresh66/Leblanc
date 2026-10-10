@@ -1,0 +1,89 @@
+{
+  "title": "Touren",
+  "subtitle": "Wanderungen, Radtouren und Rundwege rund um Le Blanc und im Regionalen Naturpark Brenne. Touren mit GPS-Track werden zuerst angezeigt.",
+  "count_one": "{{count}} Tour",
+  "count_other": "{{count}} Touren",
+  "modes": {
+    "foot": "Zu Fuß",
+    "bike": "Fahrrad",
+    "mtb": "Mountainbike",
+    "horse": "Zu Pferd"
+  },
+  "filters": {
+    "title": "Filter",
+    "show": "Filter anzeigen",
+    "hide": "Filter ausblenden",
+    "modes": "Fortbewegungsart",
+    "horseHint": "Standardmäßig ausgeblendet",
+    "modesRequired": "Wählen Sie mindestens eine Fortbewegungsart.",
+    "track": "Track",
+    "withTrack": "Nur mit Track",
+    "loop": "Streckenform",
+    "loopOnly": "Nur Rundtouren",
+    "distance": "Länge",
+    "duration": "Höchstdauer",
+    "any": "Beliebig",
+    "distances": {
+      "0-5": "Unter 5 km",
+      "5-10": "5 bis 10 km",
+      "10-20": "10 bis 20 km",
+      "20+": "Über 20 km"
+    },
+    "durations": {
+      "60": "1 Std.",
+      "120": "2 Std.",
+      "240": "4 Std.",
+      "1440": "Ein Tag"
+    },
+    "apply": "Anwenden",
+    "reset": "Zurücksetzen",
+    "search": {
+      "label": "Tour suchen",
+      "placeholder": "Name, Ort…",
+      "clear": "Suche löschen"
+    }
+  },
+  "card": {
+    "loop": "Rundtour",
+    "oneWay": "Einfache Strecke",
+    "trackAvailable": "Track verfügbar",
+    "trackUnavailable": "Track nicht verfügbar",
+    "officialLink": "Offizielle Seite",
+    "officialLinkLabel": "{{title}}: offizielle Seite (neuer Tab)",
+    "fromLeBlanc": "Start {{distance}} km von Le Blanc",
+    "distanceKm": "{{distance}} km",
+    "hoursMinutes": "{{hours}} Std. {{minutes}}",
+    "hours": "{{hours}} Std.",
+    "minutes": "{{minutes}} Min.",
+    "days_one": "{{days}} Tag",
+    "days_other": "{{days}} Tage",
+    "halfDay": "Ein halber Tag",
+    "photoCredit": "Foto: {{credit}}",
+    "photoCreditLicense": "Foto: {{credit}} ({{license}})",
+    "source": "Quelle: DATAtourisme, {{producer}}",
+    "sourceUnknown": "Quelle: DATAtourisme",
+    "modesLabel": "Fortbewegungsarten"
+  },
+  "view": {
+    "label": "Ansicht",
+    "list": "Liste",
+    "map": "Karte"
+  },
+  "list": {
+    "results": "Touren",
+    "loadMore": "Weitere Touren anzeigen",
+    "end": "Alle Touren werden angezeigt.",
+    "empty": "Keine passende Tour",
+    "emptyDescription": "Erweitern Sie die Filter oder wählen Sie eine weitere Fortbewegungsart."
+  },
+  "map": {
+    "loading": "Karte wird geladen…",
+    "osmAttribution": "Tracks © OpenStreetMap-Mitwirkende, ODbL",
+    "osmLink": "Lizenz und Mitwirkende von OpenStreetMap",
+    "legendTrack": "Streckenverlauf",
+    "legendStart": "Startpunkt",
+    "startsOnly_one": "{{count}} Tour ohne Track: Nur der Startpunkt wird angezeigt.",
+    "startsOnly_other": "{{count}} Touren ohne Track: Nur ihr Startpunkt wird angezeigt.",
+    "truncated": "Zu viele Touren für die Karte: Bitte Filter eingrenzen."
+  }
+}

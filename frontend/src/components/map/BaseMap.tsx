@@ -36,23 +36,34 @@ export const MarkerClusterGroup = createLayerComponent<L.MarkerClusterGroup, Mar
 export interface BaseMapProps {
   className?: string;
   children?: ReactNode;
+  /** Centre et zoom initiaux (défaut : Le Blanc, zoom 11). */
+  center?: [number, number];
+  zoom?: number;
+  /** Cercle des 20 km (événements, lieux) ; les parcours vont jusqu'au bout du PNR. */
+  showSearchRadius?: boolean;
 }
 
 /** Fond commun des cartes : tuiles OSM (attribution obligatoire) et rayon de 20 km. */
-export function BaseMap({ className = 'h-[500px] lg:h-[650px] w-full', children }: BaseMapProps) {
+export function BaseMap({
+  className = 'h-[500px] lg:h-[650px] w-full',
+  children,
+  center = [LE_BLANC_CENTER.lat, LE_BLANC_CENTER.lng],
+  zoom = 11,
+  showSearchRadius = true,
+}: BaseMapProps) {
   return (
     <div className={`relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 ${className}`}>
-      <MapContainer center={[LE_BLANC_CENTER.lat, LE_BLANC_CENTER.lng]} zoom={11} scrollWheelZoom className="h-full w-full z-0">
+      <MapContainer center={center} zoom={zoom} scrollWheelZoom className="h-full w-full z-0">
         <TileLayer
           url={OSM_TILE_URL}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           maxZoom={19}
         />
-        <Circle
+        {showSearchRadius && <Circle
           center={[LE_BLANC_CENTER.lat, LE_BLANC_CENTER.lng]}
           radius={SEARCH_RADIUS_METERS}
           pathOptions={{ color: '#2d6a4f', fillColor: '#52b788', fillOpacity: 0.06, weight: 1.5, dashArray: '6, 6' }}
-        />
+        />}
         {children}
       </MapContainer>
     </div>

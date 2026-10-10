@@ -43,11 +43,11 @@ function toApiError(response: Response, payload: unknown): ApiError {
   return new ApiError(response.status, code, message, requestId);
 }
 
-function invalidResponseError(path: string, cause: Error): ApiError {
+export function invalidResponseError(path: string, cause: Error): ApiError {
   return new ApiError(502, 'INVALID_RESPONSE', `Réponse invalide de l'API (${path}) : ${cause.message}`);
 }
 
-async function getJson(path: string, searchParams = new URLSearchParams()): Promise<unknown> {
+export async function getJson(path: string, searchParams = new URLSearchParams()): Promise<unknown> {
   const url = buildUrl(path, searchParams);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);

@@ -15,6 +15,7 @@ const CreditsPage = lazy(pageImports.credits);
 const PrivacyPage = lazy(pageImports.privacy);
 const EatPage = lazy(pageImports.eat);
 const PlacePage = lazy(pageImports.places);
+const WalksPage = lazy(pageImports.walks);
 const NotFoundPage = lazy(pageImports.notFound);
 
 /**
@@ -77,6 +78,10 @@ const localizedLanguageRoutes = SUPPORTED_LANGUAGES.map((lang: SupportedLanguage
       {
         path: `${segments.places}/:id`,
         element: <PlacePage />,
+      },
+      {
+        path: segments.walks,
+        element: <WalksPage />,
       },
       {
         path: segments.about,

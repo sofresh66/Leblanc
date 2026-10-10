@@ -1,0 +1,89 @@
+{
+  "title": "Routes",
+  "subtitle": "Wandelingen, fietstochten en routes rond Le Blanc en in het Regionaal Natuurpark Brenne. Routes met een gps-track staan bovenaan.",
+  "count_one": "{{count}} route",
+  "count_other": "{{count}} routes",
+  "modes": {
+    "foot": "Te voet",
+    "bike": "Fiets",
+    "mtb": "Mountainbike",
+    "horse": "Te paard"
+  },
+  "filters": {
+    "title": "Filters",
+    "show": "Filters tonen",
+    "hide": "Filters verbergen",
+    "modes": "Manier van verplaatsen",
+    "horseHint": "Standaard verborgen",
+    "modesRequired": "Kies ten minste één manier van verplaatsen.",
+    "track": "Track",
+    "withTrack": "Alleen met track",
+    "loop": "Vorm van de route",
+    "loopOnly": "Alleen rondroutes",
+    "distance": "Afstand",
+    "duration": "Maximale duur",
+    "any": "Maakt niet uit",
+    "distances": {
+      "0-5": "Minder dan 5 km",
+      "5-10": "5 tot 10 km",
+      "10-20": "10 tot 20 km",
+      "20+": "Meer dan 20 km"
+    },
+    "durations": {
+      "60": "1 u",
+      "120": "2 u",
+      "240": "4 u",
+      "1440": "Een dag"
+    },
+    "apply": "Toepassen",
+    "reset": "Herstellen",
+    "search": {
+      "label": "Een route zoeken",
+      "placeholder": "Naam, gemeente…",
+      "clear": "Zoekopdracht wissen"
+    }
+  },
+  "card": {
+    "loop": "Rondroute",
+    "oneWay": "Enkele reis",
+    "trackAvailable": "Track beschikbaar",
+    "trackUnavailable": "Track niet beschikbaar",
+    "officialLink": "Officiële pagina",
+    "officialLinkLabel": "{{title}}: officiële pagina (nieuw tabblad)",
+    "fromLeBlanc": "Start op {{distance}} km van Le Blanc",
+    "distanceKm": "{{distance}} km",
+    "hoursMinutes": "{{hours}} u {{minutes}}",
+    "hours": "{{hours}} u",
+    "minutes": "{{minutes}} min",
+    "days_one": "{{days}} dag",
+    "days_other": "{{days}} dagen",
+    "halfDay": "Een halve dag",
+    "photoCredit": "Foto: {{credit}}",
+    "photoCreditLicense": "Foto: {{credit}} ({{license}})",
+    "source": "Bron: DATAtourisme, {{producer}}",
+    "sourceUnknown": "Bron: DATAtourisme",
+    "modesLabel": "Manieren van verplaatsen"
+  },
+  "view": {
+    "label": "Weergave",
+    "list": "Lijst",
+    "map": "Kaart"
+  },
+  "list": {
+    "results": "Routes",
+    "loadMore": "Meer routes tonen",
+    "end": "Alle routes worden getoond.",
+    "empty": "Geen enkele route komt overeen",
+    "emptyDescription": "Verruim de filters of voeg een manier van verplaatsen toe."
+  },
+  "map": {
+    "loading": "Kaart wordt geladen…",
+    "osmAttribution": "Tracks © OpenStreetMap-bijdragers, ODbL",
+    "osmLink": "Licentie en bijdragers van OpenStreetMap",
+    "legendTrack": "Track van de route",
+    "legendStart": "Startpunt",
+    "startsOnly_one": "{{count}} route zonder track: alleen het startpunt wordt getoond.",
+    "startsOnly_other": "{{count}} routes zonder track: alleen hun startpunt wordt getoond.",
+    "truncated": "Te veel routes voor de kaart: verfijn de filters."
+  }
+}

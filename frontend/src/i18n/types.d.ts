@@ -27,6 +27,7 @@ export interface NavResource {
   list: string;
   about: string;
   language: string;
+  walks: string;
 }
 
 export interface ErrorsResource {
@@ -49,6 +50,7 @@ export interface SeoResource {
   event: { title: string; description: string; dynamicTitle: string };
   about: { title: string; description: string };
   notFound: { title: string; description: string };
+  walks: { title: string; description: string };
 }
 
 export interface PagesResource {
@@ -251,6 +253,34 @@ export interface PlacesResource {
   map: { noLocation_one: string; noLocation_other: string };
 }
 
+export interface WalksResource {
+  title: string;
+  subtitle: string;
+  count_one: string;
+  count_other: string;
+  modes: { foot: string; bike: string; mtb: string; horse: string };
+  filters: {
+    title: string; show: string; hide: string; modes: string; horseHint: string; modesRequired: string;
+    track: string; withTrack: string; loop: string; loopOnly: string; distance: string; duration: string; any: string;
+    distances: { '0-5': string; '5-10': string; '10-20': string; '20+': string };
+    durations: { '60': string; '120': string; '240': string; '1440': string };
+    apply: string; reset: string;
+    search: { label: string; placeholder: string; clear: string };
+  };
+  card: {
+    loop: string; oneWay: string; trackAvailable: string; trackUnavailable: string; officialLink: string;
+    officialLinkLabel: string; fromLeBlanc: string; distanceKm: string; hoursMinutes: string; hours: string;
+    minutes: string; days_one: string; days_other: string; halfDay: string; photoCredit: string;
+    photoCreditLicense: string; source: string; sourceUnknown: string; modesLabel: string;
+  };
+  view: { label: string; list: string; map: string };
+  list: { results: string; loadMore: string; end: string; empty: string; emptyDescription: string };
+  map: {
+    loading: string; osmAttribution: string; osmLink: string; legendTrack: string; legendStart: string;
+    startsOnly_one: string; startsOnly_other: string; truncated: string;
+  };
+}
+
 declare module 'react-i18next' {
   interface CustomTypeOptions {
     defaultNS: 'common';
@@ -263,6 +293,7 @@ declare module 'react-i18next' {
       events: EventsResource;
       filters: FiltersResource;
       places: PlacesResource;
+      walks: WalksResource;
     };
   }
 }

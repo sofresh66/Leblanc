@@ -3,6 +3,7 @@ import { resolveRoute } from './routeMapping';
 export const pageImports = {
   eat: () => import('../pages/EatPage').then((module) => ({ default: module.EatPage })),
   places: () => import('../pages/PlacePage').then((module) => ({ default: module.PlacePage })),
+  walks: () => import('../pages/WalksPage').then((module) => ({ default: module.WalksPage })),
   list: () => import('../pages/ListPage'),
   map: () => import('../pages/MapPage'),
   events: () => import('../pages/EventPage'),

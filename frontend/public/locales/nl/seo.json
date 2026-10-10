@@ -35,5 +35,9 @@
   "eat": {
     "title": "Waar eten in en rond Le Blanc — Le Blanc & Moi",
     "description": "Restaurants, bars en eetadressen binnen 20 km rond Le Blanc (36300): openingstijden, contactgegevens, kaart en route."
+  },
+  "walks": {
+    "title": "Routes rond Le Blanc — Le Blanc & Moi",
+    "description": "Wandelingen, fietstochten en routes rond Le Blanc en in de Brenne: afstand, duur, track en startpunt."
   }
 }
