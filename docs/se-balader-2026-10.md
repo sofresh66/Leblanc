@@ -1,6 +1,6 @@
 # Onglet « Se balader » (octobre 2026)
 
-Randonnées, balades à vélo, circuits VTT et itinéraires équestres autour du Blanc et dans le Parc naturel régional de la Brenne. Développé et validé sur la branche Neon `dev` (lots 1 à 7, tags `se-balader-lot-1` à `se-balader-lot-7`). Migration, API et données en production ; preview validée et code poussé. État de la publication du front : voir le [plan de mise en production](#plan-de-mise-en-production) en fin de document.
+Randonnées, balades à vélo, circuits VTT et itinéraires équestres autour du Blanc et dans le Parc naturel régional de la Brenne. Développé et validé sur la branche Neon `dev` (lots 1 à 7, tags `se-balader-lot-1` à `se-balader-lot-7`). **Migration, API, données et front en production depuis le 10 octobre 2026 ; vérifications finales réussies.** Voir le [plan de mise en production](#plan-de-mise-en-production) et ses comptes rendus en fin de document.
 
 ## Architecture
 
@@ -369,9 +369,16 @@ gh run watch --repo sofresh66/Leblanc
 - `npm run lint` et `npm run typecheck` : code 0 chacun. Le premier lancement des tests avait échoué avant leur exécution sur une restriction de lecture d'esbuild ; la relance avec les droits nécessaires a réussi.
 - Autorisation du propriétaire : commit du test seul, commit de documentation séparé, puis push et relance de `production.yml` sans nouvel accord si le diff ne contient que tests et doc.
 
+**Relance réussie le 10 octobre 2026 à 19:05 (heure de Paris).**
+- Commits séparés : `e5eddb0` (test seul), `de43459` (doc seule). Diff avant push limité à ces deux fichiers ; fichiers suivis propres, sauvegardes de production non suivies. `git push origin main` : code 0, `1ef7f62..de43459`.
+- [Run 38069768559](https://github.com/sofresh66/Leblanc/actions/runs/38069768559), déclenché sur `de43459f6404e3bc37e69622946b04e57b60b006` : **success**, suivi jusqu'au bout par `gh run watch --exit-status` (code 0, durée 7 min 45 s). Toutes les étapes utiles passent : tests, migrations, événements, lieux, restaurants manuels, parcours, build, vérification du sitemap et publication.
+- Pages production : **`ed9ba912-2668-43c6-bfd9-c265763170e4`**, branche `main`, source `de43459` ; URL propre https://ed9ba912.leblanc-et-moi.pages.dev. Le domaine public est https://leblanc-et-moi.pages.dev.
+- Worker confirmé après publication : **`3758615a-8bed-4d2b-87b7-6b113c2b3620` à 100 %**. `main` distant confirmé sur `de43459`.
+- Retour arrière front conservé : `96ef52a9-e658-4825-8b8a-08ddf0a43137` (source `5febaa6`). Aucun retour arrière exécuté : contrôles finaux réussis.
+
 ### 8. Vérifications après déploiement
 
-**Non exécutée après cette tentative : l'étape 7 n'a publié aucun nouveau front.**
+**Non exécutée après la première tentative (run 38069088767), puis réussie après la relance (run 38069768559).**
 
 ```bash
 bash scripts/check-seo.sh https://leblanc-et-moi.pages.dev
@@ -384,3 +391,19 @@ bash scripts/check-seo.sh https://leblanc-et-moi.pages.dev
 - **GPX** : téléchargement depuis une fiche avec tracé ; le fichier contient la licence ODbL.
 - **Pages légales** : Crédits, À propos et Confidentialité dans une autre langue.
 - **Le lendemain** : le run de 3 h et son étape « Actualiser les parcours » ; le lundi, le contrôle hebdomadaire des parcours.
+
+**Résultats du 10 octobre 2026, sur le site de production.**
+- `check-seo.sh` : code 0, « tous les contrôles sont passés » (sitemap, canonical, hreflang, JSON-LD, vraies 404, sécurité et cache).
+- Sitemap : **2 346 URL**, dont **1 002 fiches parcours**, 16 422 alternates (six langues + x-default pour chaque URL). API : 167 parcours, 26 tracés.
+- `/fr/se-balader/pas-un-uuid` : HTTP 404 avec `noindex`. Accueil, agenda, fiche parcours, Crédits, À propos et Confidentialité en anglais : HTTP 200, indexables, bundle `index-Chc4TsZU.js` identique à celui de la preview validée.
+- Fiche avec tracé `262dd712-7e99-4065-bbce-2d5a41ec41d9` : titre et relation OSM 11805696 corrects, GPX disponible. GPX : HTTP 200, `application/gpx+xml`, **857 points**, copyright OSM et licence ODbL présents. Le lien rendu dans le navigateur pointe bien vers l'API de production.
+- Vérification dans le navigateur : onglet « Se balader » visible ; accueil et agenda chargent leurs événements ; carte des parcours avec tracés et attribution ODbL ; carte des événements et fiche lieu « Les Petites Sardines » fonctionnelles.
+- Compte rendu final enregistré localement dans ce document, sans nouveau commit ni push après la publication.
+
+## Suites à prévoir (avec accord du propriétaire pour toute action)
+
+- Supprimer le déploiement de preview `routes-preview` après accord.
+- Garder `prod-avant-routes-2026-10-10` jusqu'à fin novembre 2026 ; supprimer `prod-avant-audit-2026-10-08` après le 5 novembre 2026.
+- Le 15 octobre 2026 : CSP en mode bloquant sur `csp-enforce`, un autre jour qu'un autre déploiement.
+- Envoyer le signalement à Destination Brenne (CSV dans `artifacts/`).
+- Lot 8 prioritaire : relations OSM sans fiche DATAtourisme (Étoile Verte du Blanc, V94, GR 48…).
