@@ -11,7 +11,8 @@ test.beforeAll(async ({ request }) => {
 
 test('1. L’accueil affiche des événements réels', async ({ page }) => {
   await page.goto('/fr');
-  await expect(page.getByTestId(`event-card-${events[0]!.id}`)).toBeVisible();
+  // Un même événement peut figurer dans deux sections de l’accueil (ce week-end, à venir).
+  await expect(page.getByTestId(`event-card-${events[0]!.id}`).first()).toBeVisible();
   await expect(page.getByTestId('error-state')).toHaveCount(0);
 });
 
