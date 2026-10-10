@@ -285,6 +285,7 @@ Depuis la racine du dépôt, copie locale de `main` :
 ```bash
 SITEMAP_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_SITE_URL=https://leblanc-et-moi.pages.dev VITE_USE_MOCK=false npm run build
 node scripts/verify-production-build.mjs
+node scripts/verify-preview-dist.mjs
 npm exec --workspace=@leblanc/frontend -- wrangler pages deploy dist --project-name leblanc-et-moi --branch routes-preview --commit-dirty=true
 bash scripts/check-seo.sh https://routes-preview.leblanc-et-moi.pages.dev
 ```
@@ -299,6 +300,33 @@ bash scripts/check-seo.sh https://routes-preview.leblanc-et-moi.pages.dev
   - la revue manuelle porte sur la liste, les filtres, la carte, une fiche avec tracé et GPX, une fiche sans tracé, les 6 langues et le mobile.
 - Rien n'est poussé à cette étape.
 - Retour arrière : supprimer le déploiement de preview (tableau de bord Pages › leblanc-et-moi › Deployments). Il n'a de toute façon aucun effet sur la production.
+
+**Préparation du 10 octobre 2026 : arrêt avant déploiement.**
+- Build local avec les variables de production : code de sortie 0 ; `verify-production-build.mjs` : code 0, sitemap de 2 482 153 octets, 2 346 URL (906 fiches événements, 390 fiches lieux, **1 002 fiches parcours**, soit 167 par langue).
+- Contrôle de 106 fichiers dans `frontend/dist` : API de production présente dans `assets/index-Chc4TsZU.js` et `_headers` ; aucune URL localhost ou loopback.
+- Le contrôle strict de toute occurrence du mot `localhost` sort en code 1 : une occurrence dans une expression régulière de `i18next-browser-languagedetector`, destinée à reconnaître la langue dans un sous-domaine. Ce n'est pas une URL d'API ni une destination de requête.
+- Conformément à la consigne du propriétaire en cas d'échec, aucun déploiement de preview effectué, `check-seo.sh` non lancé, aucun commit ni push. Validation du traitement de cette occurrence nécessaire avant reprise.
+
+**Reprise autorisée le 10 octobre 2026.**
+- Le propriétaire accepte l'occurrence technique de `localhost`. Comparaison en lecture seule avec `96ef52a9` : la même expression régulière est déjà présente dans le bundle en ligne `assets/index-DXSxAJTk.js` ; rien de nouveau sur ce point.
+- Le contrôle reproductible `scripts/verify-preview-dist.mjs` cherche les URL HTTP(S), ainsi que les URL relatives au protocole, vers `localhost`, `127.0.0.1`, `0.0.0.0` et `[::1]`. Il exige aussi l'API de production dans un bundle JS et des fiches parcours dans le sitemap. Le mot seul ne provoque plus d'échec.
+- Réutilisation du `dist` déjà construit : seuls la documentation et le script de contrôle ont changé, sans rebuild du front.
+
+**Preview publiée et validée par le propriétaire le 10 octobre 2026.**
+- `verify-preview-dist.mjs` : code 0, 106 fichiers contrôlés, API de production présente, aucune URL locale ; sitemap de 2 346 URL dont 1 002 fiches parcours. ESLint du nouveau script et `git diff --check` : code 0.
+- `npm exec --workspace=@leblanc/frontend -- wrangler pages deploy dist --project-name leblanc-et-moi --branch routes-preview --commit-dirty=true` : code 0 ; bundle Functions envoyé ; aucun rebuild du front.
+- Alias : https://routes-preview.leblanc-et-moi.pages.dev ; URL propre au déploiement : https://6e05a724.leblanc-et-moi.pages.dev.
+- `bash scripts/check-seo.sh https://routes-preview.leblanc-et-moi.pages.dev` : code 0, « tous les contrôles sont passés » (sitemap, hreflang, canonical, JSON-LD, 404, sécurité et cache des assets).
+- Les deux URL servent `/fr/se-balader` en HTTP 200 avec `X-Robots-Tag: noindex`.
+- Pages à examiner sur l'alias, sur ordinateur et mobile :
+  - liste et filtres : `/fr/se-balader` ; carte et attribution ODbL : `/fr/se-balader?view=map` ;
+  - fiche avec tracé et téléchargement GPX : `/fr/se-balader/262dd712-7e99-4065-bbce-2d5a41ec41d9` (Itinéraire vélo n°8) ;
+  - fiche sans tracé : `/fr/se-balader/5c18cc4c-3dcc-4ccc-ae46-9d195d524c59` (Balade à pied n°32) ;
+  - six langues : `/fr/se-balader`, `/en/trails`, `/es/rutas`, `/de/touren`, `/it/percorsi`, `/nl/routes` ; changer aussi la langue depuis une fiche ;
+  - pages légales : `/fr/credits`, `/fr/a-propos`, `/en/privacy` ;
+  - pages existantes : `/fr`, `/fr/liste`, `/fr/carte`, `/fr/lieux/008706e1-dbe5-4ad8-8b44-c219300861d7`.
+- Arrêt après l'étape 5 : aucun commit, aucun push, aucune étape 6 ou 7 lancée. Le propriétaire valide lui-même la preview avant toute suite.
+- Validation reçue : étapes 6 et 7 autorisées dans la même session, puis vérifications de l'étape 8 si le workflow réussit. Le commit préparatoire porte uniquement sur ce document ; `scripts/verify-preview-dist.mjs` reste un contrôle local non suivi, comme `.claude/` et `docs/diagnostic-indexation-2026-10-02.md`.
 
 ### 6. Push de `main` et des tags (après validation de la preview)
 
@@ -320,7 +348,7 @@ gh run watch --repo sofresh66/Leblanc
 ```
 
 - Réussite : toutes les étapes sont vertes, y compris « Actualiser les parcours ». Le résumé contient la section « Parcours « Se balader » », et `verify-production-build` mentionne des fiches parcours.
-- Retour arrière : revenir au déploiement Pages précédent (`dc49c166`, ou le dernier en ligne au moment de la mise en production) depuis le tableau de bord Pages.
+- Retour arrière : revenir au déploiement Pages **`96ef52a9-e658-4825-8b8a-08ddf0a43137`** depuis le tableau de bord Pages. Référence actualisée le 10 octobre 2026 : déploiement de la nuit, issu de `5febaa6`, avec les mêmes fichiers JS/CSS que `dc49c166`. Vérifier de nouveau le déploiement en ligne au moment de la mise en production.
 
 ### 8. Vérifications après déploiement
 
