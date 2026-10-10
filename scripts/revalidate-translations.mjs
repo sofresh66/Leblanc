@@ -1,7 +1,8 @@
 // Réévalue le statut des traductions des événements DATAtourisme déjà en base.
 // Par défaut : simulation en lecture seule, avec le diff. --apply écrit les
 // nouveaux statuts dans une transaction (jamais la donnée brute).
-// Usage : node scripts/revalidate-translations.mjs [--apply] [--json]
+// --entity=routes : mêmes règles sur les parcours (défaut : événements).
+// Usage : node scripts/revalidate-translations.mjs [--apply] [--json] [--entity=events|routes]
 import 'dotenv/config';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
@@ -10,16 +11,18 @@ import {
 } from './lib/translation-validator.mjs';
 import { loadTranslationAllowlist, loadTranslationOverrides, reportRows, summarize, toCsv } from './lib/translation-report.mjs';
 import fs from 'node:fs/promises';
+import { parseEntity } from './lib/translation-entities.mjs';
 
 const SOURCE = 'datatourisme';
 const APPLY = process.argv.includes('--apply');
 const OVERRIDES_FILE = new URL('../data/translation-overrides.json', import.meta.url);
 const ALLOWLIST_FILE = new URL('../data/translation-allowlist.json', import.meta.url);
-const REPORT_FILE = fileURLToPath(new URL('../artifacts/translation-revalidation.csv', import.meta.url));
+const ENTITY = parseEntity(process.argv);
+const REPORT_FILE = fileURLToPath(new URL(`../artifacts/translation-revalidation${ENTITY.fileSuffix}.csv`, import.meta.url));
 
 const databaseUrl = process.env.DATABASE_URL_DIRECT;
 if (!databaseUrl) throw new Error('DATABASE_URL_DIRECT est requis');
-console.error(`Base : ${new URL(databaseUrl).hostname} (${APPLY ? 'ÉCRITURE' : 'lecture seule'})`);
+console.error(`Base : ${new URL(databaseUrl).hostname} (${APPLY ? 'ÉCRITURE' : 'lecture seule'}, ${ENTITY.label})`);
 
 const overrides = await loadTranslationOverrides(OVERRIDES_FILE);
 const allowlist = await loadTranslationAllowlist(ALLOWLIST_FILE);
@@ -29,7 +32,7 @@ try {
   await client.query(APPLY ? 'BEGIN' : 'BEGIN TRANSACTION READ ONLY');
   const { rows } = await client.query(`
     SELECT e.id, sr.external_id, e.status, e.title_i18n, e.description_i18n, e.translation_status
-    FROM events e JOIN source_records sr ON sr.event_id = e.id AND sr.source = $1
+    FROM ${ENTITY.table} e JOIN ${ENTITY.sourceTable} sr ON sr.${ENTITY.foreignKey} = e.id AND sr.source = $1
     ORDER BY e.id`, [SOURCE]);
   const checkedAt = new Date().toISOString();
   const changes = [];
@@ -48,6 +51,7 @@ try {
   const rejected = report.filter((line) => line.status === 'rejected');
   const output = {
     step: APPLY ? 'apply' : 'dry_run',
+    entity: ENTITY.name,
     events: rows.length,
     changed: changes.length,
     ...summary,
@@ -60,11 +64,11 @@ try {
     report: REPORT_FILE,
   };
   await fs.mkdir(new URL('../artifacts/', import.meta.url), { recursive: true });
-  await fs.writeFile(REPORT_FILE, toCsv(report), 'utf8');
+  await fs.writeFile(REPORT_FILE, toCsv(report, { idHeader: ENTITY.name === 'routes' ? 'routeId' : 'eventId' }), 'utf8');
 
   if (APPLY) {
     for (const change of changes) {
-      await client.query('UPDATE events SET translation_status = $2::jsonb WHERE id = $1', [change.id, JSON.stringify(change.next)]);
+      await client.query(`UPDATE ${ENTITY.table} SET translation_status = $2::jsonb WHERE id = $1`, [change.id, JSON.stringify(change.next)]);
     }
     await client.query('COMMIT');
   } else {

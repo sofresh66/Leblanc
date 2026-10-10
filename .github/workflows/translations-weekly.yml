@@ -60,6 +60,7 @@ jobs:
         run: npm ci
 
       - name: Tester les règles de traduction
+        id: rules
         run: |
           npm run build --workspace=@leblanc/shared
           npx vitest run scripts/__tests__/translation-
@@ -70,6 +71,15 @@ jobs:
           CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
         run: node scripts/score-translations.mjs --apply --max-new-rejections="$MAX_NEW_REJECTIONS"
 
+      # Même règle et même garde-fou, appliqués séparément aux parcours. Exécuté
+      # même si l'étape des événements a déclenché son garde-fou, jamais si les tests échouent.
+      - name: Scorer et appliquer les rejets de fiche des parcours (garde-fou inclus)
+        if: ${{ !cancelled() && steps.rules.outcome == 'success' }}
+        env:
+          DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+          CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
+        run: node scripts/score-translations.mjs --apply --entity=routes --max-new-rejections="$MAX_NEW_REJECTIONS"
+
       - name: Publier le signalement et les scores
         if: always()
         uses: actions/upload-artifact@v4
@@ -78,5 +88,6 @@ jobs:
           path: |
             artifacts/signalement-*.csv
             artifacts/translation-scores.csv
+            artifacts/translation-scores-routes.csv
           if-no-files-found: ignore
           retention-days: 90

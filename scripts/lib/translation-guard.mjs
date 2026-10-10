@@ -27,8 +27,8 @@ export function checkRejectionGuard(decisions, maxNewRejections = DEFAULT_MAX_NE
 const cell = (value) => String(value ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim();
 
 /** Résumé Markdown pour $GITHUB_STEP_SUMMARY. */
-export function weeklySummaryMarkdown({ apply, guard, events, flagged, lifted, written, reportFiles }) {
-  const lines = ['## Contrôle hebdomadaire des traductions', ''];
+export function weeklySummaryMarkdown({ entityLabel = null, apply, guard, events, flagged, lifted, written, reportFiles }) {
+  const lines = [`## Contrôle hebdomadaire des traductions${entityLabel ? ` (${entityLabel})` : ''}`, ''];
   if (guard.blocked) {
     lines.push(`**Garde-fou déclenché : ${guard.newRejections.length} nouvelles fiches passeraient en rejet `
       + `(maximum ${guard.maxNewRejections}). Rien n'a été écrit.** Vérifier le modèle ou le seuil avant de relancer.`, '');

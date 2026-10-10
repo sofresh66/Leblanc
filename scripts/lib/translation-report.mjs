@@ -47,8 +47,10 @@ export function reportRows({ eventId = '', externalId, titleFr }, status, { resc
 const COLUMNS = ['eventId', 'externalId', 'lang', 'status', 'reason', 'titleStatus', 'descriptionStatus', 'warnings', 'titleFr'];
 const csvCell = (value) => (/[",\n;]/.test(String(value)) ? `"${String(value).replace(/"/g, '""')}"` : String(value));
 
-export function toCsv(rows) {
-  return [COLUMNS.join(','), ...rows.map((row) => COLUMNS.map((column) => csvCell(row[column] ?? '')).join(','))].join('\n') + '\n';
+// idHeader : « routeId » pour les parcours ; la clé interne reste eventId.
+export function toCsv(rows, { idHeader = 'eventId' } = {}) {
+  const header = COLUMNS.map((column) => (column === 'eventId' ? idHeader : column));
+  return [header.join(','), ...rows.map((row) => COLUMNS.map((column) => csvCell(row[column] ?? '')).join(','))].join('\n') + '\n';
 }
 
 export function summarize(rows) {
@@ -68,14 +70,14 @@ export function summarize(rows) {
 }
 
 /** Écrit le CSV et, en GitHub Actions, un résumé dans $GITHUB_STEP_SUMMARY. */
-export async function writeTranslationReport(rows, csvFile) {
+export async function writeTranslationReport(rows, csvFile, { title = 'Traductions DATAtourisme', idHeader } = {}) {
   await fs.mkdir(path.dirname(csvFile), { recursive: true });
-  await fs.writeFile(csvFile, toCsv(rows), 'utf8');
+  await fs.writeFile(csvFile, toCsv(rows, { idHeader }), 'utf8');
   const summary = summarize(rows);
   if (process.env.GITHUB_STEP_SUMMARY) {
     const reasons = Object.entries(summary.byReason).map(([reason, count]) => `| ${reason} | ${count} |`).join('\n');
     await fs.appendFile(process.env.GITHUB_STEP_SUMMARY, [
-      '### Traductions DATAtourisme',
+      `### ${title}`,
       `- Langues rejetées : ${summary.rejected}`,
       `- Titres identiques au français ignorés : ${summary.ignoredTitles}`,
       `- Descriptions identiques au français ignorées : ${summary.ignoredDescriptions}`,

@@ -18,10 +18,12 @@ const USER_AGENT = 'LeblancEtMoi/1.0 (contact: elharchdenis@gmail.com)';
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export class OverpassError extends Error {
-  constructor(code) {
+  // serverCodes : dernier code de chaque serveur essayé (diagnostic), dans l'ordre.
+  constructor(code, serverCodes = []) {
     super(`Overpass indisponible : ${code}`);
     this.name = 'OverpassError';
     this.code = code;
+    this.serverCodes = serverCodes;
   }
 }
 
@@ -30,6 +32,8 @@ export function createOverpassClient({
   sleep = pause,
   servers = OVERPASS_SERVERS,
   timeoutMs = 90_000,
+  // Requête par défaut : les lieux de restauration ; les parcours passent la leur.
+  query = OVERPASS_QUERY,
 } = {}) {
   if (!Array.isArray(servers) || !servers.length || !servers.every((server) => {
     try { return new URL(server).protocol === 'https:'; } catch { return false; }
@@ -37,6 +41,7 @@ export function createOverpassClient({
 
   async function fetchPlaces() {
     let lastCode = 'NO_SERVER';
+    const serverCodes = [];
     for (const [index, server] of servers.entries()) {
       for (let attempt = 0; attempt < 2; attempt++) {
         try {
@@ -47,7 +52,7 @@ export function createOverpassClient({
               'Content-Type': 'application/x-www-form-urlencoded',
               'User-Agent': USER_AGENT,
             },
-            body: new URLSearchParams({ data: OVERPASS_QUERY }),
+            body: new URLSearchParams({ data: query }),
             signal: AbortSignal.timeout(timeoutMs),
             redirect: 'error',
           });
@@ -72,8 +77,8 @@ export function createOverpassClient({
             lastCode = 'INVALID_PAYLOAD';
             break;
           }
-          // Cette zone contient déjà des dizaines de lieux connus. Une réponse vide
-          // d'un miroir n'est pas une collecte réussie : essayer le suivant.
+          // La zone contient déjà des dizaines de lieux et de parcours connus. Une
+          // réponse vide d'un miroir n'est pas une collecte réussie : essayer le suivant.
           if (payload.elements.length === 0) {
             lastCode = 'EMPTY_PAYLOAD';
             break;
@@ -85,9 +90,10 @@ export function createOverpassClient({
           break;
         }
       }
+      serverCodes.push(lastCode);
     }
-    throw new OverpassError(lastCode);
+    throw new OverpassError(lastCode, serverCodes);
   }
 
-  return { fetchPlaces };
+  return { fetchPlaces, fetchElements: fetchPlaces };
 }

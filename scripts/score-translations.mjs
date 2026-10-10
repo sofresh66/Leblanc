@@ -7,7 +7,8 @@
 // Garde-fou : si plus de N fiches (10 par défaut) passeraient NOUVELLEMENT en
 // rejet, rien n'est écrit et le script échoue (dérive du modèle ou du seuil).
 // Variables : DATABASE_URL_DIRECT, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_AI_TOKEN.
-// Usage : node scripts/score-translations.mjs [--apply] [--limit=N] [--max-new-rejections=N]
+// --entity=routes : mêmes règles sur les parcours (défaut : événements).
+// Usage : node scripts/score-translations.mjs [--apply] [--limit=N] [--max-new-rejections=N] [--entity=events|routes]
 import 'dotenv/config';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -18,13 +19,15 @@ import {
 import { loadTranslationOverrides } from './lib/translation-report.mjs';
 import { createWorkersAiEmbedder, scoreDistribution, scoreTranslations } from './lib/translation-scoring.mjs';
 import { checkRejectionGuard, parseMaxNewRejections, weeklySummaryMarkdown } from './lib/translation-guard.mjs';
+import { parseEntity } from './lib/translation-entities.mjs';
 
 const SOURCE = 'datatourisme';
 const THRESHOLD = 0.5;
 const APPLY = process.argv.includes('--apply');
 const OVERRIDES_FILE = new URL('../data/translation-overrides.json', import.meta.url);
 const ALLOWLIST_FILE = new URL('../data/translation-allowlist.json', import.meta.url);
-const CSV_FILE = fileURLToPath(new URL('../artifacts/translation-scores.csv', import.meta.url));
+const ENTITY = parseEntity(process.argv);
+const CSV_FILE = fileURLToPath(new URL(`../artifacts/translation-scores${ENTITY.fileSuffix}.csv`, import.meta.url));
 const limitArg = process.argv.find((arg) => arg.startsWith('--limit='));
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) : null;
 if (APPLY && limit) throw new Error('--apply ne peut pas être combiné avec --limit');
@@ -32,7 +35,7 @@ const maxNewRejections = parseMaxNewRejections(process.argv);
 
 const databaseUrl = process.env.DATABASE_URL_DIRECT;
 if (!databaseUrl) throw new Error('DATABASE_URL_DIRECT est requis');
-console.error(`Base : ${new URL(databaseUrl).hostname} (${APPLY ? 'ÉCRITURE des statuts' : 'lecture seule'})`);
+console.error(`Base : ${new URL(databaseUrl).hostname} (${APPLY ? 'ÉCRITURE des statuts' : 'lecture seule'}, ${ENTITY.label})`);
 const embed = createWorkersAiEmbedder({
   accountId: process.env.CLOUDFLARE_ACCOUNT_ID, apiToken: process.env.CLOUDFLARE_AI_TOKEN,
 });
@@ -49,7 +52,7 @@ try {
   const { rows: dbRows } = await client.query(`
     SELECT e.id, sr.external_id, sr.source_url, sr.source_updated_at, sr.raw_excerpt->>'producer' AS producer,
       e.title_i18n, e.description_i18n, e.translation_status
-    FROM events e JOIN source_records sr ON sr.event_id = e.id AND sr.source = $1
+    FROM ${ENTITY.table} e JOIN ${ENTITY.sourceTable} sr ON sr.${ENTITY.foreignKey} = e.id AND sr.source = $1
     WHERE e.status = 'published' ORDER BY e.id ${limit ? 'LIMIT ' + Math.max(1, Math.floor(limit)) : ''}`, [SOURCE]);
   await client.query('ROLLBACK');
 
@@ -107,7 +110,7 @@ try {
   const reportFiles = [];
   for (const [producer, lines] of Object.entries(reports)) {
     const slug = producer.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const file = fileURLToPath(new URL(`../artifacts/signalement-${slug}.csv`, import.meta.url));
+    const file = fileURLToPath(new URL(`../artifacts/signalement${ENTITY.fileSuffix}-${slug}.csv`, import.meta.url));
     await fs.writeFile(file, toCsv(Object.keys(lines[0]), lines.sort((a, b) => a.titreFr.localeCompare(b.titreFr, 'fr'))));
     reportFiles.push({ producer, fiches: lines.length, file });
   }
@@ -118,7 +121,7 @@ try {
     await client.query('BEGIN');
     try {
       for (const { event, status } of changes) {
-        await client.query('UPDATE events SET translation_status = $2::jsonb WHERE id = $1', [event.id, JSON.stringify(status)]);
+        await client.query(`UPDATE ${ENTITY.table} SET translation_status = $2::jsonb WHERE id = $1`, [event.id, JSON.stringify(status)]);
       }
       await client.query('COMMIT');
     } catch (error) {
@@ -128,13 +131,13 @@ try {
   }
 
   console.log(JSON.stringify({
-    step: APPLY ? 'apply' : 'scores', events: events.length, pairs: scores.length, threshold: THRESHOLD,
+    step: APPLY ? 'apply' : 'scores', entity: ENTITY.name, events: events.length, pairs: scores.length, threshold: THRESHOLD,
     recordMismatch: flagged.length, allowlisted: allowlist.size, lifted: lifted.length,
     written: write ? changes.length : 0, newRejections: guard.newRejections.length, maxNewRejections, guardBlocked: guard.blocked, reportFiles, ...scoreDistribution(scores, [0.45, THRESHOLD, 0.55, 0.6]),
   }, (key, value) => (key === 'belowThreshold' ? Object.fromEntries(Object.entries(value).map(([t, list]) => [t, list.length])) : value), 2));
   if (process.env.GITHUB_STEP_SUMMARY) {
     await fs.appendFile(process.env.GITHUB_STEP_SUMMARY, weeklySummaryMarkdown({
-      apply: APPLY, guard, events: events.length, flagged: flagged.length, lifted: lifted.length,
+      entityLabel: ENTITY.name === 'events' ? null : ENTITY.label, apply: APPLY, guard, events: events.length, flagged: flagged.length, lifted: lifted.length,
       written: write ? changes.length : 0, reportFiles: reportFiles.map(({ producer, fiches }) => ({ producer, fiches })),
     }));
   }

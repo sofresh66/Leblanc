@@ -89,6 +89,26 @@ jobs:
           DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
         run: npm run db:import:restaurants-manuel
 
+      # Ne bloque jamais la suite : une panne de /v1/tour ou d'Overpass n'empêche
+      # pas la publication des événements ni du front.
+      - name: Actualiser les parcours (Se balader)
+        id: routes
+        continue-on-error: true
+        env:
+          DATABASE_URL_DIRECT: ${{ secrets.DATABASE_URL_DIRECT }}
+          DATATOURISME_API_KEY: ${{ secrets.DATATOURISME_API_KEY }}
+        run: npm run db:ingest:routes
+
+      - name: Signaler l'échec de l'actualisation des parcours
+        if: steps.routes.outcome == 'failure'
+        run: |
+          echo "::warning::Actualisation des parcours en échec : parcours de la veille conservés, publication poursuivie."
+          {
+            echo '### ⚠️ Parcours « Se balader » non actualisés'
+            echo ''
+            echo "L'étape a échoué (journal de l'étape « Actualiser les parcours »). Les parcours déjà en base restent publiés ; la publication du site s'est poursuivie."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Construire le frontend de production
         run: npm run build --workspace=@leblanc/frontend
 
