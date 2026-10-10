@@ -16,6 +16,7 @@ import {
 import { encodeCursor } from '../validation/cursor.js';
 import { escapeLikePattern, type ParsedEventListQuery } from '../validation/query.js';
 import { executeQuery } from './client.js';
+import { assertNearPoint, type NearPoint } from './near.js';
 
 export interface EventListDbResult {
   items: Event[];
@@ -26,11 +27,7 @@ export interface EventListDbResult {
 export const EVENT_GEO_MAX = 1000;
 
 /** Restreint la liste à un rayon autour d'un point (départ d'un parcours). */
-export interface EventNearFilter {
-  lng: number;
-  lat: number;
-  radiusM: number;
-}
+export type EventNearFilter = NearPoint;
 
 interface EventVisibilitySql {
   params: unknown[];
@@ -66,7 +63,8 @@ function eventVisibilitySql(query: ParsedEventListQuery, nowIso: string, near?: 
   const conditions: string[] = [];
   if (near) {
     // En plus du rayon de 20 km autour du Blanc : la fiche doit rester accessible.
-    params.push(near.lng, near.lat, near.radiusM);
+    const { lng: nearLng, lat: nearLat, radiusM } = assertNearPoint(near);
+    params.push(nearLng, nearLat, radiusM);
     const [lng, lat, radius] = [params.length - 2, params.length - 1, params.length];
     conditions.push(`AND ST_DWithin(e.location,
       ST_SetSRID(ST_MakePoint($${lng}::double precision, $${lat}::double precision), 4326)::geography, $${radius}::double precision)`);

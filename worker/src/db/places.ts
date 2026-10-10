@@ -13,6 +13,7 @@ import {
 } from '../validation/placesQuery.js';
 import { escapeLikePattern } from '../validation/query.js';
 import { executeQuery } from './client.js';
+import { assertNearPoint } from './near.js';
 
 const PLACE_COLUMNS = `
   p.id, p.type, p.subtypes, p.title_i18n, p.description_i18n,
@@ -184,8 +185,9 @@ export async function listPlacesNearFromDb(
     ORDER BY distance_m ASC, p.id ASC
     LIMIT $6;
   `;
+  const near = assertNearPoint({ ...point, radiusM });
   const rows = await executeQuery<PlaceDbRow>(databaseUrl, sql,
-    [LE_BLANC_CENTER.lng, LE_BLANC_CENTER.lat, point.lng, point.lat, radiusM, limit]);
+    [LE_BLANC_CENTER.lng, LE_BLANC_CENTER.lat, near.lng, near.lat, near.radiusM, Math.min(Math.max(1, Math.trunc(limit)), 20)]);
   return rows.flatMap((row) => {
     const place = mapDbRowToPlace(row, lang, now);
     return place ? [place] : [];

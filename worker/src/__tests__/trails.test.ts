@@ -229,3 +229,30 @@ describe('Routage, statuts et cache des parcours', () => {
     expect(executeQuery).not.toHaveBeenCalled();
   });
 });
+
+describe('Recherche « autour d’un point » (interne, bornée)', () => {
+  it('borne coordonnées et rayon (5 km au plus)', async () => {
+    const { assertNearPoint } = await import('../db/near.js');
+    expect(assertNearPoint({ lng: 1.17, lat: 46.63, radiusM: 5000 })).toEqual({ lng: 1.17, lat: 46.63, radiusM: 5000 });
+    for (const near of [
+      { lng: 1.17, lat: 46.63, radiusM: 5001 }, { lng: 1.17, lat: 46.63, radiusM: 0 },
+      { lng: 181, lat: 46.63, radiusM: 100 }, { lng: 1.17, lat: -91, radiusM: 100 },
+      { lng: Number.NaN, lat: 46.63, radiusM: 100 }, { lng: 1.17, lat: 46.63, radiusM: Number.POSITIVE_INFINITY },
+    ]) {
+      expect(() => assertNearPoint(near)).toThrow(/hors bornes/);
+    }
+  });
+
+  it('refuse un rayon trop grand avant toute requête SQL', async () => {
+    const { listPlacesNearFromDb } = await import('../db/places.js');
+    await expect(listPlacesNearFromDb('db', { lng: 1.17, lat: 46.63 }, 20000, 6, 'fr', new Date())).rejects.toThrow(/hors bornes/);
+    expect(executeQuery).not.toHaveBeenCalled();
+  });
+
+  it('n’est activable par aucun paramètre d’URL', async () => {
+    executeQuery.mockResolvedValue([]);
+    await handleRequest(request('/api/v1/events?lat=0&lng=0&radius=999999&near=1'), env);
+    expect(String(executeQuery.mock.calls[0]?.[1])).not.toContain('::double precision');
+    expect((await handleRequest(request('/api/v1/places?lat=0&lng=0&radius=999999'), env)).status).toBe(400);
+  });
+});

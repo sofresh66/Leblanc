@@ -51,7 +51,12 @@ describe.skipIf(!databaseUrl)('API des parcours sur la branche Neon dev', () => 
     tracked = first.rows[0] ?? { id: '', relation: '' };
   });
 
-  afterAll(async () => { await client.end(); });
+  let hiddenByTest: string | null = null;
+  afterAll(async () => {
+    // Secours si le test de masquage est interrompu (délai dépassé) avant son finally.
+    if (hiddenByTest) await client.query(`UPDATE routes SET status = 'published' WHERE id = $1`, [hiddenByTest]);
+    await client.end();
+  });
 
   it('parcourt toute la liste sans doublon ni trou, à travers la frontière avec / sans tracé', async () => {
     const seen: TrailSummary[] = [];
@@ -141,6 +146,7 @@ describe.skipIf(!databaseUrl)('API des parcours sur la branche Neon dev', () => 
   });
 
   it('répond 404 pour un parcours masqué, puis le republie', async () => {
+    hiddenByTest = tracked.id;
     await client.query(`UPDATE routes SET status = 'hidden' WHERE id = $1`, [tracked.id]);
     try {
       expect((await get(`/api/v1/routes/${tracked.id}`)).status).toBe(404);
@@ -148,6 +154,7 @@ describe.skipIf(!databaseUrl)('API des parcours sur la branche Neon dev', () => 
       expect((await get(`/api/v1/routes/${tracked.id}/nearby`)).status).toBe(404);
     } finally {
       await client.query(`UPDATE routes SET status = 'published' WHERE id = $1`, [tracked.id]);
+      hiddenByTest = null;
     }
     expect((await get(`/api/v1/routes/${tracked.id}`)).status).toBe(200);
   });
