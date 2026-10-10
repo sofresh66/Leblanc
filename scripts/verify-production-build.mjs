@@ -5,12 +5,16 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 // kB décimaux : le seuil demandé est strictement supérieur à 50 000 octets.
 export const MIN_SITEMAP_BYTES = 50_000;
 export const MIN_SITEMAP_URLS = 800;
-// Marge pour les nouvelles fiches de lieux et les futures catégories.
-export const MAX_SITEMAP_URLS = 2_000;
+// Marge pour les nouvelles fiches : environ 2 300 URL avec les parcours (8 pages,
+// ~140 événements, ~65 lieux, ~168 parcours, × 6 langues). Garde-fou contre une
+// pagination emballée, très en dessous de la limite du protocole (50 000).
+export const MAX_SITEMAP_URLS = 4_000;
 const PRODUCTION_ORIGIN = 'https://leblanc-et-moi.pages.dev';
 const DEFAULT_DIST = fileURLToPath(new URL('../frontend/dist/', import.meta.url));
 const EVENT_PATH =
   /^\/(fr\/evenements|en\/events|es\/eventos|de\/veranstaltungen|it\/eventi|nl\/evenementen)\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
+const WALK_PATH =
+  /^\/(fr\/se-balader|en\/trails|es\/rutas|de\/touren|it\/percorsi|nl\/routes)\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const PLACE_PATH =
   /^\/(fr\/lieux|en\/places|es\/lugares|de\/orte|it\/luoghi|nl\/plekken)\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 
@@ -57,20 +61,23 @@ export async function verifyProductionBuild(dist = DEFAULT_DIST) {
       'Aucune URL de page principale /fr de production dans le sitemap : publication annulée.',
     );
   }
+  // Fiches parcours comptées mais non exigées : une panne de l'ingestion des
+  // parcours ne doit jamais bloquer la publication du site.
+  const walkUrls = productionUrls.filter((url) => WALK_PATH.test(url.pathname)).length;
   const totalUrls = locations.length;
   if (totalUrls < MIN_SITEMAP_URLS || totalUrls > MAX_SITEMAP_URLS) {
     throw new Error(
       `Nombre d’URLs du sitemap hors plage (${totalUrls}, attendu entre ${MIN_SITEMAP_URLS} et ${MAX_SITEMAP_URLS} inclus) : publication annulée.`,
     );
   }
-  return { sitemapBytes: sitemap.size, totalUrls, eventUrls, placeUrls };
+  return { sitemapBytes: sitemap.size, totalUrls, eventUrls, placeUrls, walkUrls };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
     const result = await verifyProductionBuild();
     console.log(
-      `Build validé : index.html non vide, sitemap de ${result.sitemapBytes} octets, ${result.totalUrls} URLs dont ${result.eventUrls} fiches événements, ${result.placeUrls} fiches lieux et une page principale /fr.`,
+      `Build validé : index.html non vide, sitemap de ${result.sitemapBytes} octets, ${result.totalUrls} URLs dont ${result.eventUrls} fiches événements, ${result.placeUrls} fiches lieux, ${result.walkUrls} fiches parcours et une page principale /fr.`,
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erreur de vérification du build.';

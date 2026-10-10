@@ -33,6 +33,11 @@ export function AboutPage() {
           <p className="rounded-xl bg-brenne-50 p-4 text-sm leading-relaxed text-brenne-900">{t('about.updates')}</p>
         </section>
         <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-brenne-900/5 space-y-5">
+          <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.walksTitle')}</h2>
+          <p className="text-base leading-loose text-gray-700">{t('about.walksBody')}</p>
+          <Link to={getLocalizedPath('walks')} className="inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900 font-semibold">{t('about.walksLink')}</Link>
+        </section>
+        <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-brenne-900/5 space-y-5">
           <h2 className="font-display text-[28px] sm:text-[32px] text-brenne-950 leading-tight">{t('about.photosTitle')}</h2>
           <p className="text-base leading-loose text-gray-700">{t('about.photosBody')}</p>
           <Link to={getLocalizedPath('credits')} className="inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900 font-semibold">{t('about.creditsLink')}</Link>

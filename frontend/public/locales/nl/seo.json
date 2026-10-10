@@ -38,6 +38,8 @@
   },
   "walks": {
     "title": "Routes rond Le Blanc — Le Blanc & Moi",
-    "description": "Wandelingen, fietstochten en routes rond Le Blanc en in de Brenne: afstand, duur, track en startpunt."
+    "description": "Wandelingen, fietstochten en routes rond Le Blanc en in de Brenne: afstand, duur, track en startpunt.",
+    "detailDescriptionDistance": "{{title}}: route van {{distance}} km vanuit {{city}}, rond Le Blanc en in de Brenne.",
+    "detailDescription": "{{title}}: route vanuit {{city}}, rond Le Blanc en in de Brenne."
   }
 }

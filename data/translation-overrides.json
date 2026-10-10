@@ -78,5 +78,13 @@
     "status": "rejected",
     "reason": "cross_record_translation",
     "note": "Une épopée municipale : traductions sur le spectacle d’un imitateur (score ≤ 0,49 dans toutes les langues)"
+  },
+  {
+    "source": "datatourisme",
+    "externalId": "466f5a76-5c81-340a-85e3-9abc87f2dd70",
+    "lang": "en",
+    "status": "rejected",
+    "reason": "cross_record_translation",
+    "note": "Balade à pied n°7 - Étangs, forêts et buttons (parcours) : titre anglais de la balade n°40 « History of Brenne » ; description anglaise correcte mais rejetée avec la langue"
   }
 ]

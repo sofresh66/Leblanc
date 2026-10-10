@@ -45,7 +45,10 @@
     "photosTitle": "Fotocredits",
     "photosBody": "De foto van Le Blanc op de startpagina is van Daniel Jolivet, onder CC BY 2.0. Bronnen, licenties en wijzigingen van lokale afbeeldingen staan in het creditdocument. Voor evenementafbeeldingen gelden de voorwaarden van hun bronnen.",
     "creditsLink": "Bekijk de fotocredits",
-    "legalTitle": "Juridische informatie"
+    "legalTitle": "Juridische informatie",
+    "walksTitle": "Routes",
+    "walksBody": "Het tabblad ‘Routes’ toont wandelingen, fietstochten, mountainbikeroutes en ruiterroutes waarvan de start op maximaal 20 km van Le Blanc of in het Regionaal Natuurpark Brenne ligt. De fiches komen van DATAtourisme. Een OpenStreetMap-track wordt alleen getoond, en als GPX aangeboden, als die met zekerheid bij de fiche past (zelfde naam, zelfde manier van verplaatsen, start op minder dan 500 m); anders wordt alleen het startpunt getoond, met een link naar de officiële pagina.",
+    "walksLink": "Bekijk de routes"
   },
   "notFound": {
     "code": "404",
@@ -81,12 +84,33 @@
         "autre": "Vijver en waterlelies"
       }
     },
-    "dataSources": { "title": "Gegevensbronnen", "osm": "De plaatsgegevens van OpenStreetMap zijn beschikbaar gesteld door bijdragers onder de Open Database License (ODbL)." },
+    "dataSources": {
+      "title": "Gegevensbronnen",
+      "osm": "De plaatsgegevens van OpenStreetMap zijn beschikbaar gesteld door bijdragers onder de Open Database License (ODbL)."
+    },
     "footer": {
       "title": "Opmerkingen en licenties",
       "note": "Deze fotocredits kunnen op elk moment worden gewijzigd.",
       "eventImages": "Voor evenementafbeeldingen blijven de voorwaarden van hun bronnen gelden. Bekijk hieronder de volledige licenties.",
       "ccLicense": "Volledige CC BY 2.0-licentie"
+    },
+    "walks": {
+      "title": "Routes in het tabblad ‘Routes’",
+      "osm": "De tracks van de routes en de omtrek van het Regionaal Natuurpark Brenne (OpenStreetMap-relatie 4287018), die het bereik van het tabblad bepaalt, komen van OpenStreetMap.",
+      "osmLink": "© OpenStreetMap-bijdragers, ODbL 1.0",
+      "pnrRelation": "Relatie 4287018: omtrek van het Regionaal Natuurpark Brenne",
+      "gpx": "De downloadbare GPX-bestanden zijn uittreksels uit OpenStreetMap en worden onder dezelfde licentie, ODbL 1.0, verspreid.",
+      "datatourisme": "De routefiches (titels, beschrijvingen, afstanden, duur, officiële links) komen van DATAtourisme, onder de Licence Ouverte 2.0, op basis van de informatie die hun producenten publiceren.",
+      "datatourismeLink": "Licence Ouverte 2.0 (Etalab)",
+      "producers": "Producenten van de fiches",
+      "photos": "Fotocredits van de routes",
+      "photosNote": "Credits en licenties zoals aangeleverd door de bron. Als er geen licentie vermeld is, wordt er geen verondersteld; de foto’s blijven onderworpen aan de voorwaarden van hun makers.",
+      "credit": "Credit",
+      "license": "Licentie",
+      "count": "Routes",
+      "notProvided": "Niet vermeld",
+      "loading": "Producenten en credits worden geladen…",
+      "unavailable": "De lijst met producenten en credits is tijdelijk niet beschikbaar."
     }
   },
   "legal": {
@@ -115,7 +139,8 @@
       "title": "Technische diensten en externe inhoud",
       "body": "Cloudflare host de website en kan technische gegevens, waaronder uw IP-adres, verwerken om de dienst te leveren en te beveiligen. De kaart laadt kaarttegels van OpenStreetMap; sommige evenementafbeeldingen worden ook van externe servers geladen. Deze aanbieders ontvangen de gegevens die nodig zijn voor die verzoeken, waaronder uw IP-adres, volgens hun eigen privacybeleid.",
       "cloudflare": "Privacy bij Cloudflare",
-      "osm": "Privacy bij OpenStreetMap"
+      "osm": "Privacy bij OpenStreetMap",
+      "walks": "Het tabblad ‘Routes’ voegt geen dienst van derden toe: de kaart gebruikt dezelfde OpenStreetMap-achtergronden, de foto’s van de routes komen van dezelfde beeldservers als die van evenementen en plekken, en de GPX-bestanden worden door de eigen API van de site geleverd."
     },
     "contact": {
       "title": "Contact",

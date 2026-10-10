@@ -45,7 +45,10 @@
     "photosTitle": "Crédits photos",
     "photosBody": "La photographie du Blanc utilisée sur l’accueil est de Daniel Jolivet, sous licence CC BY 2.0. Les sources, licences et modifications des images locales sont détaillées dans le document de crédits. Les visuels des événements restent soumis aux conditions de leurs sources.",
     "creditsLink": "Consulter les crédits photographiques",
-    "legalTitle": "Mentions légales"
+    "legalTitle": "Mentions légales",
+    "walksTitle": "Se balader",
+    "walksBody": "L’onglet « Se balader » présente des randonnées, balades à vélo, circuits VTT et itinéraires équestres dont le départ se situe à 20 km au plus du Blanc ou dans le Parc naturel régional de la Brenne. Les fiches proviennent de DATAtourisme. Un tracé OpenStreetMap n’est affiché, et proposé en GPX, que lorsque la correspondance avec la fiche est sûre (même nom, même mode de déplacement, départ à moins de 500 m) ; sinon, seul le point de départ est indiqué, avec un lien vers la fiche officielle.",
+    "walksLink": "Voir les parcours"
   },
   "notFound": {
     "code": "404",
@@ -81,12 +84,33 @@
         "autre": "Étang et nénuphars"
       }
     },
-    "dataSources": { "title": "Sources de données", "osm": "Les données des lieux OpenStreetMap sont fournies par ses contributeurs sous licence Open Database License (ODbL)." },
+    "dataSources": {
+      "title": "Sources de données",
+      "osm": "Les données des lieux OpenStreetMap sont fournies par ses contributeurs sous licence Open Database License (ODbL)."
+    },
     "footer": {
       "title": "Mentions et licences",
       "note": "Ces crédits peuvent être modifiés à tout moment.",
       "eventImages": "Les visuels des événements restent soumis aux conditions de leurs sources. Consultez les licences complètes ci-dessous.",
       "ccLicense": "Licence CC BY 2.0 complète"
+    },
+    "walks": {
+      "title": "Parcours « Se balader »",
+      "osm": "Les tracés des parcours et le contour du Parc naturel régional de la Brenne (relation OpenStreetMap 4287018), qui délimite le périmètre de l’onglet, proviennent d’OpenStreetMap.",
+      "osmLink": "© contributeurs OpenStreetMap, ODbL 1.0",
+      "pnrRelation": "Relation 4287018 : contour du PNR de la Brenne",
+      "gpx": "Les fichiers GPX téléchargeables sont extraits d’OpenStreetMap : ils sont distribués sous la même licence, ODbL 1.0.",
+      "datatourisme": "Les fiches des parcours (titres, descriptions, distances, durées, liens officiels) proviennent de DATAtourisme, sous Licence Ouverte 2.0, à partir des informations publiées par leurs producteurs.",
+      "datatourismeLink": "Licence Ouverte 2.0 (Etalab)",
+      "producers": "Producteurs des fiches",
+      "photos": "Crédits des photos des parcours",
+      "photosNote": "Crédits et licences tels que fournis par la source. Lorsqu’aucune licence n’est indiquée, aucune n’est supposée ; les photos restent soumises aux conditions de leurs auteurs.",
+      "credit": "Crédit",
+      "license": "Licence",
+      "count": "Parcours",
+      "notProvided": "Non indiquée",
+      "loading": "Chargement des producteurs et des crédits…",
+      "unavailable": "La liste des producteurs et des crédits est momentanément indisponible."
     }
   },
   "legal": {
@@ -115,7 +139,8 @@
       "title": "Services techniques et contenus externes",
       "body": "Cloudflare assure l’hébergement et peut traiter des données techniques, notamment votre adresse IP, pour fournir et sécuriser le service. La carte charge des fonds OpenStreetMap ; certaines images d’événements sont également chargées depuis des serveurs tiers. Ces fournisseurs reçoivent les données nécessaires à ces requêtes, dont votre adresse IP, selon leurs propres politiques de confidentialité.",
       "cloudflare": "Confidentialité chez Cloudflare",
-      "osm": "Confidentialité chez OpenStreetMap"
+      "osm": "Confidentialité chez OpenStreetMap",
+      "walks": "L’onglet « Se balader » n’ajoute aucun service tiers : sa carte utilise les mêmes fonds OpenStreetMap, les photos des parcours viennent des mêmes serveurs d’images que celles des événements et des lieux, et les fichiers GPX sont servis par l’API du site."
     },
     "contact": {
       "title": "Nous contacter",

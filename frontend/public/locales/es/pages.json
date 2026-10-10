@@ -45,7 +45,10 @@
     "photosTitle": "Créditos fotográficos",
     "photosBody": "La fotografía de Le Blanc en la página de inicio es de Daniel Jolivet, bajo CC BY 2.0. Las fuentes, licencias y modificaciones de las imágenes locales se detallan en el documento de créditos. Las imágenes de los eventos están sujetas a las condiciones de sus fuentes.",
     "creditsLink": "Consultar los créditos fotográficos",
-    "legalTitle": "Aviso legal"
+    "legalTitle": "Aviso legal",
+    "walksTitle": "Rutas",
+    "walksBody": "La pestaña «Rutas» presenta senderismo, paseos en bicicleta, circuitos de BTT e itinerarios ecuestres cuya salida se encuentra a 20 km como máximo de Le Blanc o dentro del Parque Natural Regional de la Brenne. Las fichas proceden de DATAtourisme. Un trazado de OpenStreetMap solo se muestra, y se ofrece en GPX, cuando la correspondencia con la ficha es segura (mismo nombre, mismo modo de desplazamiento, salida a menos de 500 m); si no, solo se indica el punto de salida, con un enlace a la ficha oficial.",
+    "walksLink": "Ver las rutas"
   },
   "notFound": {
     "code": "404",
@@ -81,12 +84,33 @@
         "autre": "Estanque y nenúfares"
       }
     },
-    "dataSources": { "title": "Fuentes de datos", "osm": "Los datos de lugares de OpenStreetMap son aportados por sus colaboradores bajo la licencia Open Database License (ODbL)." },
+    "dataSources": {
+      "title": "Fuentes de datos",
+      "osm": "Los datos de lugares de OpenStreetMap son aportados por sus colaboradores bajo la licencia Open Database License (ODbL)."
+    },
     "footer": {
       "title": "Avisos y licencias",
       "note": "Estos créditos pueden modificarse en cualquier momento.",
       "eventImages": "Las imágenes de los eventos siguen sujetas a las condiciones de sus fuentes. Consulte las licencias completas a continuación.",
       "ccLicense": "Licencia CC BY 2.0 completa"
+    },
+    "walks": {
+      "title": "Rutas de la pestaña «Rutas»",
+      "osm": "Los trazados de las rutas y el contorno del Parque Natural Regional de la Brenne (relación OpenStreetMap 4287018), que delimita el ámbito de la pestaña, proceden de OpenStreetMap.",
+      "osmLink": "© colaboradores de OpenStreetMap, ODbL 1.0",
+      "pnrRelation": "Relación 4287018: contorno del Parque Natural Regional de la Brenne",
+      "gpx": "Los archivos GPX descargables se extraen de OpenStreetMap y se distribuyen bajo la misma licencia, ODbL 1.0.",
+      "datatourisme": "Las fichas de las rutas (títulos, descripciones, distancias, duraciones, enlaces oficiales) proceden de DATAtourisme, bajo la Licence Ouverte 2.0, a partir de la información publicada por sus productores.",
+      "datatourismeLink": "Licence Ouverte 2.0 (Etalab)",
+      "producers": "Productores de las fichas",
+      "photos": "Créditos de las fotos de las rutas",
+      "photosNote": "Créditos y licencias tal como los facilita la fuente. Cuando no se indica ninguna licencia, no se supone ninguna; las fotos siguen sujetas a las condiciones de sus autores.",
+      "credit": "Crédito",
+      "license": "Licencia",
+      "count": "Rutas",
+      "notProvided": "No indicada",
+      "loading": "Cargando productores y créditos…",
+      "unavailable": "La lista de productores y créditos no está disponible por el momento."
     }
   },
   "legal": {
@@ -115,7 +139,8 @@
       "title": "Servicios técnicos y contenido externo",
       "body": "Cloudflare aloja el sitio y puede tratar datos técnicos, incluida su dirección IP, para prestar y proteger el servicio. El mapa carga mapas base de OpenStreetMap; algunas imágenes de eventos también se cargan desde servidores externos. Estos proveedores reciben los datos necesarios para esas solicitudes, incluida su dirección IP, conforme a sus propias políticas de privacidad.",
       "cloudflare": "Privacidad en Cloudflare",
-      "osm": "Privacidad en OpenStreetMap"
+      "osm": "Privacidad en OpenStreetMap",
+      "walks": "La pestaña «Rutas» no añade ningún servicio de terceros: su mapa utiliza los mismos fondos de OpenStreetMap, las fotos de las rutas proceden de los mismos servidores de imágenes que las de los eventos y los lugares, y los archivos GPX los sirve la propia API del sitio."
     },
     "contact": {
       "title": "Contacto",

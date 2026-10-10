@@ -8,6 +8,8 @@ import {
   getRestaurantJsonLd,
   resolveRoute,
   summarizeText,
+  touristTripStructuredData,
+  trailSeoDescription,
   type PageHead,
   type RouteSection,
   type SupportedLanguage,
@@ -134,17 +136,23 @@ export async function planPage(pathname: string, deps: PlanDeps): Promise<PagePl
       const parsed = TrailDetailSchema.safeParse(body);
       if (!parsed.success) return null;
       const trail = parsed.data;
+      const canonical = absolute(buildLocalizedPath('walks', lang, trail.id));
       return {
         status: 200,
         lang,
         head: buildPageHead({
           siteUrl: deps.siteUrl, lang, section: 'walks', id: trail.id,
           title: `${trail.title} — ${SITE_NAME}`,
-          description: summarizeText(trail.description, 150) || (pick(seo, 'walks.description') ?? ''),
+          description: trailSeoDescription(trail, {
+            withDistance: pick(seo, 'walks.detailDescriptionDistance'),
+            withoutDistance: pick(seo, 'walks.detailDescription'),
+            fallback: pick(seo, 'walks.description'),
+          }, lang),
           // Photo du parcours si elle existe, sinon l'image par défaut du site.
           image: trail.imageUrl,
           breadcrumb: [home, { name: pick(nav, 'walks') ?? '', path: buildLocalizedPath('walks', lang) },
             { name: trail.title, path: buildLocalizedPath('walks', lang, trail.id) }],
+          structuredData: [touristTripStructuredData(trail, canonical)],
         }),
       };
     }

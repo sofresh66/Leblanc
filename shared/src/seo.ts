@@ -1,6 +1,7 @@
 import { SupportedLanguageSchema } from './schemas.js';
 import { buildLocalizedPath, type RouteSection } from './routes.js';
 import type { EventDetail, PlaceApi, SupportedLanguage } from './types.js';
+import type { TrailDetail } from './trails.js';
 
 // Fonctions pures de SEO, partagées par le frontend (react-helmet-async) et le
 // middleware Pages Functions (HTML servi aux robots sans JavaScript).
@@ -117,6 +118,52 @@ export function getRestaurantJsonLd(place: PlaceApi): Record<string, unknown> {
     ...(hours.length ? { openingHoursSpecification: hours } : {}),
     ...(place.takeaway === true ? { takeaway: true } : {}),
   };
+}
+
+/**
+ * Données structurées d'une fiche parcours (schema.org TouristTrip), limitées
+ * aux champs présents dans les données : ni distance, ni durée, ni difficulté
+ * (propriétés absentes de TouristTrip ou des sources).
+ */
+export function touristTripStructuredData(trail: TrailDetail, url: string): Record<string, unknown> {
+  return {
+    '@type': 'TouristTrip',
+    name: trail.title,
+    // Texte complet (espaces normalisés, balises retirées) : pas de phrase tronquée.
+    ...(trail.description.trim() ? { description: summarizeText(trail.description, Number.MAX_SAFE_INTEGER) } : {}),
+    url,
+    ...(trail.imageUrl ? { image: trail.imageUrl } : {}),
+    itinerary: {
+      '@type': 'Place',
+      ...(trail.startCity ? { name: trail.startCity } : {}),
+      geo: { '@type': 'GeoCoordinates', latitude: trail.start.lat, longitude: trail.start.lng },
+    },
+  };
+}
+
+export interface TrailDescriptionTemplates {
+  /** « {{title}} : parcours de {{distance}} km au départ de {{city}}… » */
+  withDistance?: string | undefined;
+  /** « {{title}} : parcours au départ de {{city}}… » */
+  withoutDistance?: string | undefined;
+  /** Description générique de la liste, en dernier recours. */
+  fallback?: string | undefined;
+}
+
+/**
+ * Description SEO d'une fiche : le texte de la source s'il existe, sinon une
+ * phrase factuelle (titre, distance, commune de départ), jamais inventée.
+ */
+export function trailSeoDescription(trail: TrailDetail, templates: TrailDescriptionTemplates, lang: SupportedLanguage): string {
+  const own = summarizeText(trail.description, 150);
+  if (own) return own;
+  const fill = (template: string) => template
+    .replace('{{title}}', trail.title)
+    .replace('{{city}}', trail.startCity ?? '')
+    .replace('{{distance}}', trail.distanceM === null ? '' : new Intl.NumberFormat(lang, { maximumFractionDigits: 1 }).format(trail.distanceM / 1000));
+  if (trail.startCity && trail.distanceM !== null && templates.withDistance) return summarizeText(fill(templates.withDistance), 160);
+  if (trail.startCity && templates.withoutDistance) return summarizeText(fill(templates.withoutDistance), 160);
+  return templates.fallback ?? '';
 }
 
 export interface PageHeadInput {

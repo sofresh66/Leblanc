@@ -1,7 +1,11 @@
 import { Suspense, lazy, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import type { TrailDetail, TrailNearbyResponse } from '@leblanc/shared';
+import {
+  trailSeoDescription,
+  type TrailDetail,
+  type TrailNearbyResponse,
+} from '@leblanc/shared';
 import { PageSeo } from '../components/PageSeo';
 import { ErrorState } from '../components/common/ErrorState';
 import { googleMapsDirectionsUrl } from '../components/places/PlaceMap';
@@ -104,7 +108,7 @@ function Hero({ trail }: { trail: TrailDetail }) {
 export function WalkPage() {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
-  const { t, i18n } = useTranslation(['walks', 'common']);
+  const { t, i18n } = useTranslation(['walks', 'common', 'seo']);
   const languageName = useLanguageDisplayName();
   const lang = isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE;
   const validId = typeof id === 'string' && UUID.test(id);
@@ -155,9 +159,14 @@ export function WalkPage() {
     <article className="space-y-8 py-6 pb-12 sm:space-y-10 sm:py-8">
       <PageSeo
         section="walks"
+        trail={trail}
         titleOverride={`${trail.title} — Le Blanc & Moi`}
         breadcrumbName={trail.title}
-        descriptionOverride={trail.description || t('walks:detail.noDescription')}
+        descriptionOverride={trailSeoDescription(trail, {
+          withDistance: t('seo:walks.detailDescriptionDistance'),
+          withoutDistance: t('seo:walks.detailDescription'),
+          fallback: t('seo:walks.description'),
+        }, lang)}
         canonicalPath={buildLocalizedPath('walks', lang, trail.id)}
         {...(trail.imageUrl ? { imageOverride: trail.imageUrl } : {})}
       />

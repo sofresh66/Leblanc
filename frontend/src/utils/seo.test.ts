@@ -70,14 +70,15 @@ describe('SEO et sitemap', () => {
       )
       .mockResolvedValueOnce(
         Response.json({ items: [placeFixture], nextCursor: null, generatedAt: new Date().toISOString() }),
-      );
+      )
+      .mockResolvedValueOnce(Response.json({ items: [], nextCursor: null, attributions: [], generatedAt: new Date().toISOString() }));
     const result = await generateSitemap(
       'https://example.test',
       'https://api.example.test/api',
       fetcher,
     );
     expect(result.partial).toBe(false);
-    expect(result.count).toBe(54);
+    expect(result.count).toBe(60);
     expect(result.xml).toContain(`/de/veranstaltungen/${event.id}`);
     expect(result.xml).toContain(`/nl/plekken/${placeFixture.id}`);
     expect(result.xml).toContain('/it/chi-siamo');
@@ -94,7 +95,8 @@ describe('SEO et sitemap', () => {
     const event = { ...await fixture(), updatedAt: '2026-09-16T00:00:00.000Z' };
     const fetcher = vi.fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ items: [event], nextCursor: null, generatedAt: 'now' }))
-      .mockResolvedValueOnce(Response.json({ items: [placeFixture], nextCursor: null, generatedAt: new Date().toISOString() }));
+      .mockResolvedValueOnce(Response.json({ items: [placeFixture], nextCursor: null, generatedAt: new Date().toISOString() }))
+      .mockResolvedValueOnce(Response.json({ items: [], nextCursor: null, attributions: [], generatedAt: new Date().toISOString() }));
     const result = await generateSitemap('https://example.test', '/api', fetcher, new Date('2026-10-08T03:00:00Z'));
     expect(result.xml).toContain(`<loc>https://example.test/fr/evenements/${event.id}</loc><lastmod>2026-09-16</lastmod>`);
     expect(result.xml).toContain(`<loc>https://example.test/fr/lieux/${placeFixture.id}</loc><lastmod>2026-10-08</lastmod>`);
@@ -106,11 +108,13 @@ describe('SEO et sitemap', () => {
     const fetcher = vi.fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ items: [], nextCursor: null, generatedAt: 'now' }))
       .mockResolvedValueOnce(Response.json({ items: [placeFixture], nextCursor: 'page2', generatedAt: new Date().toISOString() }))
-      .mockResolvedValueOnce(Response.json({ items: [placeFixture, { ...placeFixture, id: 'a1000000-0000-4000-8000-000000000002', status: 'hidden' }], nextCursor: null, generatedAt: new Date().toISOString() }));
+      .mockResolvedValueOnce(Response.json({ items: [placeFixture, { ...placeFixture, id: 'a1000000-0000-4000-8000-000000000002', status: 'hidden' }], nextCursor: null, generatedAt: new Date().toISOString() }))
+      .mockResolvedValueOnce(Response.json({ items: [], nextCursor: null, attributions: [], generatedAt: new Date().toISOString() }));
     const result = await generateSitemap('https://example.test', '/api', fetcher);
     expect(result.partial).toBe(false);
-    expect(result.count).toBe(48);
-    expect(result.xml.match(new RegExp(placeFixture.id, 'g'))).toHaveLength(6);
+    expect(result.count).toBe(54);
+    // Six <loc> (une par langue) ; l'identifiant figure aussi dans les alternates.
+    expect(result.xml.match(new RegExp(`<loc>[^<]*${placeFixture.id}</loc>`, 'g'))).toHaveLength(6);
     expect(String(fetcher.mock.calls[2]![0])).toContain('cursor=page2');
   });
 
@@ -121,12 +125,12 @@ describe('SEO et sitemap', () => {
       .mockRejectedValueOnce(new Error('places offline'));
     const result = await generateSitemap('https://example.test', '/api', fetcher);
     expect(result.partial).toBe(true);
-    expect(result.count).toBe(48);
+    expect(result.count).toBe(54);
     expect(result.xml).toContain(event.id);
     expect(result.xml).not.toContain(placeFixture.id);
   });
 
-  it('revient aux seules 42 pages en cas de panne pendant la pagination', async () => {
+  it('revient aux seules 48 pages principales en cas de panne pendant la pagination', async () => {
     const fetcher = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(
@@ -136,11 +140,11 @@ describe('SEO et sitemap', () => {
       .mockRejectedValueOnce(new Error('offline'));
     const result = await generateSitemap('https://example.test', '/api', fetcher);
     expect(result.partial).toBe(true);
-    expect(result.count).toBe(42);
+    expect(result.count).toBe(48);
     expect(result.xml).not.toContain('/evenements/');
   });
 
-  it('revient aux 42 pages pour une réponse invalide ou HTTP 503', async () => {
+  it('revient aux 48 pages principales pour une réponse invalide ou HTTP 503', async () => {
     for (const response of [Response.json({ invalid: true }), new Response('', { status: 503 })]) {
       const result = await generateSitemap(
         'https://example.test',
@@ -148,7 +152,7 @@ describe('SEO et sitemap', () => {
         vi.fn<typeof fetch>().mockResolvedValue(response),
       );
       expect(result.partial).toBe(true);
-      expect(result.count).toBe(42);
+      expect(result.count).toBe(48);
     }
   });
 
@@ -160,7 +164,58 @@ describe('SEO et sitemap', () => {
       );
     const result = await generateSitemap('https://example.test', '/api', fetcher);
     expect(result.partial).toBe(true);
-    expect(result.count).toBe(42);
-    expect(fetcher).toHaveBeenCalledTimes(3);
+    expect(result.count).toBe(48);
+    // Événements : 2 appels (curseur répété) ; lieux : 1 (réponse invalide) ; parcours : 2.
+    expect(fetcher).toHaveBeenCalledTimes(5);
+  });
+
+  describe('parcours', () => {
+    const trailId = 'c1000000-0000-4000-8000-000000000001';
+    const trail = {
+      id: trailId, title: 'Rive gauche, rive droite', contentLanguage: 'fr', modes: ['foot'], isLoop: true,
+      distanceM: 11500, durationMin: 180, durationDays: null, start: { lat: 46.63, lng: 1.17 }, startCity: 'Fontgombault',
+      distanceFromLeBlancM: 8758, hasTrack: true, imageUrl: null, imageCredit: null, imageLicense: null,
+      officialUrl: null, producer: 'Destination Brenne', updatedAt: '2026-01-04T00:00:00.000Z',
+    };
+    const empty = () => Response.json({ items: [], nextCursor: null, generatedAt: new Date().toISOString() });
+
+    it('ajoute la liste et les fiches publiées, tous modes, avec alternates ×6 et x-default', async () => {
+      const fetcher = vi.fn<typeof fetch>()
+        .mockResolvedValueOnce(empty()).mockResolvedValueOnce(empty())
+        .mockResolvedValueOnce(Response.json({ items: [trail, { ...trail, id: 'pas-un-uuid' }, { ...trail, id: undefined }],
+          nextCursor: null, attributions: [], generatedAt: new Date().toISOString() }));
+      const result = await generateSitemap('https://example.test', '/api', fetcher);
+      expect(result.partial).toBe(false);
+      expect(result.walkCount).toBe(1);
+      expect(result.count).toBe((8 + 1) * 6);
+      const request = new URL(String(fetcher.mock.calls[2]![0]));
+      expect(request.pathname).toBe('/api/v1/routes');
+      expect(request.searchParams.get('modes')).toBe('foot,bike,mtb,horse');
+      for (const path of ['/fr/se-balader', '/en/trails', '/es/rutas', '/de/touren', '/it/percorsi', '/nl/routes']) {
+        expect(result.xml).toContain(`<loc>https://example.test${path}</loc>`);
+        expect(result.xml).toContain(`<loc>https://example.test${path}/${trailId}</loc><lastmod>2026-01-04</lastmod>`);
+      }
+      const entry = result.xml.split('\n').find((line) => line.includes(`<loc>https://example.test/de/touren/${trailId}</loc>`)) ?? '';
+      for (const [lang, path] of [['fr', 'se-balader'], ['en', 'trails'], ['es', 'rutas'], ['de', 'touren'], ['it', 'percorsi'], ['nl', 'routes'], ['x-default', 'se-balader']]) {
+        expect(entry).toContain(`<xhtml:link rel="alternate" hreflang="${lang}" href="https://example.test/${lang === 'x-default' ? 'fr' : lang}/${path}/${trailId}"/>`);
+      }
+      expect(result.xml).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+      // Aucune URL invalide.
+      expect(result.xml).not.toContain('pas-un-uuid');
+      expect(result.xml).not.toContain('undefined');
+      expect(result.nearLimits).toBe(false);
+    });
+
+    it('sans réponse de l’API des parcours : sitemap partiel, autres fiches conservées', async () => {
+      const fetcher = vi.fn<typeof fetch>()
+        .mockResolvedValueOnce(empty())
+        .mockResolvedValueOnce(Response.json({ items: [placeFixture], nextCursor: null, generatedAt: new Date().toISOString() }))
+        .mockResolvedValueOnce(new Response('{}', { status: 503 }));
+      const result = await generateSitemap('https://example.test', '/api', fetcher);
+      expect(result.partial).toBe(true);
+      expect(result.walkCount).toBe(0);
+      expect(result.xml).toContain(placeFixture.id);
+      expect(result.xml).toContain('<loc>https://example.test/fr/se-balader</loc>');
+    });
   });
 });

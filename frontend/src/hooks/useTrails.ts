@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { SupportedLanguage, TrailListResponse } from '@leblanc/shared';
+import { TRAIL_MODES, type SupportedLanguage, type TrailListResponse } from '@leblanc/shared';
 import { ApiError } from '../api/apiEventsRepository';
 import { getTrail, getTrailNearby, listTrailGeo, listTrails, normalizeTrailFilters, type TrailFilters } from '../api/trailsRepository';
 
@@ -50,5 +50,36 @@ export function useTrailNearby(id: string | undefined, lang: SupportedLanguage, 
     queryKey: ['trails', 'nearby', id, lang],
     queryFn: () => (id ? getTrailNearby(id, lang) : null),
     enabled: enabled && Boolean(id),
+  });
+}
+
+/** Producteurs et crédits photo de tous les parcours publiés (page Crédits). */
+export function useTrailCredits(lang: SupportedLanguage) {
+  return useQuery({
+    queryKey: ['trails', 'credits', lang],
+    queryFn: async () => {
+      const producers = new Set<string>();
+      const credits = new Map<string, { credit: string; license: string | null; count: number }>();
+      let cursor: string | undefined;
+      // Borne : 20 pages de 50 parcours.
+      for (let page = 0; page < 20; page++) {
+        const response = await listTrails({ lang, modes: [...TRAIL_MODES] }, { limit: 50, ...(cursor ? { cursor } : {}) });
+        for (const trail of response.items) {
+          if (trail.producer) producers.add(trail.producer);
+          if (trail.imageUrl && trail.imageCredit) {
+            const key = `${trail.imageCredit}\u0000${trail.imageLicense ?? ''}`;
+            const entry = credits.get(key) ?? { credit: trail.imageCredit, license: trail.imageLicense, count: 0 };
+            entry.count++;
+            credits.set(key, entry);
+          }
+        }
+        if (!response.nextCursor) break;
+        cursor = response.nextCursor;
+      }
+      return {
+        producers: [...producers].sort((a, b) => a.localeCompare(b, lang)),
+        credits: [...credits.values()].sort((a, b) => b.count - a.count || a.credit.localeCompare(b.credit, lang)),
+      };
+    },
   });
 }

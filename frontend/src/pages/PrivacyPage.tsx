@@ -33,6 +33,7 @@ export function PrivacyPage() {
       <section className={sectionStyle} aria-labelledby="privacy-services-title">
         <h2 id="privacy-services-title" className={titleStyle}>{t('privacy.services.title')}</h2>
         <p className="text-gray-700 leading-relaxed">{t('privacy.services.body')}</p>
+        <p className="text-gray-700 leading-relaxed">{t('privacy.services.walks')}</p>
         <div className="flex flex-wrap gap-x-6 gap-y-2">
           <a className={linkStyle} href="https://www.cloudflare.com/privacypolicy/">{t('privacy.services.cloudflare')}</a>
           <a className={linkStyle} href="https://osmfoundation.org/wiki/Privacy_Policy">{t('privacy.services.osm')}</a>

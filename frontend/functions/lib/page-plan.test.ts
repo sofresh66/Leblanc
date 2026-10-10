@@ -86,6 +86,34 @@ describe('planPage', () => {
       expect(html).not.toContain('<b>');
     });
 
+    it('JSON-LD TouristTrip limité aux champs présents dans les données', async () => {
+      const plan = await planPage(`/fr/se-balader/${trail.id}`, deps(() => ({ status: 200, body: trail })));
+      const html = plan?.head.tagsHtml ?? '';
+      const json = /<script[^>]*application\/ld\+json[^>]*>([^<]*)<\/script>/.exec(html)?.[1] ?? '';
+      const graph = (JSON.parse(json) as { '@graph': Record<string, unknown>[] })['@graph'];
+      const trip = graph.find((node) => node['@type'] === 'TouristTrip');
+      expect(trip).toEqual({
+        '@type': 'TouristTrip', name: trail.title, description: trail.description,
+        url: `https://leblanc-et-moi.pages.dev/fr/se-balader/${trail.id}`, image: trail.imageUrl,
+        itinerary: { '@type': 'Place', name: 'Fontgombault', geo: { '@type': 'GeoCoordinates', latitude: 46.63, longitude: 1.17 } },
+      });
+      // Ni distance, ni durée, ni difficulté, ni organisateur inventés.
+      expect(Object.keys(trip ?? {})).not.toEqual(expect.arrayContaining(['distance']));
+      expect(json).not.toMatch(/duration|difficulty|organizer|offers/);
+    });
+
+    it('sans description ni photo : description factuelle et JSON-LD sans description ni image', async () => {
+      const bare = { ...trail, description: '', imageUrl: null };
+      const plan = await planPage(`/de/touren/${trail.id}`, deps(() => ({ status: 200, body: bare })));
+      const html = plan?.head.tagsHtml ?? '';
+      // Balises retirées du titre dans la description (summarizeText).
+      expect(html).toContain('name="description" content="Rive gauche, rive droite : 11,5 km lange Tour ab Fontgombault, rund um Le Blanc und in der Brenne."');
+      const json = /<script[^>]*application\/ld\+json[^>]*>([^<]*)<\/script>/.exec(html)?.[1] ?? '';
+      const trip = (JSON.parse(json) as { '@graph': Record<string, unknown>[] })['@graph'].find((node) => node['@type'] === 'TouristTrip');
+      expect(trip).not.toHaveProperty('description');
+      expect(trip).not.toHaveProperty('image');
+    });
+
     it('sans photo : image par défaut du site', async () => {
       const plan = await planPage(`/fr/se-balader/${trail.id}`, deps(() => ({ status: 200, body: { ...trail, imageUrl: null } })));
       expect(plan?.head.tagsHtml).toContain('property="og:image" content="https://leblanc-et-moi.pages.dev/images/hero-le-blanc.jpg"');

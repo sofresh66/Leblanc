@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { HelmetProvider } from 'react-helmet-async';
 import { cleanup, render } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance, type Resource } from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { MemoryRouter } from 'react-router-dom';
@@ -36,9 +37,11 @@ describe('pages légales', () => {
     await i18n.use(initReactI18next).init({ lng: lang, fallbackLng: false, resources, ns: NAMESPACES,
       defaultNS: 'common', interpolation: { escapeValue: false } });
     for (const Page of [AboutPage, PrivacyPage, CreditsPage]) {
-      const { container, unmount } = render(<HelmetProvider><I18nextProvider i18n={i18n}>
+      // La page Crédits interroge l'API des parcours : requêtes sans réseau, jamais exécutées ici.
+      const queryClient = new QueryClient({ defaultOptions: { queries: { enabled: false, retry: false } } });
+      const { container, unmount } = render(<HelmetProvider><QueryClientProvider client={queryClient}><I18nextProvider i18n={i18n}>
         <MemoryRouter initialEntries={[`/${lang}`]}><Page /></MemoryRouter>
-      </I18nextProvider></HelmetProvider>);
+      </I18nextProvider></QueryClientProvider></HelmetProvider>);
       const text = container.textContent ?? '';
       expect(text).not.toMatch(/openagenda/i);
       expect(text).not.toMatch(/fictif|fictional|ficticio|fiktiv|fittizi|fictieve/i);

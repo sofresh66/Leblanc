@@ -38,6 +38,8 @@
   },
   "walks": {
     "title": "Trails around Le Blanc — Le Blanc & Moi",
-    "description": "Hikes, bike rides and routes around Le Blanc and in the Brenne: distance, duration, track and starting point."
+    "description": "Hikes, bike rides and routes around Le Blanc and in the Brenne: distance, duration, track and starting point.",
+    "detailDescriptionDistance": "{{title}}: a {{distance}} km route starting from {{city}}, around Le Blanc and in the Brenne.",
+    "detailDescription": "{{title}}: a route starting from {{city}}, around Le Blanc and in the Brenne."
   }
 }

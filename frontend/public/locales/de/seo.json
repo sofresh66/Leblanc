@@ -38,6 +38,8 @@
   },
   "walks": {
     "title": "Touren rund um Le Blanc — Le Blanc & Moi",
-    "description": "Wanderungen, Radtouren und Rundwege rund um Le Blanc und in der Brenne: Länge, Dauer, Track und Startpunkt."
+    "description": "Wanderungen, Radtouren und Rundwege rund um Le Blanc und in der Brenne: Länge, Dauer, Track und Startpunkt.",
+    "detailDescriptionDistance": "{{title}}: {{distance}} km lange Tour ab {{city}}, rund um Le Blanc und in der Brenne.",
+    "detailDescription": "{{title}}: Tour ab {{city}}, rund um Le Blanc und in der Brenne."
   }
 }

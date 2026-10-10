@@ -38,6 +38,8 @@
   },
   "walks": {
     "title": "Percorsi intorno a Le Blanc — Le Blanc & Moi",
-    "description": "Escursioni, giri in bicicletta e itinerari intorno a Le Blanc e nella Brenne: distanza, durata, traccia e punto di partenza."
+    "description": "Escursioni, giri in bicicletta e itinerari intorno a Le Blanc e nella Brenne: distanza, durata, traccia e punto di partenza.",
+    "detailDescriptionDistance": "{{title}}: percorso di {{distance}} km con partenza da {{city}}, intorno a Le Blanc e nella Brenne.",
+    "detailDescription": "{{title}}: percorso con partenza da {{city}}, intorno a Le Blanc e nella Brenne."
   }
 }

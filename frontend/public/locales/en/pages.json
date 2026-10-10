@@ -45,7 +45,10 @@
     "photosTitle": "Photo credits",
     "photosBody": "The photograph of Le Blanc on the home page is by Daniel Jolivet, under CC BY 2.0. Sources, licences and changes to local images are detailed in the credits document. Event images remain subject to their sources’ terms.",
     "creditsLink": "View photo credits",
-    "legalTitle": "Legal information"
+    "legalTitle": "Legal information",
+    "walksTitle": "Trails",
+    "walksBody": "The “Trails” tab lists hikes, bike rides, mountain-bike routes and horse-riding routes that start within 20 km of Le Blanc or inside the Brenne Regional Nature Park. Listings come from DATAtourisme. An OpenStreetMap track is shown, and offered as GPX, only when it safely matches the listing (same name, same way of travel, start within 500 m); otherwise only the starting point is shown, with a link to the official page.",
+    "walksLink": "See the routes"
   },
   "notFound": {
     "code": "404",
@@ -81,12 +84,33 @@
         "autre": "Pond and water lilies"
       }
     },
-    "dataSources": { "title": "Data sources", "osm": "OpenStreetMap place data is provided by its contributors under the Open Database License (ODbL)." },
+    "dataSources": {
+      "title": "Data sources",
+      "osm": "OpenStreetMap place data is provided by its contributors under the Open Database License (ODbL)."
+    },
     "footer": {
       "title": "Notices and licences",
       "note": "These credits may be updated at any time.",
       "eventImages": "Event images remain subject to the terms of their sources. See the full licences below.",
       "ccLicense": "Full CC BY 2.0 licence"
+    },
+    "walks": {
+      "title": "“Trails” routes",
+      "osm": "Route tracks and the outline of the Brenne Regional Nature Park (OpenStreetMap relation 4287018), which defines the scope of the tab, come from OpenStreetMap.",
+      "osmLink": "© OpenStreetMap contributors, ODbL 1.0",
+      "pnrRelation": "Relation 4287018: outline of the Brenne Regional Nature Park",
+      "gpx": "Downloadable GPX files are extracted from OpenStreetMap and are distributed under the same licence, ODbL 1.0.",
+      "datatourisme": "Route listings (titles, descriptions, distances, durations, official links) come from DATAtourisme, under the Licence Ouverte 2.0, based on information published by their producers.",
+      "datatourismeLink": "Licence Ouverte 2.0 (Etalab)",
+      "producers": "Listing producers",
+      "photos": "Route photo credits",
+      "photosNote": "Credits and licences as provided by the source. When no licence is stated, none is assumed; photos remain subject to their authors’ terms.",
+      "credit": "Credit",
+      "license": "Licence",
+      "count": "Routes",
+      "notProvided": "Not stated",
+      "loading": "Loading producers and credits…",
+      "unavailable": "The list of producers and credits is temporarily unavailable."
     }
   },
   "legal": {
@@ -115,7 +139,8 @@
       "title": "Technical services and external content",
       "body": "Cloudflare hosts the site and may process technical data, including your IP address, to deliver and secure the service. The map loads OpenStreetMap tiles; some event images also load from third-party servers. These providers receive the data needed for these requests, including your IP address, under their own privacy policies.",
       "cloudflare": "Cloudflare privacy policy",
-      "osm": "OpenStreetMap privacy policy"
+      "osm": "OpenStreetMap privacy policy",
+      "walks": "The “Trails” tab adds no third-party service: its map uses the same OpenStreetMap tiles, route photos come from the same image servers as event and place photos, and GPX files are served by the site’s own API."
     },
     "contact": {
       "title": "Contact us",

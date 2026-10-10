@@ -50,7 +50,7 @@ export interface SeoResource {
   event: { title: string; description: string; dynamicTitle: string };
   about: { title: string; description: string };
   notFound: { title: string; description: string };
-  walks: { title: string; description: string };
+  walks: { title: string; description: string; detailDescription: string; detailDescriptionDistance: string };
 }
 
 export interface PagesResource {
@@ -59,7 +59,7 @@ export interface PagesResource {
     title: string; description: string; creditsLink: string;
     storage: { title: string; body: string; delete: string };
     tracking: { title: string; body: string };
-    services: { title: string; body: string; cloudflare: string; osm: string };
+    services: { title: string; body: string; walks: string; cloudflare: string; osm: string };
     contact: { title: string; body: string };
   };
   credits: {
@@ -67,6 +67,12 @@ export interface PagesResource {
     hero: { title: string; file: string; work: string; author: string; source: string; license: string; description: string; changes: string; original: string; publication: string };
     categories: { title: string; file: string; subject: string; source: string; description: string; license: string; subjects: { culture: string; sport: string; fete: string; association: string; autre: string } };
     footer: { title: string; note: string; eventImages: string; ccLicense: string };
+    dataSources: { title: string; osm: string };
+    walks: {
+      title: string; osm: string; osmLink: string; pnrRelation: string; gpx: string; datatourisme: string;
+      datatourismeLink: string; producers: string; photos: string; photosNote: string; credit: string;
+      license: string; count: string; notProvided: string; loading: string; unavailable: string;
+    };
   };
   home: {
     title: string;
@@ -83,7 +89,11 @@ export interface PagesResource {
   map: { title: string; subtitle?: string; placeholder: string; results: string; listLink: string; truncated: string; showOnMap: string; selected: string; selectEvent: string };
   list: { title: string; subtitle?: string; placeholder: string };
   event: { title: string; placeholder: string; notFound: string };
-  about: { title: string; description: string };
+  about: {
+    title: string; description: string; projectTitle: string; projectBody: string; dataTitle: string; dataBody: string;
+    datatourismeLabel: string; datatourismeLicense: string; updates: string; photosTitle: string; photosBody: string;
+    creditsLink: string; legalTitle: string; walksTitle: string; walksBody: string; walksLink: string;
+  };
 }
 
 export interface EventsResource {

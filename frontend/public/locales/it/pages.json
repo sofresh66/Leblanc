@@ -45,7 +45,10 @@
     "photosTitle": "Crediti fotografici",
     "photosBody": "La fotografia di Le Blanc nella pagina iniziale è di Daniel Jolivet, sotto CC BY 2.0. Fonti, licenze e modifiche delle immagini locali sono descritte nel documento dei crediti. Le immagini degli eventi restano soggette alle condizioni delle rispettive fonti.",
     "creditsLink": "Consulta i crediti fotografici",
-    "legalTitle": "Note legali"
+    "legalTitle": "Note legali",
+    "walksTitle": "Percorsi",
+    "walksBody": "La scheda «Percorsi» presenta escursioni, giri in bicicletta, percorsi in mountain bike e itinerari a cavallo con partenza entro 20 km da Le Blanc o all’interno del Parco naturale regionale della Brenne. Le schede provengono da DATAtourisme. Una traccia OpenStreetMap è mostrata, e proposta in GPX, solo quando la corrispondenza con la scheda è sicura (stesso nome, stessa modalità di spostamento, partenza a meno di 500 m); altrimenti è indicato solo il punto di partenza, con un link alla scheda ufficiale.",
+    "walksLink": "Vedi i percorsi"
   },
   "notFound": {
     "code": "404",
@@ -81,12 +84,33 @@
         "autre": "Stagno e ninfee"
       }
     },
-    "dataSources": { "title": "Fonti dei dati", "osm": "I dati dei luoghi di OpenStreetMap sono forniti dai suoi contributori con licenza Open Database License (ODbL)." },
+    "dataSources": {
+      "title": "Fonti dei dati",
+      "osm": "I dati dei luoghi di OpenStreetMap sono forniti dai suoi contributori con licenza Open Database License (ODbL)."
+    },
     "footer": {
       "title": "Note e licenze",
       "note": "Questi crediti possono essere modificati in qualsiasi momento.",
       "eventImages": "Le immagini degli eventi restano soggette alle condizioni delle rispettive fonti. Consulta le licenze complete qui sotto.",
       "ccLicense": "Licenza CC BY 2.0 completa"
+    },
+    "walks": {
+      "title": "Percorsi della scheda «Percorsi»",
+      "osm": "Le tracce dei percorsi e il contorno del Parco naturale regionale della Brenne (relazione OpenStreetMap 4287018), che delimita l’ambito della scheda, provengono da OpenStreetMap.",
+      "osmLink": "© collaboratori di OpenStreetMap, ODbL 1.0",
+      "pnrRelation": "Relazione 4287018: contorno del Parco naturale regionale della Brenne",
+      "gpx": "I file GPX scaricabili sono estratti da OpenStreetMap e sono distribuiti con la stessa licenza, ODbL 1.0.",
+      "datatourisme": "Le schede dei percorsi (titoli, descrizioni, distanze, durate, link ufficiali) provengono da DATAtourisme, con Licence Ouverte 2.0, sulla base delle informazioni pubblicate dai loro produttori.",
+      "datatourismeLink": "Licence Ouverte 2.0 (Etalab)",
+      "producers": "Produttori delle schede",
+      "photos": "Crediti delle foto dei percorsi",
+      "photosNote": "Crediti e licenze così come forniti dalla fonte. Se non è indicata alcuna licenza, nessuna viene presunta; le foto restano soggette alle condizioni dei loro autori.",
+      "credit": "Credito",
+      "license": "Licenza",
+      "count": "Percorsi",
+      "notProvided": "Non indicata",
+      "loading": "Caricamento dei produttori e dei crediti…",
+      "unavailable": "L’elenco dei produttori e dei crediti è momentaneamente non disponibile."
     }
   },
   "legal": {
@@ -115,7 +139,8 @@
       "title": "Servizi tecnici e contenuti esterni",
       "body": "Cloudflare ospita il sito e può trattare dati tecnici, incluso l’indirizzo IP, per fornire e proteggere il servizio. La mappa carica le mappe di base di OpenStreetMap; alcune immagini degli eventi vengono caricate anche da server esterni. Questi fornitori ricevono i dati necessari alle richieste, incluso l’indirizzo IP, secondo le proprie informative sulla privacy.",
       "cloudflare": "Privacy di Cloudflare",
-      "osm": "Privacy di OpenStreetMap"
+      "osm": "Privacy di OpenStreetMap",
+      "walks": "La scheda «Percorsi» non aggiunge alcun servizio di terzi: la sua mappa usa gli stessi sfondi OpenStreetMap, le foto dei percorsi provengono dagli stessi server di immagini di quelle degli eventi e dei luoghi, e i file GPX sono serviti dall’API del sito."
     },
     "contact": {
       "title": "Contatti",

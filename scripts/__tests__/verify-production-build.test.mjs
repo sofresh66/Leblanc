@@ -71,11 +71,12 @@ describe('Vérification du build de production', () => {
         totalUrls: count,
         eventUrls: count - 2,
         placeUrls: 1,
+        walkUrls: 0,
       });
     },
   );
 
-  it.each([MIN_SITEMAP_URLS - 1, 2_001, 2_100])(
+  it.each([MIN_SITEMAP_URLS - 1, MAX_SITEMAP_URLS + 1, MAX_SITEMAP_URLS + 100])(
     'refuse %i URLs même avec les pages requises et une taille suffisante',
     async (count) => {
       const xml = sitemapWithUrls(catalogueUrls(count));
@@ -86,6 +87,16 @@ describe('Vérification du build de production', () => {
       );
     },
   );
+
+  it('compte les fiches parcours des six langues sans les exiger', async () => {
+    const id = '12345678-1234-1234-1234-123456789abc';
+    const walks = ['fr/se-balader', 'en/trails', 'es/rutas', 'de/touren', 'it/percorsi', 'nl/routes']
+      .map((segment) => `https://leblanc-et-moi.pages.dev/${segment}/${id}`);
+    const xml = sitemapWithUrls([...catalogueUrls(MIN_SITEMAP_URLS), ...walks,
+      'https://leblanc-et-moi.pages.dev/fr/se-balader/pas-un-uuid']);
+    await writeFile(join(dist, 'sitemap.xml'), xml);
+    await expect(verifyProductionBuild(dist)).resolves.toMatchObject({ walkUrls: 6 });
+  });
 
   it('refuse un index absent', async () => {
     await rm(join(dist, 'index.html'));

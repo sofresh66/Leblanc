@@ -45,7 +45,10 @@
     "photosTitle": "Bildnachweise",
     "photosBody": "Das Foto von Le Blanc auf der Startseite stammt von Daniel Jolivet und steht unter CC BY 2.0. Quellen, Lizenzen und Änderungen der lokalen Bilder sind im Bildnachweis aufgeführt. Für Veranstaltungsbilder gelten die Bedingungen ihrer Quellen.",
     "creditsLink": "Bildnachweise ansehen",
-    "legalTitle": "Rechtliche Hinweise"
+    "legalTitle": "Rechtliche Hinweise",
+    "walksTitle": "Touren",
+    "walksBody": "Der Bereich „Touren“ zeigt Wanderungen, Radtouren, Mountainbike-Strecken und Reitwege, deren Start höchstens 20 km von Le Blanc entfernt oder im Regionalen Naturpark Brenne liegt. Die Einträge stammen von DATAtourisme. Ein OpenStreetMap-Track wird nur angezeigt und als GPX angeboten, wenn er sicher zum Eintrag passt (gleicher Name, gleiche Fortbewegungsart, Start weniger als 500 m entfernt); andernfalls wird nur der Startpunkt angezeigt, mit einem Link zur offiziellen Seite.",
+    "walksLink": "Touren ansehen"
   },
   "notFound": {
     "code": "404",
@@ -81,12 +84,33 @@
         "autre": "Teich und Seerosen"
       }
     },
-    "dataSources": { "title": "Datenquellen", "osm": "Die Ortsdaten von OpenStreetMap stammen von dessen Mitwirkenden und stehen unter der Open Database License (ODbL)." },
+    "dataSources": {
+      "title": "Datenquellen",
+      "osm": "Die Ortsdaten von OpenStreetMap stammen von dessen Mitwirkenden und stehen unter der Open Database License (ODbL)."
+    },
     "footer": {
       "title": "Hinweise und Lizenzen",
       "note": "Diese Bildnachweise können jederzeit aktualisiert werden.",
       "eventImages": "Für Veranstaltungsbilder gelten weiterhin die Bedingungen ihrer Quellen. Die vollständigen Lizenzen sind unten verlinkt.",
       "ccLicense": "Vollständige CC-BY-2.0-Lizenz"
+    },
+    "walks": {
+      "title": "Touren im Bereich „Touren“",
+      "osm": "Die Tracks der Touren und der Umriss des Regionalen Naturparks Brenne (OpenStreetMap-Relation 4287018), der den Umfang des Bereichs festlegt, stammen aus OpenStreetMap.",
+      "osmLink": "© OpenStreetMap-Mitwirkende, ODbL 1.0",
+      "pnrRelation": "Relation 4287018: Umriss des Regionalen Naturparks Brenne",
+      "gpx": "Die herunterladbaren GPX-Dateien sind Auszüge aus OpenStreetMap und werden unter derselben Lizenz, ODbL 1.0, verbreitet.",
+      "datatourisme": "Die Toureneinträge (Titel, Beschreibungen, Längen, Dauern, offizielle Links) stammen von DATAtourisme unter der Licence Ouverte 2.0, auf Grundlage der von ihren Herausgebern veröffentlichten Informationen.",
+      "datatourismeLink": "Licence Ouverte 2.0 (Etalab)",
+      "producers": "Herausgeber der Einträge",
+      "photos": "Bildnachweise der Touren",
+      "photosNote": "Nachweise und Lizenzen so, wie sie von der Quelle geliefert werden. Ist keine Lizenz angegeben, wird keine angenommen; die Fotos unterliegen weiterhin den Bedingungen ihrer Urheber.",
+      "credit": "Nachweis",
+      "license": "Lizenz",
+      "count": "Touren",
+      "notProvided": "Nicht angegeben",
+      "loading": "Herausgeber und Nachweise werden geladen…",
+      "unavailable": "Die Liste der Herausgeber und Nachweise ist vorübergehend nicht verfügbar."
     }
   },
   "legal": {
@@ -115,7 +139,8 @@
       "title": "Technische Dienste und externe Inhalte",
       "body": "Cloudflare hostet die Website und kann technische Daten, einschließlich Ihrer IP-Adresse, zur Bereitstellung und Absicherung des Dienstes verarbeiten. Die Karte lädt Kartenkacheln von OpenStreetMap; einige Veranstaltungsbilder werden ebenfalls von externen Servern geladen. Diese Anbieter erhalten die für die Anfragen erforderlichen Daten, einschließlich Ihrer IP-Adresse, gemäß ihren eigenen Datenschutzrichtlinien.",
       "cloudflare": "Datenschutz bei Cloudflare",
-      "osm": "Datenschutz bei OpenStreetMap"
+      "osm": "Datenschutz bei OpenStreetMap",
+      "walks": "Der Bereich „Touren“ fügt keinen Drittanbieterdienst hinzu: Seine Karte nutzt dieselben OpenStreetMap-Kacheln, die Fotos der Touren stammen von denselben Bildservern wie die der Veranstaltungen und Orte, und die GPX-Dateien werden von der eigenen API der Website bereitgestellt."
     },
     "contact": {
       "title": "Kontakt",

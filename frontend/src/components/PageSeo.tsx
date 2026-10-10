@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useParams } from 'react-router-dom';
-import type { EventDetail } from '@leblanc/shared';
+import { touristTripStructuredData, type EventDetail, type TrailDetail } from '@leblanc/shared';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, SUPPORTED_LANGUAGES } from '../i18n/languages';
 import { buildLocalizedPath, type RouteSection } from '../routes/routeMapping';
 import { eventStructuredData, serializeJsonLd } from '../utils/seo';
@@ -14,6 +14,8 @@ const LOCALES = { fr: 'fr_FR', en: 'en_US', es: 'es_ES', de: 'de_DE', it: 'it_IT
 interface PageSeoProps {
   section: RouteSection | 'notFound';
   event?: EventDetail;
+  /** Fiche parcours : ajoute le JSON-LD TouristTrip. */
+  trail?: TrailDetail;
   noindex?: boolean;
   titleOverride?: string;
   descriptionOverride?: string;
@@ -23,7 +25,7 @@ interface PageSeoProps {
   breadcrumbName?: string;
 }
 
-export function PageSeo({ section, event, noindex = false, titleOverride, descriptionOverride, canonicalPath, imageOverride, breadcrumbName }: PageSeoProps) {
+export function PageSeo({ section, event, trail, noindex = false, titleOverride, descriptionOverride, canonicalPath, imageOverride, breadcrumbName }: PageSeoProps) {
   const { t, i18n } = useTranslation(['seo', 'nav']);
   const { id } = useParams<{ id: string }>();
   const { pathname } = useLocation();
@@ -77,6 +79,7 @@ export function PageSeo({ section, event, noindex = false, titleOverride, descri
       })),
     });
     if (event) graph.push(eventStructuredData(event, canonical, image));
+    if (trail) graph.push(touristTripStructuredData(trail, canonical));
   }
 
   return (

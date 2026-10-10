@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { LegalNotice } from '../components/LegalNotice';
 import { PageSeo } from '../components/PageSeo';
+import { WalksCredits } from '../components/walks/WalksCredits';
 
 const categoryPhotos = [
   { file: 'culture.jpg', subject: 'culture', url: 'https://unsplash.com/es/fotos/un-grupo-de-personas-que-estan-en-un-escenario-4-qRzyGSb98' },
@@ -71,6 +72,8 @@ export function CreditsPage() {
         <p className="text-gray-700 leading-relaxed">{t('credits.dataSources.osm')}</p>
         <a className={linkStyle} href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors — ODbL ↗</a>
       </section>
+
+      <WalksCredits />
 
       <section className="rounded-2xl bg-sable-100 border border-sable-200 p-6 sm:p-8 space-y-4">
         <h2 className="font-display text-[28px] text-brenne-950">{t('credits.footer.title')}</h2>
