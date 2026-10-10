@@ -107,19 +107,25 @@ Publier les relations OSM qui n'ont pas de fiche DATAtourisme : voie verte Étoi
 
 Attendu : `ep-jolly-dawn-b2ezqckv.c-6.eu-central-1.aws.neon.tech`.
 
-**Point d'ordre important.** Dès que `main` est poussé (étape 5), le run de 3 h publie automatiquement le front. Les étapes 5 à 7 se font donc dans la même journée. À défaut, la preview (étape 6) peut être construite et validée depuis le poste local **avant** le push.
+**Ordre retenu.** La preview est déployée depuis le poste local, à partir du build local, **avant** de pousser `main` (étape 5). Après validation : push de `main` et des tags (étape 6), puis `gh workflow run production.yml` dans la même session (étape 7). Raison : dès que `main` est poussé, le run de 3 h publierait le front automatiquement.
 
-**Prévisualisation et CORS.** Le Worker de production n'accepte que `https://leblanc-et-moi.pages.dev`. Une preview sur `routes-preview.leblanc-et-moi.pages.dev` verrait ses appels refusés par le navigateur. D'où l'option ajoutée à l'étape 3 (à valider).
+**Previews et CORS.** Le Worker accepte en permanence les previews du projet : `https://<un seul sous-domaine>.leblanc-et-moi.pages.dev`, HTTPS uniquement, sans port (`PAGES_PREVIEW_ORIGIN` dans `worker/src/http/cors.ts`, testé). Ce changement part avec le déploiement du Worker de l'étape 3.
+
+État de départ vérifié le 10 octobre 2026 : `origin/main` sur `5febaa6`, aucun tag `se-balader-*` à distance.
 
 ### 1. Sauvegarde Neon
 
+Projet `leblanc-et-moi` (`still-feather-70001673`, aws-eu-central-1). Branche parente : `production` (`br-jolly-glitter-b2egbt3q`, branche par défaut). Historique conservé par Neon : 6 heures seulement, d'où cette branche explicite.
+
 ```bash
-npx neonctl branches create --project-id still-feather-70001673 --name prod-avant-routes-AAAA-MM-JJ
-npx neonctl branches list --project-id still-feather-70001673
+npx neonctl branches create --project-id still-feather-70001673 --parent production --name prod-avant-routes-2026-10-10 --no-compute --no-secrets --output table
+npx neonctl branches list --project-id still-feather-70001673 --output table
 ```
 
-- Vérification : la branche apparaît avec la branche de production pour parente ; noter son identifiant (`br-…`).
-- Retour arrière : c'est le point de restauration des étapes suivantes (console Neon › Branches › Restore).
+- `--no-secrets` : la sortie n'affiche pas les identifiants de connexion (affichés par défaut).
+- `--no-compute` : pas de calcul actif pour une sauvegarde ; on en ajoute un seulement pour la consulter ou la restaurer.
+- Vérification : `prod-avant-routes-2026-10-10` apparaît dans la liste ; noter son identifiant (`br-…`).
+- Retour arrière : c'est le point de restauration des étapes suivantes (console Neon › Branches › Restore). Suppression ultérieure : `npx neonctl branches delete <id> --project-id still-feather-70001673`.
 
 ### 2. Migration 012
 
@@ -143,13 +149,9 @@ npx neonctl branches list --project-id still-feather-70001673
 cd worker && npx wrangler deploy && cd ..
 ```
 
-Option (pour la preview de l'étape 6) : déployer avec l'origine de preview autorisée, puis redéployer sans elle après la mise en production :
+Ce déploiement inclut l'API des parcours et l'acceptation des previews du projet (CORS).
 
-```bash
-cd worker && npx wrangler deploy --var ALLOWED_ORIGINS:http://localhost:5173,https://leblanc-et-moi.pages.dev,https://routes-preview.leblanc-et-moi.pages.dev && cd ..
-```
-
-- Vérifications : `curl -s https://leblanc-api.elharchdenis.workers.dev/health` ; `…/api/v1/routes?limit=1` doit renvoyer 200 (liste vide avant l'ingestion) ; `…/api/v1/routes/geo` doit renvoyer 200 ; `…/api/v1/events?limit=1` doit rester inchangé.
+- Vérifications : `curl -s https://leblanc-api.elharchdenis.workers.dev/health` ; `…/api/v1/routes?limit=1` doit renvoyer 200 (liste vide avant l'ingestion) ; `…/api/v1/routes/geo` doit renvoyer 200 ; `…/api/v1/events?limit=1` doit rester inchangé ; `curl -s -o /dev/null -D - -H 'Origin: https://routes-preview.leblanc-et-moi.pages.dev' …/api/v1/routes?limit=1 | grep -i access-control-allow-origin` doit renvoyer l'origine, et rien pour `http://routes-preview…` ou `https://evil-leblanc-et-moi.pages.dev`.
 - Retour arrière : `cd worker && npx wrangler rollback fca49825-70c4-4101-a78f-2624345db03f`.
 
 ### 4. Ingestion des parcours en production
@@ -171,18 +173,7 @@ curl -s 'https://leblanc-api.elharchdenis.workers.dev/api/v1/routes/geo?modes=fo
 
 Retour arrière : `UPDATE routes SET status = 'hidden'` (onglet vide, sans incidence ailleurs), ou retour arrière de l'étape 2, ou restauration depuis la sauvegarde.
 
-### 5. Push de `main` et des tags (après la migration)
-
-```bash
-git push origin main
-git push origin se-balader-lot-1 se-balader-lot-2 se-balader-lot-3 se-balader-lot-4 se-balader-lot-5 se-balader-lot-6 se-balader-lot-7
-```
-
-- Vérification : `git ls-remote --tags origin 'se-balader-*'` doit lister 7 tags ; `gh workflow list --all` doit montrer les deux workflows `active`.
-- Les workflows poussés appellent `db:ingest:routes` et `--entity=routes` : la migration 012 doit être appliquée avant (étape 2).
-- Retour arrière : `git revert` des commits concernés, puis push. Les tags peuvent être supprimés à distance (`git push origin :refs/tags/<tag>`).
-
-### 6. Preview (vérifiée ensemble)
+### 5. Preview depuis le poste local (vérifiée ensemble, avant tout push)
 
 ```bash
 SITEMAP_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_API_URL=https://leblanc-api.elharchdenis.workers.dev/api VITE_SITE_URL=https://leblanc-et-moi.pages.dev npm run build
@@ -195,7 +186,20 @@ bash scripts/check-seo.sh https://routes-preview.leblanc-et-moi.pages.dev
   - le build est validé (environ 2 300 URL, dont environ 1 000 fiches parcours) ;
   - `check-seo.sh` affiche « tous les contrôles sont passés » ;
   - la revue manuelle porte sur la liste, les filtres, la carte, une fiche avec tracé et GPX, une fiche sans tracé, les 6 langues et le mobile.
+- Le build part de la copie locale de `main` (10 commits d’avance sur `origin/main`) : rien n’est poussé à cette étape.
 - Retour arrière : supprimer le déploiement de preview (tableau de bord Pages).
+
+### 6. Push de `main` et des tags (après validation de la preview)
+
+```bash
+git push origin main
+git push origin se-balader-lot-1 se-balader-lot-2 se-balader-lot-3 se-balader-lot-4 se-balader-lot-5 se-balader-lot-6 se-balader-lot-7
+```
+
+- Vérification : `git ls-remote --tags origin 'se-balader-*'` doit lister 7 tags ; `gh workflow list --all` doit montrer les deux workflows `active`.
+- Les workflows poussés appellent `db:ingest:routes` et `--entity=routes` : la migration 012 doit être appliquée avant (étape 2).
+- Enchaîner l’étape 7 dans la même session.
+- Retour arrière : `git revert` des commits concernés, puis push. Les tags peuvent être supprimés à distance (`git push origin :refs/tags/<tag>`).
 
 ### 7. Front en production
 
@@ -220,4 +224,3 @@ bash scripts/check-seo.sh https://leblanc-et-moi.pages.dev
 - **GPX** : téléchargement depuis une fiche avec tracé ; le fichier contient la licence ODbL.
 - **Pages légales** : Crédits, À propos et Confidentialité dans une autre langue.
 - **Le lendemain** : le run de 3 h et son étape « Actualiser les parcours » ; le lundi, le contrôle hebdomadaire des parcours.
-- **Si l'option CORS de l'étape 3 a été utilisée** : redéployer le Worker sans l'origine de preview.

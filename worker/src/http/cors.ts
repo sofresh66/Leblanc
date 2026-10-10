@@ -6,6 +6,18 @@ const DEFAULT_ALLOWED_ORIGINS = [
 ];
 
 /**
+ * Previews Cloudflare Pages du projet (déploiement de branche ou de commit) :
+ * https://<un seul sous-domaine>.leblanc-et-moi.pages.dev, en HTTPS, sans port.
+ * Le sous-domaine suit les règles d'un libellé DNS (minuscules, chiffres, tirets
+ * internes, 63 caractères au plus). Aucun autre joker n'est accepté.
+ */
+export const PAGES_PREVIEW_ORIGIN = /^https:\/\/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.leblanc-et-moi\.pages\.dev$/;
+
+export function isAllowedOrigin(origin: string, env?: Env): boolean {
+  return getAllowedOrigins(env).includes(origin) || PAGES_PREVIEW_ORIGIN.test(origin);
+}
+
+/**
  * Récupère la liste des origines autorisées depuis les variables d'environnement.
  */
 export function getAllowedOrigins(env?: Env): string[] {
@@ -26,8 +38,7 @@ export function getCorsHeaders(request: Request, env?: Env): Record<string, stri
     return { Vary: 'Origin' };
   }
 
-  const allowedOrigins = getAllowedOrigins(env);
-  if (!allowedOrigins.includes(origin)) {
+  if (!isAllowedOrigin(origin, env)) {
     return { Vary: 'Origin' };
   }
 
