@@ -213,6 +213,17 @@ npx wrangler deployments list --name leblanc-api --cwd worker
 
 Puis comparer l'enregistrement « avant » avec la production (outil de comparaison de l'étape 3). En cas de contrôle en échec ou de régression : retour arrière vers `fca49825` sans attendre.
 
+**Hypothèse du cache écartée (lecture seule, avant la nouvelle tentative).**
+- Le Worker n'utilise aucun cache : ni `caches.default`, ni `cacheTtl` ou `cacheEverything`, ni option `cf`, ni appel `fetch` sortant mis en cache.
+- Il est servi uniquement sur `workers.dev`, sans route de zone ni règle de cache.
+- Les réponses ne portent ni `cf-cache-status` ni `age`. `Access-Control-Allow-Origin` suit l'origine de chaque requête, y compris pour des demandes successives de la même URL avec des origines différentes, sur l'ancienne comme sur la nouvelle version.
+
+**Fait le 10 octobre 2026 vers 16:20 UTC.**
+- `wrangler versions deploy 3758615a-8bed-4d2b-87b7-6b113c2b3620@100` : version **`3758615a` à 100 %**, message « Se balader : API des parcours et CORS des previews ».
+- `verify-worker-deploy.sh … vide` : propagation stable dès le 5e essai, **20 contrôles sur 20**.
+- Comparaison avec l'enregistrement « avant » (`artifacts/worker-snapshots/after/`) : 12 réponses conformes, aucune clé supprimée ou renommée, types et en-têtes identiques.
+- Retour arrière disponible : `npx wrangler rollback fca49825-70c4-4101-a78f-2624345db03f`.
+
 ### 4. Ingestion des parcours en production
 
 Seulement une fois l'étape 3 réussie : `/routes` doit répondre 200 en production. La simulation d'abord, puis l'ingestion réelle, chacune protégée par le contrôle d'hôte :
