@@ -10,6 +10,6 @@ export default defineConfig({
       'worker/src/**/*.test.ts',
     ],
     environment: 'node',
-    exclude: ['**/node_modules/**', '**/integration.sql.test.ts'],
+    exclude: ['**/node_modules/**', '**/integration*.sql.test.ts'],
   },
 });

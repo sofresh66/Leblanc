@@ -6,7 +6,7 @@ config({ path: '.env', override: true });
 
 export default defineConfig({
   test: {
-    include: ['worker/src/__tests__/integration.sql.test.ts'],
+    include: ['worker/src/__tests__/integration*.sql.test.ts'],
     environment: 'node',
     hookTimeout: 60000,
     testTimeout: 15000,
