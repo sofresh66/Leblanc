@@ -8,11 +8,9 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { LE_BLANC_CENTER, SEARCH_RADIUS_METERS } from '@leblanc/shared';
 
-// NOTE : Pour un trafic important (>10k vues/jour), basculer vers un
-// fournisseur de tuiles dédié (Stadia Maps, MapTiler) ou auto-héberger
-// les tuiles. Les tuiles OSM publiques ne sont pas dimensionnées pour
-// un site à fort trafic.
-export const OSM_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+import { OSM_TILE_URL } from './tiles';
+
+export { OSM_TILE_URL };
 
 /** Zoom à partir duquel les marqueurs ne sont plus regroupés. */
 export const DECLUSTER_ZOOM = 15;

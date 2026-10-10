@@ -3,6 +3,7 @@ import {
   PlaceApiSchema,
   TrailDetailSchema,
   buildLocalizedPath,
+  escapeHtml,
   buildPageHead,
   eventStructuredData,
   getRestaurantJsonLd,
@@ -137,10 +138,7 @@ export async function planPage(pathname: string, deps: PlanDeps): Promise<PagePl
       if (!parsed.success) return null;
       const trail = parsed.data;
       const canonical = absolute(buildLocalizedPath('walks', lang, trail.id));
-      return {
-        status: 200,
-        lang,
-        head: buildPageHead({
+      const head = buildPageHead({
           siteUrl: deps.siteUrl, lang, section: 'walks', id: trail.id,
           title: `${trail.title} — ${SITE_NAME}`,
           description: trailSeoDescription(trail, {
@@ -153,8 +151,12 @@ export async function planPage(pathname: string, deps: PlanDeps): Promise<PagePl
           breadcrumb: [home, { name: pick(nav, 'walks') ?? '', path: buildLocalizedPath('walks', lang) },
             { name: trail.title, path: buildLocalizedPath('walks', lang, trail.id) }],
           structuredData: [touristTripStructuredData(trail, canonical)],
-        }),
-      };
+      });
+      // La photo d'en-tête est l'élément LCP : le navigateur la demande dès le HTML.
+      const preload = trail.imageUrl
+        ? `<link data-rh="true" rel="preload" as="image" href="${escapeHtml(trail.imageUrl)}" fetchpriority="high">`
+        : '';
+      return { status: 200, lang, head: { ...head, tagsHtml: head.tagsHtml + preload } };
     }
   } catch (error) {
     if (error instanceof UpstreamUnavailable) return null;

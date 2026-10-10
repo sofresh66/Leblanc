@@ -47,7 +47,11 @@ export function TrailList({ filters, onResetFilters }: TrailListProps) {
   return (
     <div className="space-y-8">
       <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3" aria-label={t('walks:list.results')}>
-        {trails.map((trail) => <li key={trail.id} className="min-w-0"><TrailCard trail={trail} /></li>)}
+        {trails.map((trail, index) => (
+          <li key={trail.id} className="min-w-0">
+            <TrailCard trail={trail} priority={index === 0 ? 'high' : index < 3 ? 'eager' : 'lazy'} />
+          </li>
+        ))}
       </ul>
       {query.isFetchNextPageError && !query.cursorExpired ? (
         <ErrorState error={query.error} onRetry={() => void query.fetchNextPage()} />

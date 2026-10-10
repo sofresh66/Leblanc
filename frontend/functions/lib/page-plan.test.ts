@@ -114,6 +114,13 @@ describe('planPage', () => {
       expect(trip).not.toHaveProperty('image');
     });
 
+    it('précharge la photo d’en-tête (élément LCP), et rien sans photo', async () => {
+      const withPhoto = await planPage(`/fr/se-balader/${trail.id}`, deps(() => ({ status: 200, body: trail })));
+      expect(withPhoto?.head.tagsHtml).toContain('<link data-rh="true" rel="preload" as="image" href="https://centre.media.tourinsoft.eu/upload/rive.jpg" fetchpriority="high">');
+      const without = await planPage(`/fr/se-balader/${trail.id}`, deps(() => ({ status: 200, body: { ...trail, imageUrl: null } })));
+      expect(without?.head.tagsHtml).not.toContain('rel="preload"');
+    });
+
     it('sans photo : image par défaut du site', async () => {
       const plan = await planPage(`/fr/se-balader/${trail.id}`, deps(() => ({ status: 200, body: { ...trail, imageUrl: null } })));
       expect(plan?.head.tagsHtml).toContain('property="og:image" content="https://leblanc-et-moi.pages.dev/images/hero-le-blanc.jpg"');

@@ -16,6 +16,7 @@ import { useTrail, useTrailNearby } from '../hooks/useTrails';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
 import { formatEventDate } from '../utils/eventDates';
+import { fetchPriority } from '../utils/fetchPriority';
 import { officialWebsite } from '../utils/officialWebsite';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -85,7 +86,7 @@ function Hero({ trail }: { trail: TrailDetail }) {
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-br from-brenne-700 via-brenne-900 to-brenne-950" />
       {image && (
         <div className="absolute inset-0 -z-10">
-          <img src={image} alt="" onError={() => setFailed(image)} className="h-full w-full object-cover" />
+          <img src={image} alt="" {...fetchPriority('high')} onError={() => setFailed(image)} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/65 to-black/30" />
         </div>
       )}

@@ -146,7 +146,9 @@ export function Layout() {
         )}
       </header>
 
-      <main id="main" ref={mainRef} tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 focus:outline-none">
+      {/* Hauteur minimale d’un écran : pendant le chargement d’une page, le pied de page reste
+          sous la ligne de flottaison et ne « saute » pas quand le contenu arrive (CLS). */}
+      <main id="main" ref={mainRef} tabIndex={-1} className="flex-1 min-h-screen max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 focus:outline-none">
         <Suspense fallback={<div role="status" className="py-12 text-center">{t('common:actions.loading')}</div>}>
           <Outlet />
         </Suspense>

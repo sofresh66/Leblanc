@@ -3,7 +3,7 @@ import { MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { TrailTrack } from '@leblanc/shared';
-import { OSM_TILE_URL } from '../map/BaseMap';
+import { OSM_TILE_URL } from '../map/tiles';
 
 const TRACK_COLOR = '#9a3412';
 const startIcon = L.divIcon({

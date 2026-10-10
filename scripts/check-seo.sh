@@ -31,6 +31,9 @@ curl -s "$BASE/sitemap.xml" > "$TMP/sitemap.xml"
 EVENT_PATH="$(grep -o '<loc>[^<]*/fr/evenements/[^<]*</loc>' "$TMP/sitemap.xml" | head -1 | sed -E 's#<loc>https?://[^/]+##; s#</loc>##')"
 PLACE_PATH="$(grep -o '<loc>[^<]*/fr/lieux/[^<]*</loc>' "$TMP/sitemap.xml" | head -1 | sed -E 's#<loc>https?://[^/]+##; s#</loc>##')"
 check "sitemap : contient une fiche événement et une fiche lieu" '[ -n "$EVENT_PATH" ] && [ -n "$PLACE_PATH" ]'
+WALK_PATH="$(grep -o '<loc>[^<]*/fr/se-balader/[^<]*</loc>' "$TMP/sitemap.xml" | head -1 | sed -E 's#<loc>https?://[^/]+##; s#</loc>##')"
+check "sitemap : contient la liste et une fiche « Se balader »" 'grep -q "/fr/se-balader</loc>" "$TMP/sitemap.xml" && [ -n "$WALK_PATH" ]'
+check "sitemap : alternates hreflang ×6 + x-default par URL" '[ "$(grep -o "<url>" "$TMP/sitemap.xml" | wc -l)" -gt 0 ] && [ "$(grep -o "<xhtml:link" "$TMP/sitemap.xml" | wc -l)" = "$(( $(grep -o "<url>" "$TMP/sitemap.xml" | wc -l) * 7 ))" ]'
 check "sitemap : chaque URL a un lastmod" '[ "$(grep -o "<url>" "$TMP/sitemap.xml" | wc -l)" = "$(grep -o "<lastmod>" "$TMP/sitemap.xml" | wc -l)" ]'
 
 echo "Page fixe : /de/karte"
@@ -62,8 +65,16 @@ fetch "$PLACE_PATH" place
 check "statut 200" '[ "$(status place)" = 200 ]'
 check "JSON-LD d'établissement de restauration" 'grep -Eq "\"@type\":\"(Restaurant|BarOrPub|CafeOrCoffeeShop|FastFoodRestaurant|FoodEstablishment)\"" "$TMP/place.html"'
 
+echo "Se balader : liste filtrée et fiche $WALK_PATH"
+fetch "/fr/se-balader?withTrack=true&modes=foot%2Chorse" walks
+check "liste filtrée : 200, canonical sans paramètres" '[ "$(status walks)" = 200 ] && grep -q "rel=\"canonical\" href=\"[^\"]*/fr/se-balader\"" "$TMP/walks.html"'
+fetch "$WALK_PATH" walk
+check "fiche : statut 200 et titre propre" '[ "$(status walk)" = 200 ] && ! grep -q "<title>Le Blanc &amp; Moi</title>" "$TMP/walk.html"'
+check "fiche : hreflang ×6 + x-default" '[ "$(count walk "rel=\"alternate\"")" = 7 ]'
+check "fiche : JSON-LD TouristTrip" 'grep -q "\"@type\":\"TouristTrip\"" "$TMP/walk.html"'
+
 echo "Vraies 404"
-for path in /fr/page-inconnue /xx/carte /fr/evenements/pas-un-uuid /fr/evenements/00000000-0000-4000-8000-000000000000 /fr/lieux/00000000-0000-4000-8000-000000000000; do
+for path in /fr/page-inconnue /xx/carte /fr/evenements/pas-un-uuid /fr/evenements/00000000-0000-4000-8000-000000000000 /fr/lieux/00000000-0000-4000-8000-000000000000 /fr/se-balader/pas-un-uuid /de/touren/00000000-0000-4000-8000-000000000000; do
   name="nf$(printf '%s' "$path" | tr -c 'a-z0-9' '_')"
   fetch "$path" "$name"
   check "$path → 404 noindex" '[ "$(status "$name")" = 404 ] && grep -q "name=\"robots\" content=\"noindex, follow\"" "$TMP/$name.html"'

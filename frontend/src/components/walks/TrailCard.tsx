@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { TrailSummary } from '@leblanc/shared';
 import { DEFAULT_LANGUAGE, isSupportedLanguage } from '../../i18n/languages';
 import { buildLocalizedPath } from '../../routes/routeMapping';
+import { fetchPriority } from '../../utils/fetchPriority';
 import { officialWebsite } from '../../utils/officialWebsite';
 import { formatKm, formatTrailDuration, loopLabel } from './trailFormat';
 
@@ -18,7 +19,8 @@ function ImageCredit({ credit, license }: { credit: string | null; license: stri
   );
 }
 
-export function TrailCard({ trail }: { trail: TrailSummary }) {
+/** `priority` : carte visible au chargement (image non différée, la première en priorité haute). */
+export function TrailCard({ trail, priority = 'lazy' }: { trail: TrailSummary; priority?: 'high' | 'eager' | 'lazy' }) {
   const { t, i18n } = useTranslation('walks');
   const [imageFailed, setImageFailed] = useState(false);
   const lang = isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE;
@@ -33,7 +35,14 @@ export function TrailCard({ trail }: { trail: TrailSummary }) {
     <article data-testid={`trail-card-${trail.id}`} className="card-event flex h-full flex-col border border-brenne-900/5" lang={trail.contentLanguage}>
       <figure className="relative m-0 aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-brenne-100 to-sable-100">
         {showImage && trail.imageUrl && (
-          <img src={trail.imageUrl} alt="" loading="lazy" onError={() => setImageFailed(true)} className="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={trail.imageUrl}
+            alt=""
+            loading={priority === 'lazy' ? 'lazy' : 'eager'}
+            {...fetchPriority(priority === 'high' ? 'high' : 'auto')}
+            onError={() => setImageFailed(true)}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         )}
         {showImage && <ImageCredit credit={trail.imageCredit} license={trail.imageLicense} />}
       </figure>
