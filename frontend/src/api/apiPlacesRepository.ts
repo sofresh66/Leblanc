@@ -14,7 +14,7 @@ import { PlaceHttpListParamsSchema, type PlaceListParamsInput, type PlacesReposi
 const REQUEST_TIMEOUT_MS = 30_000;
 const COLD_START_MESSAGE = 'Le service se réveille, veuillez réessayer dans quelques secondes';
 
-function buildUrl(path: string, searchParams: URLSearchParams): string {
+export function buildUrl(path: string, searchParams: URLSearchParams = new URLSearchParams()): string {
   const configured = import.meta.env.VITE_API_URL?.trim() ?? '';
   const baseUrl = configured ? configured.replace(/\/+$/, '') : '/api';
   const query = searchParams.toString();

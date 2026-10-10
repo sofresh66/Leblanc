@@ -2,13 +2,18 @@ import {
   DEFAULT_TRAIL_MODES,
   TRAIL_MODES,
   TrailGeoResponseSchema,
+  TrailDetailSchema,
   TrailListResponseSchema,
+  TrailNearbyResponseSchema,
   type SupportedLanguage,
+  type TrailDetail,
+  type TrailNearbyResponse,
   type TrailGeoResponse,
   type TrailListResponse,
   type TrailMode,
 } from '@leblanc/shared';
-import { getJson, invalidResponseError } from './apiPlacesRepository';
+import { ApiError } from './apiEventsRepository';
+import { buildUrl, getJson, invalidResponseError } from './apiPlacesRepository';
 
 /** Filtres de « Se balader », dans les unités de l'API (km, minutes). */
 export interface TrailFilters {
@@ -66,4 +71,37 @@ export async function listTrailGeo(filters: TrailFilters): Promise<TrailGeoRespo
   const parsed = TrailGeoResponseSchema.safeParse(payload);
   if (!parsed.success) throw invalidResponseError('/v1/routes/geo', parsed.error);
   return parsed.data;
+}
+
+/** GET /v1/routes/:id : fiche, ou null si le parcours est inconnu ou masqué (404). */
+export async function getTrail(id: string, lang: SupportedLanguage): Promise<TrailDetail | null> {
+  const path = `/v1/routes/${encodeURIComponent(id)}`;
+  try {
+    const payload = await getJson(path, new URLSearchParams({ lang }));
+    const parsed = TrailDetailSchema.safeParse(payload);
+    if (!parsed.success) throw invalidResponseError(path, parsed.error);
+    return parsed.data;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+/** GET /v1/routes/:id/nearby : événements à venir et lieux à 5 km du départ. */
+export async function getTrailNearby(id: string, lang: SupportedLanguage): Promise<TrailNearbyResponse | null> {
+  const path = `/v1/routes/${encodeURIComponent(id)}/nearby`;
+  try {
+    const payload = await getJson(path, new URLSearchParams({ lang }));
+    const parsed = TrailNearbyResponseSchema.safeParse(payload);
+    if (!parsed.success) throw invalidResponseError(path, parsed.error);
+    return parsed.data;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+/** Adresse du GPX (téléchargement direct depuis l'API, sous ODbL). */
+export function trailGpxUrl(id: string): string {
+  return buildUrl(`/v1/routes/${encodeURIComponent(id)}/gpx`);
 }

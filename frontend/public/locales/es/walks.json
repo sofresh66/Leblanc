@@ -85,5 +85,48 @@
     "startsOnly_one": "{{count}} ruta sin trazado: solo se indica su punto de salida.",
     "startsOnly_other": "{{count}} rutas sin trazado: solo se indica su punto de salida.",
     "truncated": "Demasiadas rutas para el mapa: afine los filtros."
+  },
+  "detail": {
+    "breadcrumbLabel": "Ruta de navegación",
+    "home": "Inicio",
+    "backToList": "Volver a las rutas",
+    "sections": {
+      "description": "Descripción",
+      "characteristics": "Características",
+      "map": "Trazado y punto de salida",
+      "nearby": "Cerca de la salida",
+      "sources": "Fuentes y licencias"
+    },
+    "fields": {
+      "modes": "Modo",
+      "distance": "Distancia",
+      "duration": "Duración",
+      "loop": "Forma",
+      "start": "Salida",
+      "fromLeBlanc": "Desde Le Blanc"
+    },
+    "actions": {
+      "directions": "Cómo llegar",
+      "gpx": "Descargar el GPX",
+      "gpxLicense": "Archivo GPX bajo licencia ODbL (© colaboradores de OpenStreetMap).",
+      "official": "Ficha oficial",
+      "officialLabel": "Ficha oficial de «{{title}}» (nueva pestaña)"
+    },
+    "trackUnavailable": "Trazado no disponible: en el mapa solo se indica el punto de salida.",
+    "osmRelation": "Relación de OpenStreetMap {{id}}",
+    "fallbackNotice": "Descripción disponible en {{language}}.",
+    "noDescription": "Descripción no disponible.",
+    "notFound": {
+      "title": "Ruta no encontrada",
+      "description": "Esta ruta no existe o ya no está publicada."
+    },
+    "nearbyEvents": "Próximos eventos",
+    "nearbyPlaces": "Dónde comer",
+    "distanceFromStart": "A {{distance}} km de la salida",
+    "datatourisme": "Ficha: DATAtourisme, {{producer}}",
+    "datatourismeUnknown": "Ficha: DATAtourisme",
+    "licenceOuverte": "Licence Ouverte (licencia abierta)",
+    "mapLabel": "Mapa de la ruta «{{title}}»",
+    "startMarker": "Punto de salida"
   }
 }

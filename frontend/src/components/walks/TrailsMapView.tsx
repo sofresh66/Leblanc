@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
+import { buildLocalizedPath } from '../../routes/routeMapping';
 import type { SupportedLanguage, TrailGeoItem } from '@leblanc/shared';
 import { BaseMap, MarkerClusterGroup } from '../map/BaseMap';
 import { formatKm } from './trailFormat';
@@ -44,7 +46,8 @@ export interface TrailsMapViewProps {
 
 /** Carte de « Se balader » : départs regroupés, tracés allégés issus d'OpenStreetMap. */
 export default function TrailsMapView({ items, truncated, lang }: TrailsMapViewProps) {
-  const { t } = useTranslation('walks');
+  const { t } = useTranslation(['walks', 'common']);
+  const { search } = useLocation();
   const tracked = items.filter((item) => item.track !== null);
   const startsOnly = items.length - tracked.length;
 
@@ -69,6 +72,11 @@ export default function TrailsMapView({ items, truncated, lang }: TrailsMapViewP
                   <h3 className="text-sm font-bold leading-snug text-gray-900">{item.title}</h3>
                   {item.distanceM !== null && <p className="text-xs text-gray-700">{t('card.distanceKm', { distance: formatKm(item.distanceM, lang) })}</p>}
                   <p className="text-xs font-semibold text-gray-700">{item.hasTrack ? t('card.trackAvailable') : t('card.trackUnavailable')}</p>
+                  <div className="border-t border-gray-100 pt-2 text-right">
+                    <Link to={buildLocalizedPath('walks', lang, item.id)} state={{ listSearch: search }} className="text-xs font-bold text-brenne-700 underline hover:text-brenne-900">
+                      {t('common:actions.view')}
+                    </Link>
+                  </div>
                 </div>
               </Popup>
             </Marker>

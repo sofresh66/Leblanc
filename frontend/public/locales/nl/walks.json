@@ -85,5 +85,48 @@
     "startsOnly_one": "{{count}} route zonder track: alleen het startpunt wordt getoond.",
     "startsOnly_other": "{{count}} routes zonder track: alleen hun startpunt wordt getoond.",
     "truncated": "Te veel routes voor de kaart: verfijn de filters."
+  },
+  "detail": {
+    "breadcrumbLabel": "Kruimelpad",
+    "home": "Home",
+    "backToList": "Terug naar de routes",
+    "sections": {
+      "description": "Beschrijving",
+      "characteristics": "Kenmerken",
+      "map": "Track en startpunt",
+      "nearby": "In de buurt van de start",
+      "sources": "Bronnen en licenties"
+    },
+    "fields": {
+      "modes": "Manier van verplaatsen",
+      "distance": "Afstand",
+      "duration": "Duur",
+      "loop": "Vorm",
+      "start": "Start",
+      "fromLeBlanc": "Vanaf Le Blanc"
+    },
+    "actions": {
+      "directions": "Route ernaartoe",
+      "gpx": "GPX downloaden",
+      "gpxLicense": "GPX-bestand onder de ODbL-licentie (© OpenStreetMap-bijdragers).",
+      "official": "Officiële pagina",
+      "officialLabel": "Officiële pagina van ‘{{title}}’ (nieuw tabblad)"
+    },
+    "trackUnavailable": "Track niet beschikbaar: op de kaart staat alleen het startpunt.",
+    "osmRelation": "OpenStreetMap-relatie {{id}}",
+    "fallbackNotice": "Beschrijving beschikbaar in het {{language}}.",
+    "noDescription": "Geen beschrijving beschikbaar.",
+    "notFound": {
+      "title": "Route niet gevonden",
+      "description": "Deze route bestaat niet of is niet meer gepubliceerd."
+    },
+    "nearbyEvents": "Komende evenementen",
+    "nearbyPlaces": "Waar eten",
+    "distanceFromStart": "Op {{distance}} km van de start",
+    "datatourisme": "Fiche: DATAtourisme, {{producer}}",
+    "datatourismeUnknown": "Fiche: DATAtourisme",
+    "licenceOuverte": "Licence Ouverte (open licentie)",
+    "mapLabel": "Kaart van de route ‘{{title}}’",
+    "startMarker": "Startpunt"
   }
 }

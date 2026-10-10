@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { securityHeaders, type EventDetail, type SupportedLanguage } from '@leblanc/shared';
+import { securityHeaders, type EventDetail, type SupportedLanguage, type TrailDetail } from '@leblanc/shared';
 import { placeFixture } from '../../src/components/places/__tests__/fixture';
 import { planPage, type PlanDeps } from './page-plan';
 
@@ -57,6 +57,44 @@ describe('planPage', () => {
     }
     expect(html).toContain('"name":"Routes"');
     expect(d.fetchApi).not.toHaveBeenCalled();
+  });
+
+  describe('fiche parcours', () => {
+    const trail: TrailDetail = {
+      id: 'c1000000-0000-4000-8000-000000000001', title: 'Rive gauche, rive droite <b>', contentLanguage: 'en',
+      modes: ['foot'], isLoop: true, distanceM: 11500, durationMin: 180, durationDays: null, start: { lat: 46.63, lng: 1.17 },
+      startCity: 'Fontgombault', distanceFromLeBlancM: 8758, hasTrack: true,
+      imageUrl: 'https://centre.media.tourinsoft.eu/upload/rive.jpg', imageCredit: '© Hellio', imageLicense: null,
+      officialUrl: 'http://www.parc-naturel-brenne.fr/', producer: 'Destination Brenne', updatedAt: '2026-01-04T00:00:00.000Z',
+      description: 'A loop between both banks of the Creuse.', descriptionLanguage: 'en', isFallback: false,
+      startPostalCode: '36220', track: null, osmRelationId: null, gpxAvailable: false,
+      attributions: [{ source: 'datatourisme', text: 'DATAtourisme', license: 'Licence Ouverte 2.0',
+        licenseUrl: 'https://www.etalab.gouv.fr/licence-ouverte-open-licence/', url: 'https://www.datatourisme.fr/', producer: 'Destination Brenne', osmRelationId: null }],
+    };
+
+    it('pose titre, description, canonical, hreflang ×6 et og:image de la photo', async () => {
+      const d = deps((path) => ({ status: path === `/v1/routes/${trail.id}?lang=en` ? 200 : 500, body: trail }));
+      const plan = await planPage(`/en/trails/${trail.id}`, d);
+      expect(plan).toMatchObject({ status: 200, lang: 'en', head: { title: 'Rive gauche, rive droite <b> — Le Blanc & Moi' } });
+      const html = plan?.head.tagsHtml ?? '';
+      expect(html).toContain(`rel="canonical" href="https://leblanc-et-moi.pages.dev/en/trails/${trail.id}"`);
+      for (const path of ['/fr/se-balader', '/en/trails', '/es/rutas', '/de/touren', '/it/percorsi', '/nl/routes']) {
+        expect(html).toContain(`href="https://leblanc-et-moi.pages.dev${path}/${trail.id}"`);
+      }
+      expect(html).toContain('property="og:image" content="https://centre.media.tourinsoft.eu/upload/rive.jpg"');
+      expect(html).toContain('content="A loop between both banks of the Creuse."');
+      expect(html).not.toContain('<b>');
+    });
+
+    it('sans photo : image par défaut du site', async () => {
+      const plan = await planPage(`/fr/se-balader/${trail.id}`, deps(() => ({ status: 200, body: { ...trail, imageUrl: null } })));
+      expect(plan?.head.tagsHtml).toContain('property="og:image" content="https://leblanc-et-moi.pages.dev/images/hero-le-blanc.jpg"');
+    });
+
+    it('répond 404 pour un parcours inconnu ou masqué (404 de l’API)', async () => {
+      const plan = await planPage(`/de/touren/${trail.id}`, deps(() => ({ status: 404, body: null })));
+      expect(plan).toMatchObject({ status: 404, head: { robots: 'noindex, follow' } });
+    });
   });
 
   it.each(['/fr/page-inconnue', '/xx/carte', '/fr/evenements', '/fr/evenements/pas-un-uuid', '/fr/lieux/123', '/fr/se-balader/123'])(

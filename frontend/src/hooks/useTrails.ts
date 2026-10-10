@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { TrailListResponse } from '@leblanc/shared';
+import type { SupportedLanguage, TrailListResponse } from '@leblanc/shared';
 import { ApiError } from '../api/apiEventsRepository';
-import { listTrailGeo, listTrails, normalizeTrailFilters, type TrailFilters } from '../api/trailsRepository';
+import { getTrail, getTrailNearby, listTrailGeo, listTrails, normalizeTrailFilters, type TrailFilters } from '../api/trailsRepository';
 
 /** Pages de parcours ; un changement de filtres crée une nouvelle clé et repart de la première page. */
 export function useInfiniteTrails(filters: TrailFilters) {
@@ -32,5 +32,23 @@ export function useTrailGeo(filters: TrailFilters, enabled: boolean) {
     queryKey: ['trails', 'geo', normalized],
     queryFn: () => listTrailGeo(normalized),
     enabled,
+  });
+}
+
+/** Fiche d'un parcours ; null si inconnu ou masqué. */
+export function useTrail(id: string | undefined, lang: SupportedLanguage) {
+  return useQuery({
+    queryKey: ['trails', 'detail', id, lang],
+    queryFn: () => (id ? getTrail(id, lang) : null),
+    enabled: Boolean(id),
+  });
+}
+
+/** Bloc « À proximité du départ », chargé après la fiche. */
+export function useTrailNearby(id: string | undefined, lang: SupportedLanguage, enabled: boolean) {
+  return useQuery({
+    queryKey: ['trails', 'nearby', id, lang],
+    queryFn: () => (id ? getTrailNearby(id, lang) : null),
+    enabled: enabled && Boolean(id),
   });
 }

@@ -85,5 +85,48 @@
     "startsOnly_one": "{{count}} Tour ohne Track: Nur der Startpunkt wird angezeigt.",
     "startsOnly_other": "{{count}} Touren ohne Track: Nur ihr Startpunkt wird angezeigt.",
     "truncated": "Zu viele Touren für die Karte: Bitte Filter eingrenzen."
+  },
+  "detail": {
+    "breadcrumbLabel": "Brotkrumennavigation",
+    "home": "Startseite",
+    "backToList": "Zurück zu den Touren",
+    "sections": {
+      "description": "Beschreibung",
+      "characteristics": "Eckdaten",
+      "map": "Track und Startpunkt",
+      "nearby": "In der Nähe des Starts",
+      "sources": "Quellen und Lizenzen"
+    },
+    "fields": {
+      "modes": "Fortbewegungsart",
+      "distance": "Länge",
+      "duration": "Dauer",
+      "loop": "Streckenform",
+      "start": "Start",
+      "fromLeBlanc": "Ab Le Blanc"
+    },
+    "actions": {
+      "directions": "Anfahrt",
+      "gpx": "GPX herunterladen",
+      "gpxLicense": "GPX-Datei unter der ODbL-Lizenz (© OpenStreetMap-Mitwirkende).",
+      "official": "Offizielle Seite",
+      "officialLabel": "Offizielle Seite von „{{title}}“ (neuer Tab)"
+    },
+    "trackUnavailable": "Track nicht verfügbar: Auf der Karte wird nur der Startpunkt angezeigt.",
+    "osmRelation": "OpenStreetMap-Relation {{id}}",
+    "fallbackNotice": "Beschreibung auf {{language}} verfügbar.",
+    "noDescription": "Keine Beschreibung verfügbar.",
+    "notFound": {
+      "title": "Tour nicht gefunden",
+      "description": "Diese Tour existiert nicht oder ist nicht mehr veröffentlicht."
+    },
+    "nearbyEvents": "Kommende Veranstaltungen",
+    "nearbyPlaces": "Essen gehen",
+    "distanceFromStart": "{{distance}} km vom Start",
+    "datatourisme": "Eintrag: DATAtourisme, {{producer}}",
+    "datatourismeUnknown": "Eintrag: DATAtourisme",
+    "licenceOuverte": "Licence Ouverte (offene Lizenz)",
+    "mapLabel": "Karte der Tour „{{title}}“",
+    "startMarker": "Startpunkt"
   }
 }

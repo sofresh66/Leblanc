@@ -85,5 +85,48 @@
     "startsOnly_one": "{{count}} percorso senza traccia: è indicato solo il punto di partenza.",
     "startsOnly_other": "{{count}} percorsi senza traccia: è indicato solo il punto di partenza.",
     "truncated": "Troppi percorsi per la mappa: restringi i filtri."
+  },
+  "detail": {
+    "breadcrumbLabel": "Percorso di navigazione",
+    "home": "Home",
+    "backToList": "Torna ai percorsi",
+    "sections": {
+      "description": "Descrizione",
+      "characteristics": "Caratteristiche",
+      "map": "Traccia e punto di partenza",
+      "nearby": "Vicino alla partenza",
+      "sources": "Fonti e licenze"
+    },
+    "fields": {
+      "modes": "Modalità",
+      "distance": "Distanza",
+      "duration": "Durata",
+      "loop": "Forma",
+      "start": "Partenza",
+      "fromLeBlanc": "Da Le Blanc"
+    },
+    "actions": {
+      "directions": "Come arrivare",
+      "gpx": "Scarica il GPX",
+      "gpxLicense": "File GPX con licenza ODbL (© collaboratori di OpenStreetMap).",
+      "official": "Scheda ufficiale",
+      "officialLabel": "Scheda ufficiale di «{{title}}» (nuova scheda)"
+    },
+    "trackUnavailable": "Traccia non disponibile: sulla mappa è indicato solo il punto di partenza.",
+    "osmRelation": "Relazione OpenStreetMap {{id}}",
+    "fallbackNotice": "Descrizione disponibile in {{language}}.",
+    "noDescription": "Descrizione non disponibile.",
+    "notFound": {
+      "title": "Percorso non trovato",
+      "description": "Questo percorso non esiste o non è più pubblicato."
+    },
+    "nearbyEvents": "Prossimi eventi",
+    "nearbyPlaces": "Dove mangiare",
+    "distanceFromStart": "A {{distance}} km dalla partenza",
+    "datatourisme": "Scheda: DATAtourisme, {{producer}}",
+    "datatourismeUnknown": "Scheda: DATAtourisme",
+    "licenceOuverte": "Licence Ouverte (licenza aperta)",
+    "mapLabel": "Mappa del percorso «{{title}}»",
+    "startMarker": "Punto di partenza"
   }
 }

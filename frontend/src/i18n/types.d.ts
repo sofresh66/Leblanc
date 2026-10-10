@@ -279,6 +279,17 @@ export interface WalksResource {
     loading: string; osmAttribution: string; osmLink: string; legendTrack: string; legendStart: string;
     startsOnly_one: string; startsOnly_other: string; truncated: string;
   };
+  detail: {
+    breadcrumbLabel: string; home: string; backToList: string;
+    sections: { description: string; characteristics: string; map: string; nearby: string; sources: string };
+    fields: { modes: string; distance: string; duration: string; loop: string; start: string; fromLeBlanc: string };
+    actions: { directions: string; gpx: string; gpxLicense: string; official: string; officialLabel: string };
+    trackUnavailable: string; osmRelation: string; fallbackNotice: string; noDescription: string;
+    notFound: { title: string; description: string };
+    nearbyEvents: string; nearbyPlaces: string; distanceFromStart: string;
+    datatourisme: string; datatourismeUnknown: string; licenceOuverte: string;
+    mapLabel: string; startMarker: string;
+  };
 }
 
 declare module 'react-i18next' {

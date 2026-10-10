@@ -83,9 +83,12 @@ export function resolveRoute(pathname: string): ResolvedRoute {
     return { lang, section: 'places', id: segments[2] };
   }
 
-  // Parcours : la liste ; la fiche (même segment + identifiant) arrive au lot 5.
+  // Parcours : la liste, puis la fiche (même segment + identifiant).
   if (sectionSegment === langSegments.walks && segments.length === 2) {
     return { lang, section: 'walks' };
+  }
+  if (sectionSegment === langSegments.walks && segments.length === 3 && segments[2]) {
+    return { lang, section: 'walks', id: segments[2] };
   }
 
   if (sectionSegment === langSegments.privacy && segments.length === 2) {
@@ -113,7 +116,7 @@ export function buildLocalizedPath(
   }
 
   const segment = ROUTE_SEGMENTS[targetLang][section];
-  if (section === 'events' || section === 'places') {
+  if (section === 'events' || section === 'places' || section === 'walks') {
     return id ? `/${targetLang}/${segment}/${encodeURIComponent(id)}` : `/${targetLang}/${segment}`;
   }
 

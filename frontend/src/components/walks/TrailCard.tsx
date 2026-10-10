@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TrailSummary } from '@leblanc/shared';
 import { DEFAULT_LANGUAGE, isSupportedLanguage } from '../../i18n/languages';
+import { buildLocalizedPath } from '../../routes/routeMapping';
 import { officialWebsite } from '../../utils/officialWebsite';
 import { formatKm, formatTrailDuration, loopLabel } from './trailFormat';
 
@@ -24,6 +26,8 @@ export function TrailCard({ trail }: { trail: TrailSummary }) {
   const loop = loopLabel(trail.isLoop, t);
   const official = officialWebsite(trail.officialUrl);
   const showImage = trail.imageUrl !== null && !imageFailed;
+  // La fiche reçoit les filtres de la liste pour son lien de retour.
+  const { search } = useLocation();
 
   return (
     <article data-testid={`trail-card-${trail.id}`} className="card-event flex h-full flex-col border border-brenne-900/5" lang={trail.contentLanguage}>
@@ -41,7 +45,15 @@ export function TrailCard({ trail }: { trail: TrailSummary }) {
           {loop && <li className="rounded-full bg-sable-100 px-2.5 py-1 text-xs font-semibold text-brenne-950">{loop}</li>}
         </ul>
         <div className="space-y-2">
-          <h2 className="font-display text-xl font-bold leading-snug text-brenne-950 [overflow-wrap:anywhere]" lang={trail.contentLanguage}>{trail.title}</h2>
+          <h2 className="font-display text-xl font-bold leading-snug text-brenne-950 [overflow-wrap:anywhere]" lang={trail.contentLanguage}>
+            <Link
+              to={buildLocalizedPath('walks', lang, trail.id)}
+              state={{ listSearch: search }}
+              className="hover:text-brenne-800 hover:underline focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-creuse-700"
+            >
+              {trail.title}
+            </Link>
+          </h2>
           <p className="text-sm leading-relaxed text-gray-700">
             {[trail.startCity, t('card.fromLeBlanc', { distance: formatKm(trail.distanceFromLeBlancM, lang) })].filter(Boolean).join(' · ')}
           </p>

@@ -70,8 +70,10 @@ describe('Routes localisées de « Se balader »', () => {
       expect(buildLocalizedPath('walks', lang as keyof typeof expected)).toBe(`/${lang}/${segment}`);
       expect(resolveRoute(`/${lang}/${segment}`)).toEqual({ lang, section: 'walks' });
     }
-    // La fiche arrive au lot 5 : pas de page d'identifiant d'ici là.
-    expect(resolveRoute('/fr/se-balader/abc').section).toBe('notFound');
+    // Fiche : même segment suivi de l'identifiant.
+    expect(resolveRoute('/de/touren/abc')).toEqual({ lang: 'de', section: 'walks', id: 'abc' });
+    expect(buildLocalizedPath('walks', 'it', 'abc')).toBe('/it/percorsi/abc');
+    expect(resolveRoute('/fr/se-balader/abc/gpx').section).toBe('notFound');
   });
 });
 
@@ -171,7 +173,8 @@ describe('TrailCard', () => {
     expect(screen.queryByText(/Photo/)).toBeNull();
     cleanup();
     renderWithProviders(<TrailCard trail={trail({ officialUrl: null, producer: null })} />);
-    expect(screen.queryByRole('link')).toBeNull();
+    // Seul lien restant : le titre, vers la fiche du parcours.
+    expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([`/fr/se-balader/${trail().id}`]);
     expect(screen.getByText('Source : DATAtourisme')).toBeTruthy();
   });
 });

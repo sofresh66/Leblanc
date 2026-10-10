@@ -85,5 +85,48 @@
     "startsOnly_one": "{{count}} route has no track: only its starting point is shown.",
     "startsOnly_other": "{{count}} routes have no track: only their starting point is shown.",
     "truncated": "Too many routes for the map: narrow the filters."
+  },
+  "detail": {
+    "breadcrumbLabel": "Breadcrumb",
+    "home": "Home",
+    "backToList": "Back to routes",
+    "sections": {
+      "description": "Description",
+      "characteristics": "Key facts",
+      "map": "Track and starting point",
+      "nearby": "Near the start",
+      "sources": "Sources and licences"
+    },
+    "fields": {
+      "modes": "Way of travel",
+      "distance": "Distance",
+      "duration": "Duration",
+      "loop": "Shape",
+      "start": "Start",
+      "fromLeBlanc": "From Le Blanc"
+    },
+    "actions": {
+      "directions": "Get there",
+      "gpx": "Download the GPX",
+      "gpxLicense": "GPX file under the ODbL licence (© OpenStreetMap contributors).",
+      "official": "Official page",
+      "officialLabel": "Official page for “{{title}}” (new tab)"
+    },
+    "trackUnavailable": "Track not available: only the starting point is shown on the map.",
+    "osmRelation": "OpenStreetMap relation {{id}}",
+    "fallbackNotice": "Description available in {{language}}.",
+    "noDescription": "No description available.",
+    "notFound": {
+      "title": "Route not found",
+      "description": "This route does not exist or is no longer published."
+    },
+    "nearbyEvents": "Upcoming events",
+    "nearbyPlaces": "Where to eat",
+    "distanceFromStart": "{{distance}} km from the start",
+    "datatourisme": "Listing: DATAtourisme, {{producer}}",
+    "datatourismeUnknown": "Listing: DATAtourisme",
+    "licenceOuverte": "Licence Ouverte (Open Licence)",
+    "mapLabel": "Map of the route “{{title}}”",
+    "startMarker": "Starting point"
   }
 }

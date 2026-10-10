@@ -85,5 +85,48 @@
     "startsOnly_one": "{{count}} parcours sans tracé : seul son point de départ est indiqué.",
     "startsOnly_other": "{{count}} parcours sans tracé : seul leur point de départ est indiqué.",
     "truncated": "Trop de parcours pour la carte : affinez les filtres."
+  },
+  "detail": {
+    "breadcrumbLabel": "Fil d’Ariane",
+    "home": "Accueil",
+    "backToList": "Retour aux parcours",
+    "sections": {
+      "description": "Description",
+      "characteristics": "Caractéristiques",
+      "map": "Tracé et point de départ",
+      "nearby": "À proximité du départ",
+      "sources": "Sources et licences"
+    },
+    "fields": {
+      "modes": "Mode",
+      "distance": "Distance",
+      "duration": "Durée",
+      "loop": "Forme",
+      "start": "Départ",
+      "fromLeBlanc": "Depuis Le Blanc"
+    },
+    "actions": {
+      "directions": "Y aller",
+      "gpx": "Télécharger le GPX",
+      "gpxLicense": "Fichier GPX sous licence ODbL (© contributeurs OpenStreetMap).",
+      "official": "Fiche officielle",
+      "officialLabel": "Fiche officielle de « {{title}} » (nouvel onglet)"
+    },
+    "trackUnavailable": "Tracé non disponible : seul le point de départ est indiqué sur la carte.",
+    "osmRelation": "Relation OpenStreetMap {{id}}",
+    "fallbackNotice": "Description disponible en {{language}}.",
+    "noDescription": "Description non disponible.",
+    "notFound": {
+      "title": "Parcours introuvable",
+      "description": "Ce parcours n’existe pas ou n’est plus publié."
+    },
+    "nearbyEvents": "Événements à venir",
+    "nearbyPlaces": "Où manger",
+    "distanceFromStart": "À {{distance}} km du départ",
+    "datatourisme": "Fiche : DATAtourisme, {{producer}}",
+    "datatourismeUnknown": "Fiche : DATAtourisme",
+    "licenceOuverte": "Licence Ouverte",
+    "mapLabel": "Carte du parcours « {{title}} »",
+    "startMarker": "Point de départ"
   }
 }

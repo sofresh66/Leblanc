@@ -4,6 +4,7 @@ export const pageImports = {
   eat: () => import('../pages/EatPage').then((module) => ({ default: module.EatPage })),
   places: () => import('../pages/PlacePage').then((module) => ({ default: module.PlacePage })),
   walks: () => import('../pages/WalksPage').then((module) => ({ default: module.WalksPage })),
+  walk: () => import('../pages/WalkPage').then((module) => ({ default: module.WalkPage })),
   list: () => import('../pages/ListPage'),
   map: () => import('../pages/MapPage'),
   events: () => import('../pages/EventPage'),
@@ -15,10 +16,10 @@ export const pageImports = {
 };
 
 export function prefetchPage(pathname: string): void {
-  const { section } = resolveRoute(pathname);
+  const { section, id } = resolveRoute(pathname);
   // Leaflet reste chargé uniquement lors de l'ouverture de la carte.
   if (section === 'home' || section === 'map' || section === 'notFound') return;
-  void pageImports[section]().catch(() => {
+  void pageImports[section === 'walks' && id ? 'walk' : section]().catch(() => {
     // Préchargement facultatif : un échec sera retenté lors de la navigation.
   });
 }

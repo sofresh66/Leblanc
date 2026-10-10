@@ -52,6 +52,9 @@ export function PageSeo({ section, event, noindex = false, titleOverride, descri
   } else if (section === 'places') {
     breadcrumbs.push({ name: t('nav:eat'), item: absolute(buildLocalizedPath('eat', lang)) });
     breadcrumbs.push({ name: breadcrumbName ?? titleOverride ?? t('nav:eat'), item: canonical });
+  } else if (section === 'walks' && breadcrumbName) {
+    breadcrumbs.push({ name: t('nav:walks'), item: absolute(buildLocalizedPath('walks', lang)) });
+    breadcrumbs.push({ name: breadcrumbName, item: canonical });
   } else if (section !== 'home' && section !== 'notFound') {
     breadcrumbs.push({ name: t(`nav:${section}`), item: canonical });
   }
