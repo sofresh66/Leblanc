@@ -1,6 +1,6 @@
 # Onglet « Se balader » (octobre 2026)
 
-Randonnées, balades à vélo, circuits VTT et itinéraires équestres autour du Blanc et dans le Parc naturel régional de la Brenne. Développé et validé sur la branche Neon `dev` (lots 1 à 7, tags locaux `se-balader-lot-1` à `se-balader-lot-7`). **Rien n'est en production** : voir le [plan de mise en production](#plan-de-mise-en-production) en fin de document.
+Randonnées, balades à vélo, circuits VTT et itinéraires équestres autour du Blanc et dans le Parc naturel régional de la Brenne. Développé et validé sur la branche Neon `dev` (lots 1 à 7, tags `se-balader-lot-1` à `se-balader-lot-7`). Migration, API et données en production ; preview validée et code poussé. État de la publication du front : voir le [plan de mise en production](#plan-de-mise-en-production) en fin de document.
 
 ## Architecture
 
@@ -340,6 +340,11 @@ git push origin se-balader-lot-1 se-balader-lot-2 se-balader-lot-3 se-balader-lo
 - Enchaîner l’étape 7 dans la même session.
 - Retour arrière : `git revert` des commits concernés, puis push. Les tags peuvent être supprimés à distance (`git push origin :refs/tags/<tag>`).
 
+**Fait le 10 octobre 2026, après validation de la preview.**
+- Commit local de la doc seule : `1ef7f625fd3e93bd69e152233e84b17b6d163c1b`. Avant les pushes : fichiers suivis propres, aucun `*.production-backup` suivi, `origin/main` toujours sur `5febaa6` après fetch.
+- `git push origin main` : code 0, `5febaa6..1ef7f62` ; `git push origin 'refs/tags/se-balader-*'` : code 0, sept tags créés. Vérification distante : `main` sur `1ef7f62` et les sept tags présents ; les deux workflows sont actifs.
+- `.claude/`, `docs/diagnostic-indexation-2026-10-02.md` et le contrôle local `scripts/verify-preview-dist.mjs` restent non suivis.
+
 ### 7. Front en production
 
 ```bash
@@ -350,7 +355,23 @@ gh run watch --repo sofresh66/Leblanc
 - Réussite : toutes les étapes sont vertes, y compris « Actualiser les parcours ». Le résumé contient la section « Parcours « Se balader » », et `verify-production-build` mentionne des fiches parcours.
 - Retour arrière : revenir au déploiement Pages **`96ef52a9-e658-4825-8b8a-08ddf0a43137`** depuis le tableau de bord Pages. Référence actualisée le 10 octobre 2026 : déploiement de la nuit, issu de `5febaa6`, avec les mêmes fichiers JS/CSS que `dc49c166`. Vérifier de nouveau le déploiement en ligne au moment de la mise en production.
 
+**Tentative du 10 octobre 2026 à 18:47 (heure de Paris) : échec avant publication.**
+- `gh workflow run production.yml --ref main` : code 0 ; run [38069088767](https://github.com/sofresh66/Leblanc/actions/runs/38069088767), commit `1ef7f62`. Suivi jusqu'au résultat : échec, code de sortie 1, étape « Exécuter tous les tests ».
+- Résultat : 644 tests passent, 1 échoue ; 71 fichiers passent, 1 échoue. `frontend/src/pages/WalkPage.test.tsx:73` attend `/api/v1/routes/c1000000-0000-4000-8000-000000000001/gpx`, mais reçoit `https://leblanc-api.elharchdenis.workers.dev/api/v1/routes/c1000000-0000-4000-8000-000000000001/gpx` : le test suppose une base relative, alors que le workflow fournit `VITE_API_URL` de production.
+- Migrations, ingestions, build et publication Pages non exécutés. Lecture de la liste Pages après échec : production toujours sur `96ef52a9` (source `5febaa6`), preview `6e05a724` conservée. Worker vérifié : `3758615a` à 100 %.
+- Arrêt demandé par le propriétaire à la fin de cette tentative : aucune correction ou relance, aucun retour arrière nécessaire. Compte rendu repris dans la documentation lors du correctif suivant.
+
+**Correctif de test autorisé et vérifié le 10 octobre 2026.**
+- Seul `frontend/src/pages/WalkPage.test.tsx` change : l'assertion du lien GPX vérifie la fin `/api/v1/routes/<id>/gpx`, indépendamment de l'origine définie par `VITE_API_URL`. Aucun code de l'application modifié.
+- Recherche des autres tests sensibles à `VITE_API_URL` ou `VITE_SITE_URL` : aucune autre correction nécessaire après exécution de toute la suite.
+- Avec les variables du workflow (`VITE_API_URL=https://leblanc-api.elharchdenis.workers.dev/api`, `VITE_SITE_URL=https://leblanc-et-moi.pages.dev`, `VITE_USE_MOCK=false`) : **645 tests, 72 fichiers, tous passent**, code 0.
+- Sans les trois variables de processus : **645 tests, 72 fichiers, tous passent**, code 0. Les valeurs des fichiers `.env` n'ont pas été modifiées.
+- `npm run lint` et `npm run typecheck` : code 0 chacun. Le premier lancement des tests avait échoué avant leur exécution sur une restriction de lecture d'esbuild ; la relance avec les droits nécessaires a réussi.
+- Autorisation du propriétaire : commit du test seul, commit de documentation séparé, puis push et relance de `production.yml` sans nouvel accord si le diff ne contient que tests et doc.
+
 ### 8. Vérifications après déploiement
+
+**Non exécutée après cette tentative : l'étape 7 n'a publié aucun nouveau front.**
 
 ```bash
 bash scripts/check-seo.sh https://leblanc-et-moi.pages.dev
