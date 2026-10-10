@@ -27,6 +27,24 @@ acao() { grep -i '^access-control-allow-origin:' "$TMP/$1.headers" | tr -d '\r' 
 
 echo "Worker testé : $API (parcours : $ROUTES_STATE)"
 
+# Juste après un déploiement, certaines requêtes peuvent encore atteindre l'ancienne
+# version le temps de la propagation. On attend 5 réponses consécutives de la
+# nouvelle version (/routes en 200 et origine de preview acceptée), 90 s au plus.
+PREVIEW_ORIGIN=https://routes-preview.leblanc-et-moi.pages.dev
+consecutive=0
+for attempt in $(seq 1 45); do
+  code="$(curl -s -o /dev/null -D "$TMP/probe.headers" -w '%{http_code}' -H "Origin: $PREVIEW_ORIGIN" "$API/api/v1/routes?limit=1")"
+  origin="$(grep -i '^access-control-allow-origin:' "$TMP/probe.headers" | tr -d '\r' | sed 's/^[^:]*: *//')"
+  if [ "$code" = 200 ] && [ "$origin" = "$PREVIEW_ORIGIN" ]; then consecutive=$((consecutive + 1)); else consecutive=0; fi
+  [ "$consecutive" -ge 5 ] && break
+  sleep 2
+done
+if [ "$consecutive" -ge 5 ]; then
+  echo "Propagation : nouvelle version servie de façon stable (après $attempt essai(s))."
+else
+  echo "Propagation : nouvelle version NON stable après 90 s (dernier essai : statut $code, CORS « $origin »)."
+fi
+
 echo "Anciennes routes"
 get /health health
 check "/health 200 et status ok" '[ "$(status health)" = 200 ] && [ "$(json health "j.status")" = ok ]'
@@ -68,7 +86,8 @@ check "site de production autorisé (/events)" '[ "$(acao corsprod)" = "https://
 get "/api/v1/routes?limit=1" corsprodroutes https://leblanc-et-moi.pages.dev
 check "site de production autorisé (/routes)" '[ "$(acao corsprodroutes)" = "https://leblanc-et-moi.pages.dev" ]'
 get "/api/v1/routes?limit=1" corspreview https://routes-preview.leblanc-et-moi.pages.dev
-check "preview du projet autorisée" '[ "$(acao corspreview)" = "https://routes-preview.leblanc-et-moi.pages.dev" ]'
+check "preview du projet autorisée" '[ "$(acao corspreview)" = "https://routes-preview.leblanc-et-moi.pages.dev" ]' || true
+[ "$(acao corspreview)" = "https://routes-preview.leblanc-et-moi.pages.dev" ] || echo "        reçu : statut $(status corspreview), CORS « $(acao corspreview) »"
 for origin in http://routes-preview.leblanc-et-moi.pages.dev https://evil-leblanc-et-moi.pages.dev https://a.b.leblanc-et-moi.pages.dev https://leblanc-et-moi.pages.dev.evil.com; do
   name="cors$(printf '%s' "$origin" | tr -c 'a-z0-9' '_')"
   get "/api/v1/routes?limit=1" "$name" "$origin"

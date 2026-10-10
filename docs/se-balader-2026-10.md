@@ -195,24 +195,67 @@ cd worker && npx wrangler deploy && cd ..
   Attendu : « tous les contrôles sont passés » (20 contrôles, validés sur le Worker local).
 - Retour arrière : `cd worker && npx wrangler rollback fca49825-70c4-4101-a78f-2624345db03f && cd ..`. Ensuite, `npx wrangler deployments list --name leblanc-api` doit montrer `fca49825` à 100 %, et `/routes` répondre de nouveau 404. Les tables vides de l'étape 2 sont sans effet sur l'ancien Worker.
 
-### 4. Ingestion des parcours en production
+**Tentative du 10 octobre 2026 (16:01 UTC) : retour arrière.**
+
+- Le déploiement a créé la version `3758615a-8bed-4d2b-87b7-6b113c2b3620`. Le script, lancé dans la seconde qui suivait, a échoué sur un seul contrôle : « preview du projet autorisée ».
+- Retour arrière immédiat vers `fca49825` (16:03 UTC environ). Vérifié : 100 %, `/routes` en 404, `/events` et `/health` en 200.
+- Cause : transition entre versions juste après le déploiement. Le code est en cause ailleurs que prévu, il n'est pas fautif : sur l'URL dédiée à la version, `https://3758615a-leblanc-api.elharchdenis.workers.dev`, sans trafic de production, les 20 contrôles passent.
+- La comparaison structurelle avec l'ancien Worker passe aussi : 12 réponses (`/events`, `/events/geo`, une fiche événement, `/categories`, `/places`, une fiche lieu, en `fr` et `en`), aucune clé supprimée ou renommée, types et en-têtes `Cache-Control`, CORS, `Vary` et `Content-Type` identiques. Enregistrements dans `artifacts/worker-snapshots/` (non versionné).
+- `scripts/verify-worker-deploy.sh` attend désormais la stabilité de la nouvelle version : 5 réponses consécutives, 90 s au plus. Il affiche aussi le statut et l'en-tête CORS reçus en cas d'échec.
+
+**Nouvelle tentative (à valider).** Redéployer exactement la version vérifiée, sans reconstruire :
 
 ```bash
-DOTENV_CONFIG_PATH=.env.production-backup node scripts/ingest-routes.mjs --dry-run
-DOTENV_CONFIG_PATH=.env.production-backup node scripts/ingest-routes.mjs
+cd worker && npx wrangler versions deploy 3758615a-8bed-4d2b-87b7-6b113c2b3620@100 --message "Se balader : API des parcours et CORS des previews" -y && cd ..
+bash scripts/verify-worker-deploy.sh https://leblanc-api.elharchdenis.workers.dev vide
+npx wrangler deployments list --name leblanc-api --cwd worker
+```
+
+Puis comparer l'enregistrement « avant » avec la production (outil de comparaison de l'étape 3). En cas de contrôle en échec ou de régression : retour arrière vers `fca49825` sans attendre.
+
+### 4. Ingestion des parcours en production
+
+Seulement une fois l'étape 3 réussie : `/routes` doit répondre 200 en production. La simulation d'abord, puis l'ingestion réelle, chacune protégée par le contrôle d'hôte :
+
+```bash
+H=$(DOTENV_CONFIG_PATH=.env.production-backup node -r dotenv/config -e 'process.stdout.write(new URL(process.env.DATABASE_URL_DIRECT).hostname)'); echo "Hôte : $H"; [ "$H" = "ep-jolly-dawn-b2ezqckv.c-6.eu-central-1.aws.neon.tech" ] && DOTENV_CONFIG_PATH=.env.production-backup node scripts/ingest-routes.mjs --dry-run
+H=$(DOTENV_CONFIG_PATH=.env.production-backup node -r dotenv/config -e 'process.stdout.write(new URL(process.env.DATABASE_URL_DIRECT).hostname)'); echo "Hôte : $H"; [ "$H" = "ep-jolly-dawn-b2ezqckv.c-6.eu-central-1.aws.neon.tech" ] && DOTENV_CONFIG_PATH=.env.production-backup node scripts/ingest-routes.mjs
 DOTENV_CONFIG_PATH=.env.production-backup node scripts/revalidate-translations.mjs --entity=routes
 ```
 
-Attendu : environ 167 parcours, environ 26 tracés, « finished » en `success`. La revalidation (simulation) doit afficher `changed: 0`.
+Les scripts lisent `DATABASE_URL_DIRECT` et `DATATOURISME_API_KEY`, présentes dans `.env.production-backup`. L'ingestion fait aussi une requête Overpass.
 
-Vérification de l'API :
+Attendu, d'après la répétition du 10 octobre 2026 sur `dev`, à partir de tables vides comme en production (25 s) :
+- **simulation** : `fetched` ≈ 614, `accepted` ≈ 167, `created` = `accepted`, `withTrack` ≈ 26, `osm.available: true` ;
+- **ingestion** : `status: success`, `created` ≈ 167, `withTrack` ≈ 26 ;
+- **traductions** : `rejected: 1` (la balade n°7 en anglais, override) et `rejectedDescriptions: 15` (3 itinérances sans description française × 5 langues) ;
+- **revalidation** (lecture seule) : `changed: 0`.
+
+Si Overpass est indisponible (`osm.available: false`), les fiches sont publiées sans tracé. Relancer l'ingestion plus tard suffit à récupérer les tracés.
+
+Vérifications de l'API (lecture seule) :
 
 ```bash
-curl -s 'https://leblanc-api.elharchdenis.workers.dev/api/v1/routes?limit=3' | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);console.log(j.items.length,j.items[0]?.hasTrack,j.nextCursor!==null)})'
-curl -s 'https://leblanc-api.elharchdenis.workers.dev/api/v1/routes/geo?modes=foot,bike,mtb,horse' | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);console.log(j.items.length,"parcours",j.items.filter(i=>i.hasTrack).length,"tracés")})'
+bash scripts/verify-worker-deploy.sh https://leblanc-api.elharchdenis.workers.dev données
+curl -s 'https://leblanc-api.elharchdenis.workers.dev/api/v1/routes/geo?modes=foot,bike,mtb,horse' | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);console.log(j.items.length,"parcours,",j.items.filter(i=>i.hasTrack).length,"tracés")})'
+ID=$(curl -s 'https://leblanc-api.elharchdenis.workers.dev/api/v1/routes?with_track=true&limit=1' | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>process.stdout.write(JSON.parse(s).items[0].id))'); curl -s -o /dev/null -w "fiche %{http_code}\n" "https://leblanc-api.elharchdenis.workers.dev/api/v1/routes/$ID?lang=en"; curl -s "https://leblanc-api.elharchdenis.workers.dev/api/v1/routes/$ID/gpx" | grep -c "opendatacommons.org/licenses/odbl"
 ```
 
-Retour arrière : `UPDATE routes SET status = 'hidden'` (onglet vide, sans incidence ailleurs), ou retour arrière de l'étape 2, ou restauration depuis la sauvegarde.
+Attendu :
+- le script affiche « tous les contrôles sont passés » (liste avec curseur, tracés présents) ;
+- ≈ 167 parcours, dont ≈ 26 tracés ;
+- la fiche répond 200 et le GPX contient la licence ODbL (`1`).
+
+Retour arrière : vider les deux tables (le schéma de la migration 012 reste en place), en une seule transaction :
+
+```bash
+DOTENV_CONFIG_PATH=.env.production-backup node scripts/clear-routes.mjs
+DOTENV_CONFIG_PATH=.env.production-backup node scripts/clear-routes.mjs --apply --confirm-host=ep-jolly-dawn-b2ezqckv.c-6.eu-central-1.aws.neon.tech
+```
+
+- La première commande fait un décompte en lecture seule. La seconde n'écrit que si `--confirm-host` correspond exactement à l'hôte visé (testé sur `dev`, où elle refuse un autre hôte).
+- Ensuite, `/routes` doit répondre de nouveau avec une liste vide.
+- Autres options : retour arrière de l'étape 2, ou restauration depuis `prod-avant-routes-2026-10-10`.
 
 ### 5. Preview depuis le poste local (vérifiée ensemble, avant tout push)
 
