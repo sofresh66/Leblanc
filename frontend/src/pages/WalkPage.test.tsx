@@ -70,7 +70,8 @@ describe('WalkPage', () => {
     expect(facts.getByText('Boucle')).toBeTruthy();
     expect(facts.getByText('Fontgombault 36220')).toBeTruthy();
     expect(screen.getByText('Photo : © Hellio et Van Ingen')).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Télécharger le GPX' }).getAttribute('href')).toBe(`/api/v1/routes/${id}/gpx`);
+    // L'origine dépend de VITE_API_URL ; le chemin GPX reste identique.
+    expect(screen.getByRole('link', { name: 'Télécharger le GPX' }).getAttribute('href')).toMatch(new RegExp(`/api/v1/routes/${id}/gpx$`));
     const relation = screen.getByRole('link', { name: 'Relation OpenStreetMap 18248594' });
     expect(relation.getAttribute('href')).toBe('https://www.openstreetmap.org/relation/18248594');
     expect(screen.getAllByRole('link', { name: 'Tracés © contributeurs OpenStreetMap, ODbL' }).length).toBeGreaterThan(0);
