@@ -192,6 +192,9 @@ describe('_headers', () => {
   it('exclut les fichiers statiques du middleware', () => {
     const routes = JSON.parse(readFileSync(join(__dirname, '../../public/_routes.json'), 'utf8')) as { include: string[]; exclude: string[] };
     expect(routes.include).toEqual(['/*']);
-    expect(routes.exclude).toEqual(expect.arrayContaining(['/assets/*', '/images/*', '/fonts/*', '/locales/*', '/sitemap.xml', '/robots.txt', '/favicon.svg']));
+    expect(routes.exclude).toEqual(expect.arrayContaining(['/assets/*', '/images/*', '/fonts/*', '/locales/*', '/sitemap.xml', '/robots.txt', '/favicon.svg',
+      '/favicon.ico', '/favicon-48.png', '/apple-touch-icon.png', '/icon-192.png', '/icon-512.png']));
+    // Cloudflare Pages limite include + exclude à 100 règles.
+    expect(routes.include.length + routes.exclude.length).toBeLessThanOrEqual(100);
   });
 });
