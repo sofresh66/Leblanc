@@ -48,7 +48,7 @@ jobs:
           const expected = {
             CLOUDFLARE_ACCOUNT_ID: 'f3fbcbb1368768039312d4877ac6d48c',
             VITE_API_URL: 'https://leblanc-api.elharchdenis.workers.dev/api',
-            VITE_SITE_URL: 'https://leblanc-et-moi.pages.dev',
+            VITE_SITE_URL: 'https://leblanc-et-moi.fr',
             SITEMAP_API_URL: 'https://leblanc-api.elharchdenis.workers.dev/api',
           };
           for (const [name, value] of Object.entries(expected)) {

@@ -22,7 +22,7 @@ const event: EventDetail = {
 
 function deps(api: (path: string) => { status: number; body: unknown } | Promise<never>): PlanDeps & { fetchApi: ReturnType<typeof vi.fn> } {
   return {
-    siteUrl: 'https://leblanc-et-moi.pages.dev',
+    siteUrl: 'https://leblanc-et-moi.fr',
     loadLocale: (lang, namespace) => Promise.resolve(locale(lang, namespace)),
     fetchApi: vi.fn((path: string) => Promise.resolve(api(path))),
   };
@@ -39,9 +39,9 @@ describe('planPage', () => {
     expect(plan?.head.title).toBe(locale('de', 'seo').map && (locale('de', 'seo').map as { title: string }).title);
     const html = plan?.head.tagsHtml ?? '';
     expect(html.match(/rel="alternate"/g)).toHaveLength(7);
-    expect(html).toContain('hreflang="fr" href="https://leblanc-et-moi.pages.dev/fr/carte"');
-    expect(html).toContain('hreflang="x-default" href="https://leblanc-et-moi.pages.dev/fr/carte"');
-    expect(html).toContain('rel="canonical" href="https://leblanc-et-moi.pages.dev/de/karte"');
+    expect(html).toContain('hreflang="fr" href="https://leblanc-et-moi.fr/fr/carte"');
+    expect(html).toContain('hreflang="x-default" href="https://leblanc-et-moi.fr/fr/carte"');
+    expect(html).toContain('rel="canonical" href="https://leblanc-et-moi.fr/de/karte"');
     expect(html).toContain('content="index, follow"');
     expect(html).toContain('property="og:locale" content="de_DE"');
     expect(html.split('data-rh="true"').length - 1).toBe(html.split('<').length - 1 - (html.match(/<\/script>/g)?.length ?? 0));
@@ -53,7 +53,7 @@ describe('planPage', () => {
     expect(plan).toMatchObject({ status: 200, lang: 'nl', head: { title: 'Routes rond Le Blanc — Le Blanc & Moi' } });
     const html = plan?.head.tagsHtml ?? '';
     for (const path of ['/fr/se-balader', '/en/trails', '/es/rutas', '/de/touren', '/it/percorsi', '/nl/routes']) {
-      expect(html).toContain(`href="https://leblanc-et-moi.pages.dev${path}"`);
+      expect(html).toContain(`href="https://leblanc-et-moi.fr${path}"`);
     }
     expect(html).toContain('"name":"Routes"');
     expect(d.fetchApi).not.toHaveBeenCalled();
@@ -77,9 +77,9 @@ describe('planPage', () => {
       const plan = await planPage(`/en/trails/${trail.id}`, d);
       expect(plan).toMatchObject({ status: 200, lang: 'en', head: { title: 'Rive gauche, rive droite <b> — Le Blanc & Moi' } });
       const html = plan?.head.tagsHtml ?? '';
-      expect(html).toContain(`rel="canonical" href="https://leblanc-et-moi.pages.dev/en/trails/${trail.id}"`);
+      expect(html).toContain(`rel="canonical" href="https://leblanc-et-moi.fr/en/trails/${trail.id}"`);
       for (const path of ['/fr/se-balader', '/en/trails', '/es/rutas', '/de/touren', '/it/percorsi', '/nl/routes']) {
-        expect(html).toContain(`href="https://leblanc-et-moi.pages.dev${path}/${trail.id}"`);
+        expect(html).toContain(`href="https://leblanc-et-moi.fr${path}/${trail.id}"`);
       }
       expect(html).toContain('property="og:image" content="https://centre.media.tourinsoft.eu/upload/rive.jpg"');
       expect(html).toContain('content="A loop between both banks of the Creuse."');
@@ -94,7 +94,7 @@ describe('planPage', () => {
       const trip = graph.find((node) => node['@type'] === 'TouristTrip');
       expect(trip).toEqual({
         '@type': 'TouristTrip', name: trail.title, description: trail.description,
-        url: `https://leblanc-et-moi.pages.dev/fr/se-balader/${trail.id}`, image: trail.imageUrl,
+        url: `https://leblanc-et-moi.fr/fr/se-balader/${trail.id}`, image: trail.imageUrl,
         itinerary: { '@type': 'Place', name: 'Fontgombault', geo: { '@type': 'GeoCoordinates', latitude: 46.63, longitude: 1.17 } },
       });
       // Ni distance, ni durée, ni difficulté, ni organisateur inventés.
@@ -123,7 +123,7 @@ describe('planPage', () => {
 
     it('sans photo : image par défaut du site', async () => {
       const plan = await planPage(`/fr/se-balader/${trail.id}`, deps(() => ({ status: 200, body: { ...trail, imageUrl: null } })));
-      expect(plan?.head.tagsHtml).toContain('property="og:image" content="https://leblanc-et-moi.pages.dev/images/hero-le-blanc.jpg"');
+      expect(plan?.head.tagsHtml).toContain('property="og:image" content="https://leblanc-et-moi.fr/images/hero-le-blanc.jpg"');
     });
 
     it('répond 404 pour un parcours inconnu ou masqué (404 de l’API)', async () => {

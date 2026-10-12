@@ -13,7 +13,7 @@ const locale = (lang: SupportedLanguage, namespace: string) =>
   JSON.parse(readFileSync(join(LOCALES, lang, `${namespace}.json`), 'utf8')) as Record<string, unknown>;
 function deps(api: (path: string) => { status: number; body: unknown }): PlanDeps {
   return {
-    siteUrl: 'https://leblanc-et-moi.pages.dev',
+    siteUrl: 'https://leblanc-et-moi.fr',
     loadLocale: (lang, namespace) => Promise.resolve(locale(lang, namespace)),
     fetchApi: (path: string) => Promise.resolve(api(path)),
   };
@@ -35,7 +35,7 @@ describe('cohérence sitemap ↔ <head> du middleware', () => {
       attributions: [{ source: 'datatourisme', text: 'DATAtourisme', license: 'Licence Ouverte 2.0',
         licenseUrl: 'https://www.etalab.gouv.fr/licence-ouverte-open-licence/', url: 'https://www.datatourisme.fr/', producer: null, osmRelationId: null }],
     };
-    const site = 'https://leblanc-et-moi.pages.dev';
+    const site = 'https://leblanc-et-moi.fr';
     const now = new Date().toISOString();
     const fetcher = vi.fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ items: [event], nextCursor: null, generatedAt: now }))

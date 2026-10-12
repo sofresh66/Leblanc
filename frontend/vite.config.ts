@@ -5,7 +5,7 @@ import { sitemapPlugin } from './vite-plugins/sitemap';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '..', ['VITE_', 'SITEMAP_']);
-  const siteUrl = env.VITE_SITE_URL?.trim() || 'https://leblanc-et-moi.pages.dev';
+  const siteUrl = env.VITE_SITE_URL?.trim() || 'https://leblanc-et-moi.fr';
   return {
     plugins: [
       react(),

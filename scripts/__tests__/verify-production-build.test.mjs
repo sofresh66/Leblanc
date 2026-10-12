@@ -10,9 +10,9 @@ import {
 } from '../verify-production-build.mjs';
 
 const eventUrl =
-  'https://leblanc-et-moi.pages.dev/fr/evenements/12345678-1234-1234-1234-123456789abc';
+  'https://leblanc-et-moi.fr/fr/evenements/12345678-1234-1234-1234-123456789abc';
 const placeUrl =
-  'https://leblanc-et-moi.pages.dev/fr/lieux/12345678-1234-1234-1234-123456789abc';
+  'https://leblanc-et-moi.fr/fr/lieux/12345678-1234-1234-1234-123456789abc';
 let dist;
 
 function sitemapWithUrls(urls) {
@@ -23,12 +23,12 @@ function sitemapWithUrls(urls) {
 
 function catalogueUrls(count = 800) {
   return [
-    'https://leblanc-et-moi.pages.dev/fr',
+    'https://leblanc-et-moi.fr/fr',
     placeUrl,
     ...Array.from(
       { length: count - 2 },
       (_, index) =>
-        `https://leblanc-et-moi.pages.dev/fr/evenements/12345678-1234-1234-1234-${index.toString(16).padStart(12, '0')}`,
+        `https://leblanc-et-moi.fr/fr/evenements/12345678-1234-1234-1234-${index.toString(16).padStart(12, '0')}`,
     ),
   ];
 }
@@ -91,9 +91,9 @@ describe('Vérification du build de production', () => {
   it('compte les fiches parcours des six langues sans les exiger', async () => {
     const id = '12345678-1234-1234-1234-123456789abc';
     const walks = ['fr/se-balader', 'en/trails', 'es/rutas', 'de/touren', 'it/percorsi', 'nl/routes']
-      .map((segment) => `https://leblanc-et-moi.pages.dev/${segment}/${id}`);
+      .map((segment) => `https://leblanc-et-moi.fr/${segment}/${id}`);
     const xml = sitemapWithUrls([...catalogueUrls(MIN_SITEMAP_URLS), ...walks,
-      'https://leblanc-et-moi.pages.dev/fr/se-balader/pas-un-uuid']);
+      'https://leblanc-et-moi.fr/fr/se-balader/pas-un-uuid']);
     await writeFile(join(dist, 'sitemap.xml'), xml);
     await expect(verifyProductionBuild(dist)).resolves.toMatchObject({ walkUrls: 6 });
   });
@@ -128,13 +128,13 @@ describe('Vérification du build de production', () => {
 
   it('refuse les fiches d’une autre origine', async () => {
     const urls = catalogueUrls().map((url, index) =>
-      index === 0 ? url : url.replace('leblanc-et-moi.pages.dev', 'example.org'),
+      index === 0 ? url : url.replace('leblanc-et-moi.fr', 'example.org'),
     );
     await writeFile(join(dist, 'sitemap.xml'), sitemapWithUrls(urls));
     await expect(verifyProductionBuild(dist)).rejects.toThrow('Aucune URL de fiche');
   });
 
-  it.each(['https://leblanc-et-moi.pages.dev/fr/lieux/12345678-1234-1234-1234-123456789abc', 'https://example.org/fr', 'https://leblanc-et-moi.pages.dev/france'])(
+  it.each(['https://leblanc-et-moi.fr/fr/lieux/12345678-1234-1234-1234-123456789abc', 'https://example.org/fr', 'https://leblanc-et-moi.fr/france'])(
     'refuse un sitemap sans page principale /fr de production (%s)',
     async (replacement) => {
       const urls = catalogueUrls();

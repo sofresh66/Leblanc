@@ -112,7 +112,7 @@ async function geocode(items, { persist = true } = {}) {
       url.search = new URLSearchParams({ q: query, format: 'jsonv2', limit: '1', addressdetails: '1', countrycodes: 'fr' });
       const response = await fetch(url, {
         headers: {
-          'User-Agent': process.env.NOMINATIM_USER_AGENT || 'LeBlancEtMoi-restaurant-import/1.0 (https://leblanc-et-moi.pages.dev)',
+          'User-Agent': process.env.NOMINATIM_USER_AGENT || 'LeBlancEtMoi-restaurant-import/1.0 (https://leblanc-et-moi.fr)',
           'Accept-Language': 'fr',
         },
         signal: AbortSignal.timeout(15000),

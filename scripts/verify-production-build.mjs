@@ -9,7 +9,7 @@ export const MIN_SITEMAP_URLS = 800;
 // ~140 événements, ~65 lieux, ~168 parcours, × 6 langues). Garde-fou contre une
 // pagination emballée, très en dessous de la limite du protocole (50 000).
 export const MAX_SITEMAP_URLS = 4_000;
-const PRODUCTION_ORIGIN = 'https://leblanc-et-moi.pages.dev';
+const PRODUCTION_ORIGIN = 'https://leblanc-et-moi.fr';
 const DEFAULT_DIST = fileURLToPath(new URL('../frontend/dist/', import.meta.url));
 const EVENT_PATH =
   /^\/(fr\/evenements|en\/events|es\/eventos|de\/veranstaltungen|it\/eventi|nl\/evenementen)\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;

@@ -14,7 +14,7 @@ interface Env {
 }
 
 const DEFAULT_API_URL = 'https://leblanc-api.elharchdenis.workers.dev/api';
-const DEFAULT_SITE_URL = 'https://leblanc-et-moi.pages.dev';
+const DEFAULT_SITE_URL = 'https://leblanc-et-moi.fr';
 const API_CACHE_SECONDS = { found: 3600, missing: 300 };
 
 // Traductions mises en cache par isolate : elles ne changent qu'au déploiement.

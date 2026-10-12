@@ -38,10 +38,10 @@ test('sitemap : liste et fiches publiées seulement, alternates, un parcours mas
   const databaseUrl = process.env.DATABASE_URL_DIRECT ?? '';
   if (!databaseUrl || new URL(databaseUrl).hostname === PRODUCTION_HOST) throw new Error('Base dev requise pour ce test');
   const published = await allTrails(request, 'fr');
-  const first = await generateSitemap('https://leblanc-et-moi.pages.dev', API);
+  const first = await generateSitemap('https://leblanc-et-moi.fr', API);
   expect(first.partial).toBe(false);
   expect(first.walkCount).toBe(published.length);
-  for (const lang of LANGS) expect(first.xml).toContain(`<loc>https://leblanc-et-moi.pages.dev/${lang}/${SEGMENTS[lang]}</loc>`);
+  for (const lang of LANGS) expect(first.xml).toContain(`<loc>https://leblanc-et-moi.fr/${lang}/${SEGMENTS[lang]}</loc>`);
   for (const trail of published) expect(first.xml).toContain(`/fr/se-balader/${trail.id}</loc>`);
   // Toute <loc> de parcours a un identifiant UUID valide.
   const walkLocs = [...first.xml.matchAll(/<loc>[^<]*\/(?:se-balader|trails|rutas|touren|percorsi|routes)\/[^<]+<\/loc>/g)].map(([loc]) => loc);
@@ -55,7 +55,7 @@ test('sitemap : liste et fiches publiées seulement, alternates, un parcours mas
   const hidden = published[published.length - 1]!.id;
   await client.query(`UPDATE routes SET status = 'hidden' WHERE id = $1`, [hidden]);
   try {
-    const second = await generateSitemap('https://leblanc-et-moi.pages.dev', API);
+    const second = await generateSitemap('https://leblanc-et-moi.fr', API);
     expect(second.walkCount).toBe(published.length - 1);
     expect(second.xml).not.toContain(hidden);
   } finally {

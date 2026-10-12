@@ -7,7 +7,7 @@ import { buildLocalizedPath, type RouteSection } from '../routes/routeMapping';
 import { eventStructuredData, serializeJsonLd } from '../utils/seo';
 
 const SITE_URL = (
-  import.meta.env.VITE_SITE_URL?.trim() || 'https://leblanc-et-moi.pages.dev'
+  import.meta.env.VITE_SITE_URL?.trim() || 'https://leblanc-et-moi.fr'
 ).replace(/\/+$/, '');
 const LOCALES = { fr: 'fr_FR', en: 'en_US', es: 'es_ES', de: 'de_DE', it: 'it_IT', nl: 'nl_NL' };
 

@@ -121,7 +121,7 @@ Chaque page dispose d'une canonical absolue sans paramètres de filtres, de mét
 
 Le JSON-LD contient `Organization` (logo : favicon existante), `BreadcrumbList` sur les pages indexables et `Event` sur les fiches chargées. Les champs absents sont omis, notamment l'organisateur que l'API ne fournit pas. Les descriptions sont sérialisées sans permettre la fermeture de la balise JSON-LD par du contenu externe.
 
-`VITE_SITE_URL` définit l'origine publique, avec **https://leblanc-et-moi.pages.dev** par défaut. Employer une origine HTTPS sans chemin ni paramètres. `DocumentLang` conserve la langue du document ; le titre est désormais géré par Helmet.
+`VITE_SITE_URL` définit l'origine publique, avec **https://leblanc-et-moi.fr** par défaut. Employer une origine HTTPS sans chemin ni paramètres. `DocumentLang` conserve la langue du document ; le titre est désormais géré par Helmet.
 
 ## Limitations SEO
 
@@ -187,7 +187,7 @@ Ce script utilise Chromium via Playwright, lit les données réelles et contrôl
 
 ## Production — ingestion quotidienne (Lot 9)
 
-- Site : https://leblanc-et-moi.pages.dev
+- Site : https://leblanc-et-moi.fr
 - API : https://leblanc-api.elharchdenis.workers.dev (santé : `/health`, données : `/api/v1/…`).
 - Dépôt : https://github.com/sofresh66/Leblanc ; branche de production : `main`.
 - Workflow : [production.yml](.github/workflows/production.yml).
@@ -211,7 +211,7 @@ Configurer les **Repository secrets** dans [Settings → Secrets and variables �
 | `CLOUDFLARE_API_TOKEN` | Secret | Token personnalisé décrit ci-dessous. |
 | `CLOUDFLARE_ACCOUNT_ID` | Variable | `f3fbcbb1368768039312d4877ac6d48c` |
 | `VITE_API_URL` | Variable | `https://leblanc-api.elharchdenis.workers.dev/api` |
-| `VITE_SITE_URL` | Variable | `https://leblanc-et-moi.pages.dev` |
+| `VITE_SITE_URL` | Variable | `https://leblanc-et-moi.fr` |
 | `SITEMAP_API_URL` | Variable | `https://leblanc-api.elharchdenis.workers.dev/api` |
 
 `VITE_USE_MOCK=false` est fixé dans le workflow. La connexion poolée `DATABASE_URL` reste exclusivement dans les secrets du Worker. Aucun secret OpenAgenda n’est nécessaire.
@@ -236,7 +236,7 @@ gh secret set CLOUDFLARE_API_TOKEN --repo sofresh66/Leblanc
 
 gh variable set CLOUDFLARE_ACCOUNT_ID --repo sofresh66/Leblanc --body 'f3fbcbb1368768039312d4877ac6d48c'
 gh variable set VITE_API_URL --repo sofresh66/Leblanc --body 'https://leblanc-api.elharchdenis.workers.dev/api'
-gh variable set VITE_SITE_URL --repo sofresh66/Leblanc --body 'https://leblanc-et-moi.pages.dev'
+gh variable set VITE_SITE_URL --repo sofresh66/Leblanc --body 'https://leblanc-et-moi.fr'
 gh variable set SITEMAP_API_URL --repo sofresh66/Leblanc --body 'https://leblanc-api.elharchdenis.workers.dev/api'
 ```
 
@@ -249,7 +249,7 @@ npm run typecheck
 npm run lint
 npm test
 VITE_API_URL='https://leblanc-api.elharchdenis.workers.dev/api' \
-VITE_SITE_URL='https://leblanc-et-moi.pages.dev' \
+VITE_SITE_URL='https://leblanc-et-moi.fr' \
 VITE_USE_MOCK='false' \
 SITEMAP_API_URL='https://leblanc-api.elharchdenis.workers.dev/api' \
 npm run build
@@ -261,7 +261,7 @@ Le [contrôle du build](scripts/verify-production-build.mjs) vérifie les invari
 - `index.html` existe et n'est pas vide ;
 - `sitemap.xml` existe et dépasse **50 000 octets** (kB décimaux, seuil strict) ;
 - au moins une URL de fiche événement avec un UUID et un chemin localisé reconnu est présente sur le domaine de production ;
-- la page principale `https://leblanc-et-moi.pages.dev/fr` est présente (barre oblique finale acceptée) ;
+- la page principale `https://leblanc-et-moi.fr/fr` est présente (barre oblique finale acceptée) ;
 - le sitemap contient **entre 700 et 1 000 URLs incluses**, comptées à partir des balises `<loc>`.
 
 Il retourne 0 si tout est valide, 1 avec un message français et une annotation GitHub `warning` sinon. Le message de succès indique la taille, le nombre total d'URLs et le nombre de fiches événements observés. Aucun comptage exact d'événements ou d'URLs, aucun titre et aucun identifiant métier précis n'est imposé. Les nombres 189 et 828 cités dans les bilans historiques ne sont pas des assertions de production ; le vérificateur ne consulte pas la base de données.

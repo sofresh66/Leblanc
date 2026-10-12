@@ -7,7 +7,7 @@ import { gzipSync } from 'node:zlib';
 // Démarrer le Worker local et vite preview avant ce contrôle du build de production.
 const preview = process.env.SEO_PREVIEW_URL || 'http://127.0.0.1:4173';
 const api = process.env.SITEMAP_API_URL || 'http://127.0.0.1:8787/api';
-const site = (process.env.VITE_SITE_URL || 'https://leblanc-et-moi.pages.dev').replace(/\/+$/, '');
+const site = (process.env.VITE_SITE_URL || 'https://leblanc-et-moi.fr').replace(/\/+$/, '');
 const output = new URL('../artifacts/lot8-2/', import.meta.url);
 await fs.mkdir(output, { recursive: true });
 const { items } = await (await fetch(`${api}/v1/events?lang=fr&limit=50`)).json();
