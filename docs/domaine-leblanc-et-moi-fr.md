@@ -38,7 +38,7 @@ aucun secret affiché ; codes de sortie vérifiés ; **rien le 15/10/2026** (CSP
   `.fr`/`www` changent (CORS ajouté).
 - Retour arrière : `cd worker && npx wrangler rollback 3758615a-8bed-4d2b-87b7-6b113c2b3620`.
 
-## Étape 2 — front (préparée en local le 12/10/2026, non publiée)
+## Étape 2 — front (publiée le 12/10/2026)
 
 - Commit `ca799cf`, tag `domaine-fr-2-front` : origine `https://leblanc-et-moi.fr` dans
   `production.yml` (valeur attendue de `VITE_SITE_URL`), les valeurs par défaut (`vite.config.ts`,
@@ -106,6 +106,35 @@ Il suffit de remettre les deux en accord et de relancer. Aucun commit d'assoupli
 `pages.dev` avec le code `.fr`. Si le push échoue après la modification de la variable :
 remettre aussitôt la variable à `https://leblanc-et-moi.pages.dev`.
 
+### Publication (12/10/2026, 20:26–20:38 UTC)
+
+- Contrôles préalables : aucun run en cours ni en file ; Pages en production
+  `26041166-c5c1-42a0-8d4e-d80f3b5acadc` (source `c231a3b`) ; `VITE_SITE_URL` =
+  `https://leblanc-et-moi.pages.dev` ; `origin/main` = `c231a3b`, `main` locale 4 commits devant,
+  0 derrière.
+- 20:26:55–20:27:00 UTC : `gh variable set VITE_SITE_URL` → `https://leblanc-et-moi.fr` (exit 0),
+  `git push origin main` `c231a3b..7d36800` (exit 0), tags `domaine-fr-1-worker` et
+  `domaine-fr-2-front` poussés (exit 0).
+- Run `workflow_dispatch` [38304336567](https://github.com/sofresh66/Leblanc/actions/runs/38304336567) :
+  **succès** en 10 min 04 s, toutes les étapes vertes (parcours compris). Build validé :
+  2 298 URL (858 fiches événements, 390 lieux, 1 002 parcours).
+- Pages production : **`dd2ed07d-26d5-46fc-b6ec-f9f6cf3a10f4`**, source `7d36800`.
+- Vérifications sur https://leblanc-et-moi.fr :
+  - `check-seo.sh https://leblanc-et-moi.fr https://leblanc-et-moi.fr` : tous les contrôles
+    passés (exit 0) ;
+  - sitemap : 18 384 adresses, toutes sur `https://leblanc-et-moi.fr` ; robots.txt :
+    `Sitemap: https://leblanc-et-moi.fr/sitemap.xml` ;
+  - accueil, liste, carte (FR/EN), Se balader, fiches événement (FR/IT), parcours et lieu :
+    200, canonical `.fr`, 7 hreflang, `index, follow` ; `/fr/page-inconnue` : 404
+    `noindex, follow` (sa canonical vers `/fr` existait déjà avant, seul l'hôte change) ;
+  - GPX : 200 `application/gpx+xml` ; lien GPX et tracé présents sur la fiche ;
+  - navigateur : API chargée depuis `.fr` (`/events`, `/events/geo`, `/routes/:id`,
+    `/nearby` en 200), carte avec 23 marqueurs et ses tuiles, aucune erreur de console ;
+    Web Analytics : `cloudflareinsights.com/cdn-cgi/rum` → **204** ;
+  - `leblanc-et-moi.pages.dev` et `www` : toujours 200 (redirections : étape 4), canonical `.fr`.
+- Cible de retour arrière : Pages `26041166-c5c1-42a0-8d4e-d80f3b5acadc`, puis
+  `VITE_SITE_URL` remise à `https://leblanc-et-moi.pages.dev`.
+
 ### Retours arrière
 
 1. Pages : tableau de bord → leblanc-et-moi → Deployments → déploiement noté avant publication
@@ -117,9 +146,9 @@ remettre aussitôt la variable à `https://leblanc-et-moi.pages.dev`.
 
 ## Reste à faire
 
-- Denis : valeurs de `SITE_URL` et `API_URL` dans Pages → leblanc-et-moi → Settings →
-  Variables, **environnement Production** (et Preview).
-- Denis : validation visuelle de la preview, puis accord pour la publication.
+- `SITE_URL` et `API_URL` du projet Pages : vides (vérifié par Denis le 12/10/2026).
+- Le run planifié de 03:00 utilisera désormais `VITE_SITE_URL = https://leblanc-et-moi.fr` :
+  vérifier qu'il passe le 13/10.
 - Étape 3 (à partir du 16/10) : vérifications sur `.fr`, CORS en navigateur, Web Analytics.
 - Étape 4 (après l'étape 3) : redirections 301 (Redirect Rule de zone `www` créée par Denis,
   middleware en filet de sécurité, `/robots.txt` et `/sitemap.xml` retirés des exclusions de
