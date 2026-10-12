@@ -29,13 +29,14 @@ echo "Worker testé : $API (parcours : $ROUTES_STATE)"
 
 # Juste après un déploiement, certaines requêtes peuvent encore atteindre l'ancienne
 # version le temps de la propagation. On attend 5 réponses consécutives de la
-# nouvelle version (/routes en 200 et origine de preview acceptée), 90 s au plus.
-PREVIEW_ORIGIN=https://routes-preview.leblanc-et-moi.pages.dev
+# nouvelle version (/routes en 200 et origine sonde acceptée), 90 s au plus.
+# L'origine sonde est la dernière ajoutée au CORS : seule la nouvelle version l'accepte.
+PROBE_ORIGIN=https://leblanc-et-moi.fr
 consecutive=0
 for attempt in $(seq 1 45); do
-  code="$(curl -s -o /dev/null -D "$TMP/probe.headers" -w '%{http_code}' -H "Origin: $PREVIEW_ORIGIN" "$API/api/v1/routes?limit=1")"
+  code="$(curl -s -o /dev/null -D "$TMP/probe.headers" -w '%{http_code}' -H "Origin: $PROBE_ORIGIN" "$API/api/v1/routes?limit=1")"
   origin="$(grep -i '^access-control-allow-origin:' "$TMP/probe.headers" | tr -d '\r' | sed 's/^[^:]*: *//')"
-  if [ "$code" = 200 ] && [ "$origin" = "$PREVIEW_ORIGIN" ]; then consecutive=$((consecutive + 1)); else consecutive=0; fi
+  if [ "$code" = 200 ] && [ "$origin" = "$PROBE_ORIGIN" ]; then consecutive=$((consecutive + 1)); else consecutive=0; fi
   [ "$consecutive" -ge 5 ] && break
   sleep 2
 done
@@ -85,10 +86,19 @@ get "/api/v1/events?limit=1" corsprod https://leblanc-et-moi.pages.dev
 check "site de production autorisé (/events)" '[ "$(acao corsprod)" = "https://leblanc-et-moi.pages.dev" ]'
 get "/api/v1/routes?limit=1" corsprodroutes https://leblanc-et-moi.pages.dev
 check "site de production autorisé (/routes)" '[ "$(acao corsprodroutes)" = "https://leblanc-et-moi.pages.dev" ]'
+for origin in https://leblanc-et-moi.fr https://www.leblanc-et-moi.fr; do
+  for path in events routes; do
+    name="cors$(printf '%s%s' "$origin" "$path" | tr -c 'a-z0-9' '_')"
+    get "/api/v1/$path?limit=1" "$name" "$origin"
+    check "domaine autorisé : $origin (/$path)" '[ "$(status "$name")" = 200 ] && [ "$(acao "$name")" = "$origin" ]'
+  done
+  code="$(curl -s -o /dev/null -D "$TMP/preflightfr.headers" -w '%{http_code}' -X OPTIONS -H "Origin: $origin" -H 'Access-Control-Request-Method: GET' "$API/api/v1/routes")"
+  check "prévol OPTIONS 204 : $origin" '[ "$code" = 204 ] && [ "$(acao preflightfr)" = "$origin" ]'
+done
 get "/api/v1/routes?limit=1" corspreview https://routes-preview.leblanc-et-moi.pages.dev
 check "preview du projet autorisée" '[ "$(acao corspreview)" = "https://routes-preview.leblanc-et-moi.pages.dev" ]' || true
 [ "$(acao corspreview)" = "https://routes-preview.leblanc-et-moi.pages.dev" ] || echo "        reçu : statut $(status corspreview), CORS « $(acao corspreview) »"
-for origin in http://routes-preview.leblanc-et-moi.pages.dev https://evil-leblanc-et-moi.pages.dev https://a.b.leblanc-et-moi.pages.dev https://leblanc-et-moi.pages.dev.evil.com; do
+for origin in http://routes-preview.leblanc-et-moi.pages.dev https://evil-leblanc-et-moi.pages.dev https://a.b.leblanc-et-moi.pages.dev https://leblanc-et-moi.pages.dev.evil.com http://leblanc-et-moi.fr https://evil.leblanc-et-moi.fr https://evil-leblanc-et-moi.fr https://leblanc-et-moi.fr.evil.com; do
   name="cors$(printf '%s' "$origin" | tr -c 'a-z0-9' '_')"
   get "/api/v1/routes?limit=1" "$name" "$origin"
   check "refusé : $origin" '[ -z "$(acao "$name")" ]'

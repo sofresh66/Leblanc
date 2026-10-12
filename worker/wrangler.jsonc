@@ -12,6 +12,6 @@
     }
   },
   "vars": {
-    "ALLOWED_ORIGINS": "http://localhost:5173,https://leblanc-et-moi.pages.dev"
+    "ALLOWED_ORIGINS": "http://localhost:5173,https://leblanc-et-moi.pages.dev,https://leblanc-et-moi.fr,https://www.leblanc-et-moi.fr"
   }
 }

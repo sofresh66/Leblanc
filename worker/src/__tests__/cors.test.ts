@@ -4,7 +4,12 @@ import { getAllowedOrigins, getCorsHeaders, handleCorsPreflight } from '../http/
 describe('Gestion CORS (worker/src/http/cors.ts)', () => {
   it('utilise les origines par défaut quand la variable d’environnement est absente', () => {
     const origins = getAllowedOrigins(undefined);
-    expect(origins).toEqual(['http://localhost:5173', 'https://leblanc-et-moi.pages.dev']);
+    expect(origins).toEqual([
+      'http://localhost:5173',
+      'https://leblanc-et-moi.pages.dev',
+      'https://leblanc-et-moi.fr',
+      'https://www.leblanc-et-moi.fr',
+    ]);
   });
 
   it('lit les origines configurées via env.ALLOWED_ORIGINS', () => {
@@ -31,6 +36,47 @@ describe('Gestion CORS (worker/src/http/cors.ts)', () => {
 
     const reqNoOrigin = new Request('https://api.example.com/api/v1/events');
     expect(getCorsHeaders(reqNoOrigin)).toEqual({ Vary: 'Origin' });
+  });
+
+  describe('domaine leblanc-et-moi.fr', () => {
+    const allowed = (origin: string) =>
+      getCorsHeaders(new Request('https://api.example.com/api/v1/events', { headers: { Origin: origin } }))['Access-Control-Allow-Origin'];
+
+    it.each([
+      'https://leblanc-et-moi.fr',
+      'https://www.leblanc-et-moi.fr',
+      'https://leblanc-et-moi.pages.dev', // conservé pendant la transition
+    ])('autorise %s', (origin) => {
+      expect(allowed(origin)).toBe(origin);
+    });
+
+    it.each([
+      'http://leblanc-et-moi.fr', // pas de HTTP
+      'http://www.leblanc-et-moi.fr',
+      'https://leblanc-et-moi.fr:8443', // pas de port
+      'https://leblanc-et-moi.fr/', // origine exacte, sans chemin
+      'https://evil.leblanc-et-moi.fr', // aucun autre sous-domaine
+      'https://a.www.leblanc-et-moi.fr',
+      'https://evil-leblanc-et-moi.fr',
+      'https://leblanc-et-moi.fr.evil.com', // suffixe ajouté
+      'https://leblanc-et-moi.france',
+      'https://Leblanc-et-moi.fr', // les navigateurs envoient des minuscules
+    ])('refuse %s', (origin) => {
+      expect(allowed(origin)).toBeUndefined();
+    });
+
+    it('autorise le domaine avec la liste de production (wrangler.jsonc)', () => {
+      const env = {
+        DATABASE_URL: '',
+        ALLOWED_ORIGINS: 'http://localhost:5173,https://leblanc-et-moi.pages.dev,https://leblanc-et-moi.fr,https://www.leblanc-et-moi.fr',
+      };
+      for (const origin of ['https://leblanc-et-moi.fr', 'https://www.leblanc-et-moi.fr']) {
+        const req = new Request('https://api.example.com/api/v1/routes', { method: 'OPTIONS', headers: { Origin: origin } });
+        const res = handleCorsPreflight(req, env);
+        expect(res.status).toBe(204);
+        expect(res.headers.get('Access-Control-Allow-Origin')).toBe(origin);
+      }
+    });
   });
 
   describe('previews Cloudflare Pages du projet', () => {

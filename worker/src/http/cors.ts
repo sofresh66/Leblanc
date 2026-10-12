@@ -3,6 +3,8 @@ import type { Env } from '../env.js';
 const DEFAULT_ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'https://leblanc-et-moi.pages.dev',
+  'https://leblanc-et-moi.fr',
+  'https://www.leblanc-et-moi.fr',
 ];
 
 /**
