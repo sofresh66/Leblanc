@@ -70,6 +70,8 @@ interface PickOptions {
   exclude?: Event[];
   /** Plafond par catégorie (relâché en dernier recours). */
   perCategory?: number;
+  /** Événements déjà affichés sur la page : un marché parmi eux épuise le quota d'un marché. */
+  shown?: Event[];
 }
 
 /**
@@ -78,17 +80,19 @@ interface PickOptions {
  * ne suffit pas, les règles sont relâchées dans l'ordre : événements à éviter, catégorie, puis
  * long cours et marchés.
  */
-function pickDiverse(ordered: Event[], { count, avoid = [], exclude = [], perCategory = 1 }: PickOptions): Event[] {
+function pickDiverse(ordered: Event[], { count, avoid = [], exclude = [], perCategory = 1, shown = [] }: PickOptions): Event[] {
   const excludedIds = new Set(exclude.map((event) => event.id));
   const excludedTitles = new Set(exclude.map(normalizeTitle));
   const avoidedIds = new Set(avoid.map((event) => event.id));
   const avoidedTitles = new Set(avoid.map(normalizeTitle));
   const pool = ordered.filter((event) => !excludedIds.has(event.id) && !excludedTitles.has(normalizeTitle(event)));
 
+  // Un seul marché sur toute la page : celui déjà affiché ailleurs compte.
+  const markets = Math.max(0, 1 - shown.filter(isMarket).length);
   const stages = [
-    { avoid: true, perCategory, maxLong: 1, maxMarkets: 1 },
-    { avoid: false, perCategory, maxLong: 1, maxMarkets: 1 },
-    { avoid: false, perCategory: Infinity, maxLong: 1, maxMarkets: 1 },
+    { avoid: true, perCategory, maxLong: 1, maxMarkets: markets },
+    { avoid: false, perCategory, maxLong: 1, maxMarkets: markets },
+    { avoid: false, perCategory: Infinity, maxLong: 1, maxMarkets: markets },
     { avoid: false, perCategory: Infinity, maxLong: Infinity, maxMarkets: Infinity },
   ];
   const picked: Event[] = [];
@@ -134,22 +138,24 @@ export interface HomeSelection {
 
 /**
  * Top du moment (3 cartes diversifiées, ordre mélangé du jour) et Derniers ajouts
- * (3 cartes suivantes dans l'ordre chronologique, sans répéter le Top).
+ * (3 cartes suivantes dans l'ordre chronologique, sans répéter le Top ni ajouter de
+ * marché s'il y en a déjà un dans le Top, sauf en dernier recours).
  */
 export function selectHomeEvents(events: Event[], now: Date, lang: string): HomeSelection {
   const seed = dailySeed(now, lang);
   const top = shuffle(pickDiverse(priorityOrder(events, now, seed), { count: HOME_SECTION_SIZE }), seed);
-  const recent = pickDiverse(events, { count: HOME_SECTION_SIZE, exclude: top, perCategory: Infinity });
+  const recent = pickDiverse(events, { count: HOME_SECTION_SIZE, exclude: top, perCategory: Infinity, shown: top });
   return { top, recent };
 }
 
 /**
- * Ce week-end : mêmes règles de diversité ; évite si possible les cartes du Top.
+ * Ce week-end : mêmes règles de diversité ; évite si possible les cartes du Top, et n'ajoute
+ * pas de marché si la page (Top, Derniers ajouts) en montre déjà un, sauf en dernier recours.
  * `events` provient de l'API filtrée sur le week-end (voir `upcomingWeekend`).
  */
-export function selectWeekendEvents(events: Event[], now: Date, lang: string, top: Event[] = []): Event[] {
+export function selectWeekendEvents(events: Event[], now: Date, lang: string, top: Event[] = [], recent: Event[] = []): Event[] {
   const seed = dailySeed(now, lang);
-  return shuffle(pickDiverse(priorityOrder(events, now, seed), { count: HOME_SECTION_SIZE, avoid: top }), seed);
+  return shuffle(pickDiverse(priorityOrder(events, now, seed), { count: HOME_SECTION_SIZE, avoid: top, shown: [...top, ...recent] }), seed);
 }
 
 /**

@@ -89,8 +89,8 @@ export const HomePage: React.FC = () => {
     [data, now, currentLang],
   );
   const weekendEvents = useMemo(
-    () => selectWeekendEvents(weekendQuery.data?.items ?? [], now, currentLang, topEvents),
-    [weekendQuery.data, now, currentLang, topEvents],
+    () => selectWeekendEvents(weekendQuery.data?.items ?? [], now, currentLang, topEvents, recentEvents),
+    [weekendQuery.data, now, currentLang, topEvents, recentEvents],
   );
   const loadingLabel = t('actions.loading', { ns: 'common' });
 

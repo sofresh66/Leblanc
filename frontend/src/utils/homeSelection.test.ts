@@ -140,6 +140,52 @@ describe('selectHomeEvents', () => {
     expect(recent.filter(isLongRunning).length).toBeLessThanOrEqual(1);
   });
 
+  it('un seul marché sur la page : Top avec marché → aucun marché dans Derniers ajouts', () => {
+    // Marchés ponctuels tôt dans l'ordre de l'API : sans la règle, Derniers ajouts les prendrait.
+    const base = pool();
+    const events = [
+      ...base.slice(0, 6),
+      event('Marché de Saint-Savin', 'fete', '2026-10-14T06:00:00Z', '2026-10-14T11:00:00Z'),
+      event('Foire aux potirons', 'autre', '2026-10-14T06:30:00Z', '2026-10-14T16:00:00Z'),
+      ...base.slice(6),
+    ];
+    for (let day = 0; day < 10; day++) {
+      const { top, recent } = selectHomeEvents(events, new Date(Date.UTC(2026, 9, 13 + day, 10)), 'fr');
+      expect(top.filter(isMarket)).toHaveLength(1);
+      expect(recent).toHaveLength(3);
+      expect(recent.filter(isMarket)).toHaveLength(0);
+    }
+  });
+
+  it('Top sans marché : Derniers ajouts inchangé (ordre de l’API, sans le Top)', () => {
+    const events = pool().filter((e) => !isMarket(e));
+    const { top, recent } = selectHomeEvents(events, NOW, 'fr');
+    expect(top.filter(isMarket)).toHaveLength(0);
+    const topIds = ids(top);
+    const titles = new Set<string>(top.map(normalizeTitle));
+    const expected: Event[] = [];
+    let long = 0;
+    for (const e of events) {
+      if (expected.length === 3) break;
+      if (topIds.includes(e.id) || titles.has(normalizeTitle(e))) continue;
+      if (isLongRunning(e) && long >= 1) continue;
+      if (isLongRunning(e)) long += 1;
+      titles.add(normalizeTitle(e));
+      expected.push(e);
+    }
+    expect(ids(recent)).toEqual(ids(expected));
+  });
+
+  it('repli : s’il n’y a que des marchés, ils remplissent les sections (titres toujours uniques)', () => {
+    const events = ['Marché de Saint-Savin', 'Foire mensuelle', 'Marché bio', 'Marché nocturne', 'Marché de Noël']
+      .map((title, i) => event(title, 'autre', `2026-10-1${4 + i}T08:00:00Z`, `2026-10-1${4 + i}T12:00:00Z`));
+    const { top, recent } = selectHomeEvents(events, NOW, 'fr');
+    expect(top).toHaveLength(3);
+    expect(recent).toHaveLength(2);
+    const titles = [...top, ...recent].map(normalizeTitle);
+    expect(new Set(titles).size).toBe(5);
+  });
+
   it('repli : moins de 3 ponctuels → complète avec des événements au long cours', () => {
     const events = [market('Le Blanc', 300), expo('Exposition A'), expo('Exposition B'), event('Bal Folk', 'culture', '2026-10-17T18:30:00Z')];
     const { top } = selectHomeEvents(events, NOW, 'fr');
@@ -182,6 +228,22 @@ describe('Ce week-end', () => {
     expect(weekend.filter(isLongRunning)).toHaveLength(1);
     expect(new Set(weekend.map((e) => e.category)).size).toBe(3);
     expect(ids(weekend)).not.toContain(weekendPool[2]!.id);
+  });
+
+  it('n’ajoute pas de marché si la page en montre déjà un, sauf s’il n’y a rien d’autre', () => {
+    const shownMarket = [market('Le Blanc', 300)];
+    const weekendPool = [
+      market('Martizay', 15000),
+      event('Marché de Saint-Savin', 'fete', '2026-10-17T07:00:00Z', '2026-10-17T12:00:00Z'),
+      event('Octobre Rose', 'sport', '2026-10-17T14:00:00Z'),
+      event('Bal Folk', 'culture', '2026-10-17T18:30:00Z'),
+      event('Nuit de gongs', 'association', '2026-10-17T19:00:00Z'),
+    ];
+    expect(selectWeekendEvents(weekendPool, NOW, 'fr', shownMarket).filter(isMarket)).toHaveLength(0);
+    expect(selectWeekendEvents(weekendPool, NOW, 'fr', [], shownMarket).filter(isMarket)).toHaveLength(0);
+    expect(selectWeekendEvents(weekendPool, NOW, 'fr').filter(isMarket)).toHaveLength(1);
+    const onlyMarkets = weekendPool.slice(0, 2);
+    expect(selectWeekendEvents(onlyMarkets, NOW, 'fr', shownMarket)).toHaveLength(2);
   });
 
   it('week-end sans résultat : aucune carte (la section sera masquée)', () => {
