@@ -144,11 +144,41 @@ remettre aussitôt la variable à `https://leblanc-et-moi.pages.dev`.
    ne republie pas le `.fr` par-dessus le rollback.
 3. Ensuite : `git revert ca799cf`, push et relance du workflow pour retrouver des runs verts.
 
+### Premier run planifié en `.fr` (13/10/2026)
+
+Run [38362601269](https://github.com/sofresh66/Leblanc/actions/runs/38362601269) (`schedule`,
+source `7d36800`) : démarré à 07:25:56 UTC, **succès** en 11 min 56 s, avec
+`VITE_SITE_URL = https://leblanc-et-moi.fr`. Pages production : `c88fe7a5-4e8f-4b15-be08-ded052dc4fd3`.
+
+## Favicon LB (publié le 13/10/2026)
+
+- Design validé par Denis : disque `#2D5016`, lettres « LB » `#F4EFE0`. Source
+  `design/favicon-source.svg` (aucune police, aucun texte, script, image ou référence externe ;
+  viewBox 64×64). Lisible à 16 px (empattements fondus), net à 32 px. Variante avec 5 % de marge
+  en plus étudiée puis écartée (moins lisible à 16 px) ; l'icône iPhone n'est pas rognée.
+- Fichiers de `frontend/public/` : `favicon.svg`, `favicon.ico` (16/32/48), `favicon-48.png`,
+  `apple-touch-icon.png` (180×180, opaque, fond vert plein), `icon-192.png`, `icon-512.png`.
+  Regénération : `node scripts/generate-favicons.mjs` (Chromium via Playwright, sortie
+  identique octet pour octet).
+- Déclaration unique dans `frontend/index.html` (6 balises), conservée par le middleware ;
+  fichiers exclus du middleware dans `_routes.json` (13 règles sur 100). Pas de manifest.
+- Commits : `24a22ba` (icônes, tag `favicon-lb-1`), `797f6bb` (source et script),
+  `7f051a3` (fusion de `favicon-lb` dans `main`, sans réécriture), avec la doc `129bbb6`.
+- Preview `67fdc127` (alias `favicon-preview`) validée par Denis.
+- Publication : push `7d36800..7f051a3` et tag `favicon-lb-1` ; run `workflow_dispatch`
+  [38450730205](https://github.com/sofresh66/Leblanc/actions/runs/38450730205) : **succès**
+  (fin 19:08:45 UTC) ; Pages production **`a5448caf-3d09-4eb4-a3c5-30e1741b0272`** (source `7f051a3`).
+- Vérifications sur https://leblanc-et-moi.fr : les 6 fichiers en 200, identiques au dépôt
+  (`image/svg+xml`, `image/vnd.microsoft.icon`, `image/png`) ; les 6 balises une seule fois sur
+  `/fr`, `/fr/page-inconnue` (404) et `/fr/se-balader` ;
+  `check-seo.sh https://leblanc-et-moi.fr https://leblanc-et-moi.fr` : exit 0 ; navigateur :
+  console sans erreur, API 200, `cdn-cgi/rum` 204.
+- Retour arrière : Pages → `c88fe7a5-4e8f-4b15-be08-ded052dc4fd3`, puis `git revert -m 1 7f051a3`.
+
 ## Reste à faire
 
 - `SITE_URL` et `API_URL` du projet Pages : vides (vérifié par Denis le 12/10/2026).
-- Le run planifié de 03:00 utilisera désormais `VITE_SITE_URL = https://leblanc-et-moi.fr` :
-  vérifier qu'il passe le 13/10.
+- Rien le 15/10/2026 (CSP en mode bloquant, chantier séparé).
 - Étape 3 (à partir du 16/10) : vérifications sur `.fr`, CORS en navigateur, Web Analytics.
 - Étape 4 (après l'étape 3) : redirections 301 (Redirect Rule de zone `www` créée par Denis,
   middleware en filet de sécurité, `/robots.txt` et `/sitemap.xml` retirés des exclusions de
