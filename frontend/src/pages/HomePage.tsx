@@ -1,5 +1,5 @@
 import { PageSeo } from '../components/PageSeo';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { prefetchPage } from '../routes/pageImports';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { EventCard } from '../components/events/EventCard';
 import { ErrorState } from '../components/common/ErrorState';
 import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '../i18n/languages';
 import { buildLocalizedPath } from '../routes/routeMapping';
+import { HOME_POOL_SIZE, HOME_SECTION_SIZE, WEEKEND_POOL_SIZE, selectHomeEvents, selectWeekendEvents, upcomingWeekend } from '../utils/homeSelection';
 
 const categoryMeta: Record<EventCategory, { icon: string; surface: string; iconColor: string; border: string }> = {
   culture: {
@@ -52,6 +53,14 @@ function SectionHeader({ id, title, subtitle, href, action }: { id: string; titl
   );
 }
 
+function GridSkeleton({ label }: { label: string }) {
+  return (
+    <div role="status" aria-busy="true" aria-label={label} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: HOME_SECTION_SIZE }, (_, index) => <div key={index} className="aspect-[4/5] animate-pulse rounded-xl bg-brenne-100" />)}
+    </div>
+  );
+}
+
 function EventGrid({ events }: { events: Event[] }) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
@@ -69,16 +78,21 @@ export const HomePage: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, [listPath]);
 
-  const { data, isLoading, isError, error, refetch } = useEvents({ lang: currentLang, limit: 15 });
-  const allEvents: Event[] = data?.items ?? [];
+  // Heure figée au montage : l'ordre du jour ne change pas pendant la visite.
+  const now = useMemo(() => new Date(), []);
+  const weekend = useMemo(() => upcomingWeekend(now), [now]);
+  const { data, isLoading, isError, error, refetch } = useEvents({ lang: currentLang, limit: HOME_POOL_SIZE });
+  const weekendQuery = useEvents({ lang: currentLang, from: weekend.from, to: weekend.to, limit: WEEKEND_POOL_SIZE });
 
-  // La sélection conserve volontairement la logique existante jusqu'au sous-lot 8.2.
-  const topEvents = allEvents.slice(0, 3);
-  const weekendEvents = allEvents.filter((event) => {
-    const day = new Date(event.startDate).getDay();
-    return day === 0 || day === 6;
-  }).slice(0, 3);
-  const recentEvents = allEvents.slice(3, 6);
+  const { top: topEvents, recent: recentEvents } = useMemo(
+    () => selectHomeEvents(data?.items ?? [], now, currentLang),
+    [data, now, currentLang],
+  );
+  const weekendEvents = useMemo(
+    () => selectWeekendEvents(weekendQuery.data?.items ?? [], now, currentLang, topEvents),
+    [weekendQuery.data, now, currentLang, topEvents],
+  );
+  const loadingLabel = t('actions.loading', { ns: 'common' });
 
   return (
     <div className="-mt-2 sm:-mt-4">
@@ -114,17 +128,14 @@ export const HomePage: React.FC = () => {
 
       <section className="space-y-8 py-16 sm:py-20" aria-labelledby="top-title">
         <SectionHeader id="top-title" title={t('home.topTitle', { ns: 'pages' })} subtitle={t('home.topSubtitle', { ns: 'pages' })} href={listPath} action={t('home.viewAll', { ns: 'pages' })} />
-        {isError ? <ErrorState error={error} onRetry={() => void refetch()} /> : isLoading ? (
-          <div role="status" aria-busy="true" aria-label={t('actions.loading', { ns: 'common' })} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }, (_, index) => <div key={index} className="aspect-[4/5] animate-pulse rounded-xl bg-brenne-100" />)}
-          </div>
-        ) : <EventGrid events={topEvents} />}
+        {isError ? <ErrorState error={error} onRetry={() => void refetch()} /> : isLoading ? <GridSkeleton label={loadingLabel} /> : <EventGrid events={topEvents} />}
       </section>
 
-      {weekendEvents.length > 0 && (
+      {/* Masquée seulement si l'API ne renvoie rien pour le week-end (ou en cas d'erreur). */}
+      {(weekendQuery.isLoading || weekendEvents.length > 0) && (
         <section className="-mx-4 space-y-8 bg-sable-100 px-4 py-16 sm:-mx-6 sm:px-6 sm:py-20 lg:-mx-8 lg:px-8" aria-labelledby="weekend-title">
           <SectionHeader id="weekend-title" title={t('home.weekendTitle', { ns: 'pages' })} subtitle={t('home.weekendSubtitle', { ns: 'pages' })} href={listPath} action={t('home.viewAll', { ns: 'pages' })} />
-          <EventGrid events={weekendEvents} />
+          {weekendQuery.isLoading ? <GridSkeleton label={loadingLabel} /> : <EventGrid events={weekendEvents} />}
         </section>
       )}
 
@@ -152,10 +163,10 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {recentEvents.length > 0 && (
+      {(isLoading || recentEvents.length > 0) && (
         <section className="space-y-8 border-t border-brenne-900/10 py-16 sm:py-20" aria-labelledby="recent-title">
           <SectionHeader id="recent-title" title={t('home.recentTitle', { ns: 'pages' })} href={listPath} action={t('home.viewAll', { ns: 'pages' })} />
-          <EventGrid events={recentEvents} />
+          {isLoading ? <GridSkeleton label={loadingLabel} /> : <EventGrid events={recentEvents} />}
         </section>
       )}
     </div>

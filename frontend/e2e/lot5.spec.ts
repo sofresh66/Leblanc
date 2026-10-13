@@ -11,8 +11,11 @@ test.beforeAll(async ({ request }) => {
 
 test('1. L’accueil affiche des événements réels', async ({ page }) => {
   await page.goto('/fr');
-  // Un même événement peut figurer dans deux sections de l’accueil (ce week-end, à venir).
-  await expect(page.getByTestId(`event-card-${events[0]!.id}`).first()).toBeVisible();
+  // Le Top est une sélection du jour parmi les premiers événements de l'API.
+  const firstCard = page.locator('[data-testid^="event-card-"]').first();
+  await expect(firstCard).toBeVisible();
+  const cardId = (await firstCard.getAttribute('data-testid'))!.replace('event-card-', '');
+  expect(events.map((event) => event.id)).toContain(cardId);
   await expect(page.getByTestId('error-state')).toHaveCount(0);
 });
 
