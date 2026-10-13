@@ -70,15 +70,27 @@ describe('normalizeTitle et classement', () => {
 });
 
 describe('selectHomeEvents', () => {
-  it('Top : 3 cartes de catégories différentes, un seul événement au long cours, le marché proche', () => {
+  it('Top : 3 cartes de catégories différentes, un seul événement au long cours, et c’est un marché', () => {
     const { top } = selectHomeEvents(pool(), NOW, 'fr');
     expect(top).toHaveLength(3);
     expect(new Set(top.map((e) => e.category)).size).toBe(3);
     expect(top.filter(isLongRunning)).toHaveLength(1);
-    expect(top.find(isLongRunning)?.city).toBe('Le Blanc'); // marché à moins de 10 km
+    expect(isMarket(top.find(isLongRunning)!)).toBe(true); // un marché passe avant les expositions
     for (const e of top.filter((e) => !isLongRunning(e))) {
       expect(Date.parse(e.startDate)).toBeLessThanOrEqual(NOW.getTime() + 14 * 86_400_000);
     }
+  });
+
+  it('les marchés de la zone tournent : au moins 3 différents sur 10 jours, un seul par jour', () => {
+    const events = pool();
+    const markets = new Set<string>();
+    for (let day = 0; day < 10; day++) {
+      const { top } = selectHomeEvents(events, new Date(Date.UTC(2026, 9, 14 + day, 10)), 'fr');
+      const dayMarkets = top.filter(isMarket);
+      expect(dayMarkets).toHaveLength(1);
+      markets.add(dayMarkets[0]!.id);
+    }
+    expect(markets.size).toBeGreaterThanOrEqual(3);
   });
 
   it('au plus un marché par section, même ponctuel (marché de Saint-Savin)', () => {

@@ -14,8 +14,11 @@ export const HOME_SECTION_SIZE = 3;
 export const LONG_RUNNING_DAYS = 14;
 /** Fenêtre de priorité des événements ponctuels. */
 export const PUNCTUAL_WINDOW_DAYS = 14;
-/** Un marché à moins de cette distance du Blanc passe avant les autres événements au long cours. */
-export const NEARBY_MARKET_METERS = 10_000;
+/**
+ * Un marché à moins de cette distance du Blanc passe avant les autres événements au long cours.
+ * 20 km = tout le périmètre du site : les marchés de la zone tournent d'un jour à l'autre.
+ */
+export const NEARBY_MARKET_METERS = 20_000;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
