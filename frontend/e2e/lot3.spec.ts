@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { Event } from '@leblanc/shared';
 import { discoverEvents } from './fixtures';
+import { upcomingWeekend } from '../src/utils/homeSelection';
 
 const SCREENSHOTS_DIR = path.resolve('screenshots');
 
@@ -17,6 +18,20 @@ test.beforeAll(async ({ request }) => {
 
 test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
   test('1. Affichage de la HomePage avec ses sections et captures d’écran FR + EN', async ({ page }) => {
+    // « Ce week-end » dépend des données du jour : la requête du week-end (from/to) reçoit
+    // un événement réel déplacé au samedi ; les autres requêtes vont à l'API locale.
+    const { from } = upcomingWeekend(new Date());
+    await page.route('**/api/v1/events?*', (route) => {
+      const url = new URL(route.request().url());
+      if (!url.searchParams.has('from')) return route.continue();
+      expect(url.searchParams.get('to')).toBeTruthy();
+      const weekendEvent = { ...realEvent, startDate: `${from}T10:00:00.000Z`, endDate: `${from}T12:00:00.000Z` };
+      return route.fulfill({
+        contentType: 'application/json',
+        body: JSON.stringify({ items: [weekendEvent], nextCursor: null, generatedAt: new Date().toISOString() }),
+      });
+    });
+
     // 1a. Accueil en français
     await page.goto('/fr');
     await expect(page.locator('h1')).toContainText('Bienvenue au Blanc & Moi');
@@ -46,11 +61,14 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
 
   test('2. Navigation depuis une EventCard vers la fiche détaillée', async ({ page }) => {
     await page.goto('/fr');
-    const firstCardLink = page.locator('[data-testid^="event-card-"]').first().locator('a').first();
+    // Le Top change chaque jour : on suit la première carte affichée, quelle qu'elle soit.
+    const firstCard = page.locator('[data-testid^="event-card-"]').first();
+    const cardId = (await firstCard.getAttribute('data-testid'))!.replace('event-card-', '');
+    const firstCardLink = firstCard.locator('a').first();
     const cardTitle = await firstCardLink.textContent();
 
     await firstCardLink.click();
-    await expect(page).toHaveURL(new RegExp(`/fr/evenements/${realEvent.id}$`));
+    await expect(page).toHaveURL(new RegExp(`/fr/evenements/${cardId}$`));
     if (cardTitle) {
       await expect(page.locator('h1')).toContainText(cardTitle.trim());
     }
