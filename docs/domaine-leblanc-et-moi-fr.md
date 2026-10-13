@@ -175,6 +175,39 @@ source `7d36800`) : démarré à 07:25:56 UTC, **succès** en 11 min 56 s, avec
   console sans erreur, API 200, `cdn-cgi/rum` 204.
 - Retour arrière : Pages → `c88fe7a5-4e8f-4b15-be08-ded052dc4fd3`, puis `git revert -m 1 7f051a3`.
 
+## Accueil diversifié (publié le 13/10/2026)
+
+- Cause : les marchés sont ingérés comme une occurrence unique du 01/01 au 31/12 ; toujours
+  « en cours », ils étaient ex æquo en tête de l'API (clé `GREATEST(début, maintenant)`, départage
+  par UUID) et occupaient le Top et les Derniers ajouts tous les jours.
+- Correctif front seul (`frontend/src/utils/homeSelection.ts`, `HomePage.tsx`) ; Worker, base,
+  ingestion, liste, carte et SEO inchangés :
+  - Top du moment : 3 cartes parmi 40 événements, ponctuels des 14 prochains jours en priorité,
+    1 carte par catégorie et par titre normalisé, 1 événement au long cours (plus de 14 jours),
+    ordre stable sur la journée (graine : date UTC + langue) ;
+  - marchés : rotation entre tous les marchés de la zone (`NEARBY_MARKET_METERS` = 20 km) et
+    **un seul marché sur toute la page** (Derniers ajouts et Ce week-end n'en ajoutent pas) ;
+  - Ce week-end : appel `from`/`to` sur le week-end à venir ou en cours, évite les cartes du Top ;
+  - Derniers ajouts : ordre de l'API, sans répéter le Top ;
+  - plafonds relâchés en dernier recours, dédoublonnage des titres jamais relâché ; squelettes
+    de chargement (CLS ≈ 0) ; 2 appels API sur l'accueil au lieu d'un.
+- Tests : 684 unitaires, e2e 58/58 (le test « Ce week-end » de `lot3` ne dépend plus des données).
+  Simulation 14→23/10 : 4 marchés différents dans le Top en fr, 5 en en, 1 seul par page.
+- Commits `dd91997`, `7a77875`, `84bb25e` (tags `accueil-diversifie-1` à `-3`), fusion `e58c0e9`
+  (avec la doc `1e5f9d5`). Preview `fc2e1c7b` (alias `home-preview`) validée par Denis.
+- Publication : push `7f051a3..e58c0e9` et des 3 tags ; run `workflow_dispatch`
+  [38466757896](https://github.com/sofresh66/Leblanc/actions/runs/38466757896) : **succès**
+  (fin 21:07:51 UTC ; `gh run watch` interrompu deux fois par des erreurs 502/504 de l'API
+  GitHub, suivi repris sans relancer le run) ; Pages production
+  **`9ce78655-4450-40b0-b0bf-4f78a0501a0f`** (source `e58c0e9`).
+- Vérifications sur https://leblanc-et-moi.fr :
+  - accueil fr et en : 1 seul marché sur la page, les 3 sections remplies (3 cartes chacune),
+    aucun doublon, 2 appels API (200), console sans erreur, `cdn-cgi/rum` 204, CLS 0,0003 ;
+  - `check-seo.sh https://leblanc-et-moi.fr https://leblanc-et-moi.fr` : exit 0 ;
+  - `/fr/liste`, `/fr/carte`, `/en/map` et une fiche d'événement : 200 ; la liste garde l'ordre
+    de l'API ; les 6 icônes en 200 avec le bon type.
+- Retour arrière : Pages → `a5448caf-3d09-4eb4-a3c5-30e1741b0272`, puis `git revert -m 1 e58c0e9`.
+
 ## Reste à faire
 
 - `SITE_URL` et `API_URL` du projet Pages : vides (vérifié par Denis le 12/10/2026).
