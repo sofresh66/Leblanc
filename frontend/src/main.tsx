@@ -1,3 +1,4 @@
+import './zodConfig';
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
