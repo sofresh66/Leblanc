@@ -36,6 +36,6 @@ export function securityHeaders(apiOrigin: string = API_ORIGIN): Record<string, 
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'geolocation=(self), camera=(), microphone=(), payment=()',
-    'Content-Security-Policy-Report-Only': contentSecurityPolicy(apiOrigin),
+    'Content-Security-Policy': contentSecurityPolicy(apiOrigin),
   };
 }
