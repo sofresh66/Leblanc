@@ -208,10 +208,41 @@ source `7d36800`) : démarré à 07:25:56 UTC, **succès** en 11 min 56 s, avec
     de l'API ; les 6 icônes en 200 avec le bon type.
 - Retour arrière : Pages → `a5448caf-3d09-4eb4-a3c5-30e1741b0272`, puis `git revert -m 1 e58c0e9`.
 
+## CSP en mode bloquant (15/10/2026)
+
+- Contrôle préalable : aucun run en cours ; run planifié du 14/10
+  [38519090335](https://github.com/sofresh66/Leblanc/actions/runs/38519090335) vert, source
+  `e58c0e9` ; Pages production **`1ba2ed90-84af-4e5b-866b-d509d081f6d7`** (publiée par ce run ;
+  `9ce78655` de la consigne était périmé), retenue comme cible de retour arrière.
+- Lot : `f87068b` (bascule `Content-Security-Policy`, rebase sans conflit de `39dd114` sur
+  `e58c0e9`) et `404e50f` (`z.config({ jitless: true })` dans `frontend/src/zodConfig.ts`, importé
+  en premier par `main.tsx` : Zod 4.5.1 lit le réglage à la construction des schémas ; sans JIT il
+  ne sonde plus `new Function("")`, que la CSP bloquait sur chaque page ; validation inchangée,
+  test `zodConfig.test.ts`). Directives et hôtes inchangés ; ni Worker, ni base, ni redirection.
+- Contrôles : lint, typecheck, 685 tests unitaires (exit 0) ; e2e 58/58 (premier passage :
+  `lot3` « 4. Filtrage sur ListPage » instable sous charge, vert 3/3 seul puis 58/58 au second
+  passage) ; build et `verify-production-build.mjs` OK ; aucun `package.json`/lock modifié.
+- Preview `9e95236a` (alias `csp-preview`) : `Content-Security-Policy` sans Report-Only sur les 7
+  pages, aucune violation (dont `eval`), carte, photos, tracé, GPX et icônes OK ; seule erreur :
+  CORS Analytics propre à l'hôte de preview.
+- Publication : fusion `5b4da51` (avec la doc `019f0bd`), push `e58c0e9..5b4da51` et du tag
+  `csp-enforce-1` ; run `workflow_dispatch`
+  [38648197004](https://github.com/sofresh66/Leblanc/actions/runs/38648197004) : **succès**
+  (fin 22:42:44 UTC) ; Pages production **`5d78b464-9508-43fc-bd5b-706acdfe5576`** (source `5b4da51`).
+- Vérifications sur https://leblanc-et-moi.fr : `Content-Security-Policy` présent et Report-Only
+  absent sur accueil, carte, fiche événement, fiche lieu, Se balader avec tracé, liste et 404 ;
+  aucune violation CSP en navigateur ; 16 tuiles et 23 marqueurs sur la carte, tracé et GPX
+  (200 `application/gpx+xml`) ; photos Tourinsoft chargées ; `cdn-cgi/rum` 204 ;
+  `check-seo.sh https://leblanc-et-moi.fr https://leblanc-et-moi.fr` exit 0 ; sitemap, robots.txt
+  et les 6 icônes en 200.
+- Retour arrière : Pages → `1ba2ed90-84af-4e5b-866b-d509d081f6d7`, puis `git revert -m 1 5b4da51`.
+- Rapports CSP : toujours dans les journaux du Worker (`csp_violation`), à relire dans
+  Workers › leblanc-api › Observability.
+
 ## Reste à faire
 
 - `SITE_URL` et `API_URL` du projet Pages : vides (vérifié par Denis le 12/10/2026).
-- Rien le 15/10/2026 (CSP en mode bloquant, chantier séparé).
+- CSP en mode bloquant : publiée le 15/10/2026 (voir plus haut) ; relire les rapports `csp_violation`.
 - Étape 3 (à partir du 16/10) : vérifications sur `.fr`, CORS en navigateur, Web Analytics.
 - Étape 4 (après l'étape 3) : redirections 301 (Redirect Rule de zone `www` créée par Denis,
   middleware en filet de sécurité, `/robots.txt` et `/sitemap.xml` retirés des exclusions de
