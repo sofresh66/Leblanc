@@ -154,3 +154,56 @@ describe('Historique des séances sur la fiche événement', () => {
     expect(screen.queryAllByRole('button', { name: /Dates/ })).toHaveLength(0);
   });
 });
+
+describe('Boutons « Ajouter à mon calendrier » et « Partager »', () => {
+  const calendarButton = () => screen.queryByRole('button', { name: 'details.addToCalendarLabel' });
+  const shareButton = () => screen.queryByRole('button', { name: 'details.shareLabel' });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it('télécharge la prochaine séance en .ics, avec l’URL canonique .fr', async () => {
+    const blobs: Blob[] = [];
+    URL.createObjectURL = vi.fn((blob: Blob) => { blobs.push(blob); return 'blob:event'; });
+    URL.revokeObjectURL = vi.fn();
+    const clicked: HTMLAnchorElement[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) { clicked.push(this); });
+    await renderWithOccurrences([occurrence('2020-01-01T10:00:00Z', '2020-01-01T12:00:00Z'), occurrence('2099-01-01T10:00:00Z', '2099-01-01T12:00:00Z')]);
+
+    fireEvent.click(calendarButton()!);
+    expect(clicked[0]?.download).toMatch(/^[a-z0-9-]+\.ics$/);
+    const text = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.readAsText(blobs[0]!);
+    });
+    expect(text.startsWith('BEGIN:VCALENDAR\r\n')).toBe(true);
+    expect(text).toContain('DTSTART:20990101T100000Z\r\n');
+    expect(text.replace(/\r\n /g, '')).toMatch(/URL:https:\/\/leblanc-et-moi\.fr\/fr\/evenements\/[0-9a-f-]{36}\r\n/);
+  });
+
+  it('masque le calendrier quand toutes les séances sont passées, garde le partage', async () => {
+    await renderWithOccurrences([occurrence('2020-01-01T10:00:00Z', '2020-01-01T12:00:00Z'), occurrence('2020-01-08T10:00:00Z', '2020-01-08T12:00:00Z')]);
+    expect(calendarButton()).toBeNull();
+    expect(shareButton()).toBeTruthy();
+  });
+
+  it('masque le calendrier pour une séance de plus de 14 jours, garde le partage', async () => {
+    await renderWithOccurrences([occurrence('2026-01-01T07:00:00.000Z', '2099-12-31T12:00:00.000Z')]);
+    expect(calendarButton()).toBeNull();
+    expect(shareButton()).toBeTruthy();
+  });
+
+  it('partage l’URL canonique .fr, jamais une adresse pages.dev', async () => {
+    vi.stubEnv('VITE_SITE_URL', 'https://agenda-preview.leblanc-et-moi.pages.dev');
+    await renderWithOccurrences([occurrence('2099-01-01T10:00:00Z', '2099-01-01T12:00:00Z')]);
+    fireEvent.click(shareButton()!);
+    for (const name of ['details.shareWhatsAppLabel', 'details.shareSms']) {
+      const href = decodeURIComponent(screen.getByRole('link', { name }).getAttribute('href') ?? '');
+      expect(href).toMatch(/\nhttps:\/\/leblanc-et-moi\.fr\/fr\/evenements\/[0-9a-f-]{36}$/);
+      expect(href).not.toContain('pages.dev');
+    }
+  });
+});

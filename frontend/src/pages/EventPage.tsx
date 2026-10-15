@@ -12,7 +12,9 @@ import { buildLocalizedPath } from '../routes/routeMapping';
 import { formatEventDate, occurrenceStatus, type OccurrenceStatus } from '../utils/eventDates';
 import { officialWebsite } from '../utils/officialWebsite';
 import { formatVenueCity } from '../utils/eventLocation';
-import { downloadIcsFile } from '../utils/ics';
+import { canonicalEventUrl } from '../utils/canonicalUrl';
+import { AddToCalendarButton } from '../components/events/AddToCalendarButton';
+import { ShareEventButton } from '../components/events/ShareEventButton';
 import type { EventOccurrence } from '@leblanc/shared';
 
 /** Dates à venir affichées avant le bouton « Voir les N autres dates ». */
@@ -29,7 +31,6 @@ export const EventPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation(['events', 'pages', 'common', 'errors', 'filters']);
   const languageName = useLanguageDisplayName();
-  const [copied, setCopied] = useState(false);
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const [showPastDates, setShowPastDates] = useState(false);
   const [showAllDates, setShowAllDates] = useState(false);
@@ -39,30 +40,6 @@ export const EventPage: React.FC = () => {
 
   const currentLang = (isSupportedLanguage(i18n.language) ? i18n.language : DEFAULT_LANGUAGE) as SupportedLanguage;
   const { data: event, isLoading, isError, error, refetch } = useEvent(id, currentLang);
-
-  const handleShare = async () => {
-    if (!event) return;
-    const shareData = {
-      title: event.title,
-      text: event.description,
-      url: window.location.href,
-    };
-
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch {
-        // Fallback to clipboard if share was cancelled or failed
-      }
-    }
-
-    if (navigator.clipboard) {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 3000);
-    }
-  };
 
   // État de chargement
   if (isLoading) {
@@ -279,36 +256,10 @@ export const EventPage: React.FC = () => {
           {t('details.directions', { ns: 'events' })}
         </a>
 
-        <button
-          type="button"
-          onClick={() => downloadIcsFile(event)}
-          className="btn-secondary min-h-12 px-5 py-3 text-sm inline-flex items-center gap-2 w-full sm:w-auto justify-center"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          {t('details.addToCalendar', { ns: 'events' })}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleShare}
-          className="btn-secondary min-h-12 px-5 py-3 text-sm inline-flex items-center gap-2 w-full sm:w-auto justify-center relative"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-          </svg>
-          {t('details.share', { ns: 'events' })}
-        </button>
-
-        {copied && (
-          <span
-            role="status"
-            className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200"
-          >
-            {t('details.linkCopied', { ns: 'events' })}
-          </span>
-        )}
+        <AddToCalendarButton event={event} lang={currentLang} />
+        <ShareEventButton
+          content={{ title: event.title, date: formattedDate, place: venueCity, url: canonicalEventUrl(event.id, currentLang) }}
+        />
       </div>
 
       {/* Contenu principal : 2 colonnes */}
