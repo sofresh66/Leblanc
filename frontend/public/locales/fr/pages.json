@@ -127,9 +127,9 @@
     "title": "Politique de confidentialité",
     "description": "Comment Le Blanc & Moi utilise le stockage de votre navigateur et les services nécessaires à son fonctionnement.",
     "storage": {
-      "title": "Votre choix de langue",
-      "body": "Ce site utilise uniquement le stockage local (localStorage) de votre navigateur pour mémoriser votre choix de langue. Cette préférence reste dans votre navigateur et n’est pas utilisée comme identifiant de suivi.",
-      "delete": "Vous pouvez modifier la langue à tout moment ou effacer cette préférence dans les paramètres de votre navigateur, en supprimant les données du site. Elle reste enregistrée jusqu’à son remplacement ou sa suppression."
+      "title": "Votre langue et vos favoris",
+      "body": "Ce site utilise le stockage local (localStorage) de votre navigateur pour deux choses seulement : mémoriser votre choix de langue et, si vous en ajoutez, vos événements favoris. Pour les favoris, seuls les identifiants des événements et leur date d’ajout sont enregistrés, uniquement dans ce navigateur. Ils ne sont jamais envoyés à nos serveurs et ne servent pas à vous suivre.",
+      "delete": "Vous pouvez changer de langue à tout moment. Vos favoris s’effacent avec le bouton « Tout retirer » de la page Mes favoris, ou en supprimant les données du site dans les paramètres de votre navigateur."
     },
     "tracking": {
       "title": "Aucun suivi publicitaire",
@@ -158,5 +158,27 @@
       "specialties": "Spécialités du terroir"
     },
     "backHome": "Retour à l’accueil"
+  },
+  "favorites": {
+    "title": "Mes favoris",
+    "intro": "Vos événements favoris sont enregistrés uniquement dans ce navigateur.",
+    "notPersistent": "Le stockage de votre navigateur est indisponible : vos favoris seront perdus en quittant le site.",
+    "emptyTitle": "Aucun favori pour l’instant",
+    "emptyBody": "Touchez le cœur d’un événement pour le retrouver ici.",
+    "browse": "Parcourir les événements",
+    "home": "Retour à l’accueil",
+    "upcoming": "À venir",
+    "past": "Passés",
+    "missingTitle": "Événements introuvables",
+    "missingItem": "Cet événement n’est plus publié.",
+    "errorItem": "Impossible de charger cet événement pour le moment.",
+    "retry": "Réessayer",
+    "remove": "Retirer",
+    "clearAll": "Tout retirer",
+    "confirmClear_one": "Retirer votre favori ?",
+    "confirmClear_other": "Retirer vos {{count}} favoris ?",
+    "confirm": "Oui, tout retirer",
+    "cancel": "Annuler",
+    "cleared": "Tous les favoris ont été retirés."
   }
 }

@@ -57,5 +57,14 @@
   "dates": {
     "allDay": "Ganztägig",
     "until": "Bis {{date}}"
+  },
+  "favorites": {
+    "add": "„{{title}}“ zu den Favoriten hinzufügen",
+    "remove": "„{{title}}“ aus den Favoriten entfernen",
+    "addShort": "Zu den Favoriten",
+    "saved": "In meinen Favoriten",
+    "limit": "Sie haben die Grenze von 100 Favoriten erreicht: Entfernen Sie einen, um einen weiteren hinzuzufügen.",
+    "error": "Dieser Favorit konnte nicht in Ihrem Browser gespeichert werden.",
+    "dismiss": "Meldung schließen"
   }
 }

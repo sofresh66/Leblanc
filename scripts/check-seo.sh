@@ -100,6 +100,15 @@ check "fiche : hreflang ×6 + x-default" '[ "$(count walk "rel=\"alternate\"")" 
 check "fiche : JSON-LD TouristTrip" 'grep -q "\"@type\":\"TouristTrip\"" "$TMP/walk.html"'
 site_check walk "$WALK_PATH"
 
+echo "Mes favoris : /fr/favoris et /nl/favorieten (page propre au navigateur du visiteur)"
+for path in /fr/favoris /nl/favorieten; do
+  name="fav$(printf '%s' "$path" | tr -c 'a-z0-9' '_')"
+  fetch "$path" "$name"
+  check "$path → 200 noindex" '[ "$(status "$name")" = 200 ] && grep -q "name=\"robots\" content=\"noindex, follow\"" "$TMP/$name.html"'
+  check "$path : ni canonical, ni og:url, ni hreflang" '[ "$(count "$name" "rel=\"canonical\"")" = 0 ] && [ "$(count "$name" "property=\"og:url\"")" = 0 ] && [ "$(count "$name" "hreflang=")" = 0 ]'
+done
+check "sitemap : aucune page des favoris" '! grep -qE "/(favoris|favorites|favoritos|favoriten|preferiti|favorieten)</loc>|/(favoris|favorites|favoritos|favoriten|preferiti|favorieten)\"" "$TMP/sitemap.xml"'
+
 echo "Vraies 404"
 for path in /fr/page-inconnue /xx/carte /fr/evenements/pas-un-uuid /fr/evenements/00000000-0000-4000-8000-000000000000 /fr/lieux/00000000-0000-4000-8000-000000000000 /fr/se-balader/pas-un-uuid /de/touren/00000000-0000-4000-8000-000000000000; do
   name="nf$(printf '%s' "$path" | tr -c 'a-z0-9' '_')"

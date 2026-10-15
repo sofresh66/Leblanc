@@ -17,6 +17,7 @@ const EatPage = lazy(pageImports.eat);
 const PlacePage = lazy(pageImports.places);
 const WalksPage = lazy(pageImports.walks);
 const WalkPage = lazy(pageImports.walk);
+const FavoritesPage = lazy(pageImports.favorites);
 const NotFoundPage = lazy(pageImports.notFound);
 
 /**
@@ -99,6 +100,10 @@ const localizedLanguageRoutes = SUPPORTED_LANGUAGES.map((lang: SupportedLanguage
       {
         path: segments.privacy,
         element: <PrivacyPage />,
+      },
+      {
+        path: segments.favorites,
+        element: <FavoritesPage />,
       },
       {
         path: '*',

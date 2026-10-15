@@ -8,6 +8,7 @@ import { DEFAULT_LANGUAGE, isSupportedLanguage, type SupportedLanguage } from '.
 import { buildLocalizedPath } from '../../routes/routeMapping';
 import { formatEventDate } from '../../utils/eventDates';
 import { formatVenueCity } from '../../utils/eventLocation';
+import { FavoriteButton } from '../favorites/FavoriteButton';
 
 export interface EventCardProps {
   event: Event;
@@ -104,6 +105,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, showDistance = true
           )}
           <div className="ml-auto"><PriceBadge event={event} /></div>
         </div>
+
+        {/* Cœur : bouton frère des liens de la carte, jamais à l'intérieur d'un <a>. */}
+        <FavoriteButton eventId={event.id} title={event.title} variant="overlay" />
       </div>
 
       {/* Content body */}

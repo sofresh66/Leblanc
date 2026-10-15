@@ -28,6 +28,9 @@ export interface NavResource {
   about: string;
   language: string;
   walks: string;
+  favorites: string;
+  favoritesCount_one: string;
+  favoritesCount_other: string;
 }
 
 export interface ErrorsResource {
@@ -51,10 +54,16 @@ export interface SeoResource {
   about: { title: string; description: string };
   notFound: { title: string; description: string };
   walks: { title: string; description: string; detailDescription: string; detailDescriptionDistance: string };
+  favorites: { title: string; description: string };
 }
 
 export interface PagesResource {
   legal: { title: string; publisher: string; personalProject: string; contact: string; director: string; host: string; database: string; databaseLocation: string };
+  favorites: {
+    title: string; intro: string; notPersistent: string; emptyTitle: string; emptyBody: string; browse: string; home: string;
+    upcoming: string; past: string; missingTitle: string; missingItem: string; errorItem: string; retry: string; remove: string;
+    clearAll: string; confirmClear_one: string; confirmClear_other: string; confirm: string; cancel: string; cleared: string;
+  };
   privacy: {
     title: string; description: string; creditsLink: string;
     storage: { title: string; body: string; delete: string };
@@ -156,6 +165,7 @@ export interface EventsResource {
     emptyDescription: string;
     resetFilters: string;
   };
+  favorites: { add: string; remove: string; addShort: string; saved: string; limit: string; error: string; dismiss: string };
 }
 
 export interface FiltersResource {

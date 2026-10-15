@@ -8,5 +8,8 @@
   "credits": "Crediti fotografici",
   "privacy": "Informativa sulla privacy",
   "eat": "Dove mangiare",
-  "walks": "Percorsi"
+  "walks": "Percorsi",
+  "favorites": "I miei preferiti",
+  "favoritesCount_one": "I miei preferiti: {{count}} evento",
+  "favoritesCount_other": "I miei preferiti: {{count}} eventi"
 }

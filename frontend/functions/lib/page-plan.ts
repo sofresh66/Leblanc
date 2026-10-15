@@ -165,6 +165,8 @@ export async function planPage(pathname: string, deps: PlanDeps): Promise<PagePl
 
   const section: RouteSection = route.section;
   const key = section;
+  // Favoris : liste propre au navigateur du visiteur, ni indexée ni canonique.
+  const personal = section === 'favorites';
   return {
     status: 200,
     lang,
@@ -172,6 +174,8 @@ export async function planPage(pathname: string, deps: PlanDeps): Promise<PagePl
       siteUrl: deps.siteUrl, lang, section,
       title: pick(seo, `${key}.title`) ?? SITE_NAME,
       description: pick(seo, `${key}.description`) ?? '',
+      noindex: personal,
+      noCanonical: personal,
       breadcrumb: section === 'home' ? [home] : [home, { name: pick(nav, section) ?? '', path: buildLocalizedPath(section, lang) }],
     }),
   };

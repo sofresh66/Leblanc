@@ -127,9 +127,9 @@
     "title": "Datenschutzerklärung",
     "description": "Wie Le Blanc & Moi den Browserspeicher und die für den Betrieb erforderlichen Dienste nutzt.",
     "storage": {
-      "title": "Ihre Spracheinstellung",
-      "body": "Diese Website verwendet ausschließlich den lokalen Speicher (localStorage) Ihres Browsers, um Ihre Spracheinstellung zu speichern. Diese Einstellung bleibt in Ihrem Browser und wird nicht als Tracking-Kennung verwendet.",
-      "delete": "Sie können die Sprache jederzeit ändern oder die Einstellung durch Löschen der Websitedaten in Ihren Browsereinstellungen entfernen. Sie bleibt gespeichert, bis sie ersetzt oder gelöscht wird."
+      "title": "Ihre Sprache und Ihre Favoriten",
+      "body": "Diese Website nutzt den lokalen Speicher (localStorage) Ihres Browsers nur für zwei Dinge: um Ihre Sprache zu speichern und, falls Sie welche hinzufügen, Ihre Lieblingsveranstaltungen. Bei den Favoriten werden nur die Kennungen der Veranstaltungen und das Datum des Hinzufügens gespeichert, ausschließlich in diesem Browser. Sie werden nie an unsere Server gesendet und nicht zu Ihrer Verfolgung verwendet.",
+      "delete": "Sie können die Sprache jederzeit ändern. Ihre Favoriten löschen Sie mit der Schaltfläche „Alle entfernen“ auf der Seite Meine Favoriten oder durch Löschen der Websitedaten in Ihren Browsereinstellungen."
     },
     "tracking": {
       "title": "Kein Werbetracking",
@@ -158,5 +158,27 @@
       "specialties": "Regionale Spezialitäten"
     },
     "backHome": "Zur Startseite"
+  },
+  "favorites": {
+    "title": "Meine Favoriten",
+    "intro": "Ihre Lieblingsveranstaltungen werden nur in diesem Browser gespeichert.",
+    "notPersistent": "Der Speicher Ihres Browsers ist nicht verfügbar: Ihre Favoriten gehen beim Verlassen der Website verloren.",
+    "emptyTitle": "Noch keine Favoriten",
+    "emptyBody": "Tippen Sie auf das Herz einer Veranstaltung, um sie hier wiederzufinden.",
+    "browse": "Veranstaltungen ansehen",
+    "home": "Zur Startseite",
+    "upcoming": "Demnächst",
+    "past": "Vergangen",
+    "missingTitle": "Nicht mehr verfügbare Veranstaltungen",
+    "missingItem": "Diese Veranstaltung ist nicht mehr veröffentlicht.",
+    "errorItem": "Diese Veranstaltung kann gerade nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "remove": "Entfernen",
+    "clearAll": "Alle entfernen",
+    "confirmClear_one": "Ihren Favoriten entfernen?",
+    "confirmClear_other": "Ihre {{count}} Favoriten entfernen?",
+    "confirm": "Ja, alle entfernen",
+    "cancel": "Abbrechen",
+    "cleared": "Alle Favoriten wurden entfernt."
   }
 }
