@@ -18,7 +18,10 @@
   "details": {
     "directions": "Y aller",
     "addToCalendar": "Ajouter à mon calendrier",
-    "addToCalendarLabel": "Ajouter à mon calendrier : {{title}} (fichier .ics)",
+    "addToCalendarLabel": "Ajouter à mon calendrier : {{title}}",
+    "calendarOptions": "Choix du calendrier",
+    "calendarGoogleLabel": "Google Agenda (nouvelle fenêtre)",
+    "calendarIcs": "Fichier .ics (Apple, Outlook)",
     "share": "Partager",
     "shareLabel": "Partager : {{title}}",
     "shareOptions": "Options de partage",

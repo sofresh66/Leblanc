@@ -164,7 +164,7 @@ describe('Boutons « Ajouter à mon calendrier » et « Partager »', () => {
     vi.restoreAllMocks();
   });
 
-  it('télécharge la prochaine séance en .ics, avec l’URL canonique .fr', async () => {
+  it('ouvre un menu sans rien télécharger, puis Google Agenda ou le .ics de la prochaine séance', async () => {
     const blobs: Blob[] = [];
     URL.createObjectURL = vi.fn((blob: Blob) => { blobs.push(blob); return 'blob:event'; });
     URL.revokeObjectURL = vi.fn();
@@ -172,7 +172,27 @@ describe('Boutons « Ajouter à mon calendrier » et « Partager »', () => {
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) { clicked.push(this); });
     await renderWithOccurrences([occurrence('2020-01-01T10:00:00Z', '2020-01-01T12:00:00Z'), occurrence('2099-01-01T10:00:00Z', '2099-01-01T12:00:00Z')]);
 
-    fireEvent.click(calendarButton()!);
+    const button = calendarButton()!;
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    expect(screen.queryByRole('group', { name: 'details.calendarOptions' })).toBeNull();
+    fireEvent.click(button);
+    // Un seul toucher : le menu s'ouvre, aucun téléchargement automatique.
+    expect(URL.createObjectURL).not.toHaveBeenCalled();
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    const menu = screen.getByRole('group', { name: 'details.calendarOptions' });
+    expect(button.getAttribute('aria-controls')).toBe(menu.id);
+
+    const google = screen.getByRole('link', { name: 'details.calendarGoogleLabel' });
+    expect(google.textContent).toContain('Google Agenda');
+    expect(google.getAttribute('target')).toBe('_blank');
+    expect(google.getAttribute('rel')).toBe('noopener noreferrer');
+    const query = new URL(google.getAttribute('href')!).searchParams;
+    expect(google.getAttribute('href')).toMatch(/^https:\/\/calendar\.google\.com\/calendar\/render\?action=TEMPLATE&text=/);
+    expect(query.get('dates')).toBe('20990101T100000Z/20990101T120000Z');
+    expect(query.get('details')).toMatch(/\nhttps:\/\/leblanc-et-moi\.fr\/fr\/evenements\/[0-9a-f-]{36}$/);
+
+    fireEvent.click(screen.getByRole('button', { name: 'details.calendarIcs' }));
+    expect(button.getAttribute('aria-expanded')).toBe('false');
     expect(clicked[0]?.download).toMatch(/^[a-z0-9-]+\.ics$/);
     const text = await new Promise<string>((resolve) => {
       const reader = new FileReader();

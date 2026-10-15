@@ -121,6 +121,9 @@ export interface EventsResource {
     directions: string;
     addToCalendar: string;
     addToCalendarLabel: string;
+    calendarOptions: string;
+    calendarGoogleLabel: string;
+    calendarIcs: string;
     share: string;
     shareLabel: string;
     shareOptions: string;

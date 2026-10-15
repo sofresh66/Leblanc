@@ -152,8 +152,9 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
   test('7. Page événement : bouton "Ajouter à mon calendrier" génère bien le .ics', async ({ page }) => {
     await page.goto(`/fr/evenements/${realEvent.id}`);
 
-    const downloadPromise = page.waitForEvent('download');
     await page.getByRole('button', { name: /Ajouter à mon calendrier/i }).click();
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Fichier .ics (Apple, Outlook)' }).click();
     const download = await downloadPromise;
 
     expect(download.suggestedFilename()).toContain('.ics');

@@ -15,7 +15,7 @@ const FILE_NAME_MAX = 60;
 const REVOKE_DELAY_MS = 60_000;
 
 export type CalendarOccurrence = Pick<EventOccurrence, 'startDate' | 'endDate' | 'timezone' | 'allDay'>;
-type CalendarEvent = Pick<Event, 'id' | 'title' | 'description' | 'venueName' | 'address' | 'postalCode' | 'city' | 'latitude' | 'longitude'>;
+export type CalendarEvent = Pick<Event, 'id' | 'title' | 'description' | 'venueName' | 'address' | 'postalCode' | 'city' | 'latitude' | 'longitude'>;
 
 function formatDateToIcsUtc(date: Date): string {
   return date
@@ -115,13 +115,40 @@ export function foldIcsLine(line: string): string {
   return parts.join('\r\n ');
 }
 
-/** Début du texte, coupé sur un mot, suivi de « … ». */
-function excerpt(text: string): string {
+/** Début du texte (sur une ligne), coupé sur un mot, suivi de « … ». */
+export function calendarExcerpt(text: string, maxLength: number = DESCRIPTION_EXCERPT): string {
   const flat = text.replace(/\s+/g, ' ').trim();
-  if (flat.length <= DESCRIPTION_EXCERPT) return flat;
-  const cut = flat.slice(0, DESCRIPTION_EXCERPT);
+  if (flat.length <= maxLength) return flat;
+  const cut = flat.slice(0, maxLength);
   const lastSpace = cut.lastIndexOf(' ');
-  return `${(lastSpace > DESCRIPTION_EXCERPT / 2 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+  return `${(lastSpace > maxLength / 2 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
+export interface CalendarDates {
+  allDay: boolean;
+  /** AAAAMMJJ (journée entière) ou AAAAMMJJTHHMMSSZ (UTC). */
+  start: string;
+  /** Fin exclusive : lendemain du dernier jour, ou heure de fin (début + 2 h si inconnue). */
+  end: string;
+}
+
+/** Dates d'une séance, communes au fichier .ics et au lien Google Agenda. */
+export function calendarDates(occurrence: CalendarOccurrence): CalendarDates {
+  const timeZone = occurrence.timezone || DEFAULT_TIMEZONE;
+  // Journée entière : dates seules, fin exclusive au lendemain du dernier jour.
+  if (occurrence.allDay) {
+    return {
+      allDay: true,
+      start: formatIcsDate(occurrence.startDate, timeZone),
+      end: formatIcsDate(occurrence.endDate ?? occurrence.startDate, timeZone, 1),
+    };
+  }
+  const start = new Date(occurrence.startDate);
+  return {
+    allDay: false,
+    start: formatDateToIcsUtc(start),
+    end: formatDateToIcsUtc(knownEnd(occurrence, timeZone) ?? new Date(start.getTime() + DEFAULT_DURATION_MS)),
+  };
 }
 
 function hasCoordinates(event: CalendarEvent): boolean {
@@ -140,21 +167,13 @@ export function generateIcsContent(
   now: Date = new Date(),
 ): string {
   const timeZone = occurrence.timezone || DEFAULT_TIMEZONE;
-  const start = new Date(occurrence.startDate);
-
-  // Journée entière : dates seules, fin exclusive au lendemain du dernier jour.
-  const dates = occurrence.allDay
-    ? [
-      `DTSTART;VALUE=DATE:${formatIcsDate(occurrence.startDate, timeZone)}`,
-      `DTEND;VALUE=DATE:${formatIcsDate(occurrence.endDate ?? occurrence.startDate, timeZone, 1)}`,
-    ]
-    : [
-      `DTSTART:${formatDateToIcsUtc(start)}`,
-      `DTEND:${formatDateToIcsUtc(knownEnd(occurrence, timeZone) ?? new Date(start.getTime() + DEFAULT_DURATION_MS))}`,
-    ];
+  const { allDay, start, end } = calendarDates(occurrence);
+  const dates = allDay
+    ? [`DTSTART;VALUE=DATE:${start}`, `DTEND;VALUE=DATE:${end}`]
+    : [`DTSTART:${start}`, `DTEND:${end}`];
 
   const url = canonicalEventUrl(event.id, lang);
-  const summary = excerpt(event.description);
+  const summary = calendarExcerpt(event.description);
   const location = formatFullAddress(event);
   const uidDomain = new URL(CANONICAL_SITE_URL).host;
 
@@ -184,7 +203,7 @@ export function generateIcsContent(
 export function icsFileName(title: string): string {
   const slug = title
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/œ/gi, 'oe')
     .replace(/æ/gi, 'ae')
     .replace(/ß/g, 'ss')

@@ -10,7 +10,7 @@ test.beforeAll(async ({ request }) => {
   events = await discoverEvents(request);
 });
 
-test('La fiche événement télécharge un .ics qui pointe vers leblanc-et-moi.fr', async ({ page }) => {
+test('Le menu calendrier propose Google Agenda et un .ics qui pointent vers leblanc-et-moi.fr', async ({ page }) => {
   // Les dates de la liste sont celles de la prochaine séance : on prend une séance courte à venir.
   const event = events.find((candidate) => {
     const start = Date.parse(candidate.startDate);
@@ -25,8 +25,27 @@ test('La fiche événement télécharge un .ics qui pointe vers leblanc-et-moi.f
   const box = await button.boundingBox();
   expect(box!.height).toBeGreaterThanOrEqual(44);
 
+  // Le bouton ouvre un menu (clavier compris) et ne télécharge rien à lui seul.
+  let downloads = 0;
+  page.on('download', () => { downloads++; });
+  await button.focus();
+  await page.keyboard.press('Enter');
+  await expect(button).toHaveAttribute('aria-expanded', 'true');
+  expect(downloads).toBe(0);
+
+  const google = page.getByRole('link', { name: /^Google Agenda/ });
+  await expect(google).toHaveAttribute('target', '_blank');
+  await expect(google).toHaveAttribute('rel', 'noopener noreferrer');
+  const googleHref = new URL((await google.getAttribute('href'))!);
+  expect(googleHref.origin + googleHref.pathname).toBe('https://calendar.google.com/calendar/render');
+  expect(googleHref.searchParams.get('action')).toBe('TEMPLATE');
+  expect(googleHref.searchParams.get('text')).toBe(event!.title.replace(/\s+/g, ' ').trim());
+  expect(googleHref.searchParams.get('dates')).toMatch(/^(\d{8}T\d{6}Z\/\d{8}T\d{6}Z|\d{8}\/\d{8})$/);
+  expect(googleHref.searchParams.get('details')!.endsWith(`https://leblanc-et-moi.fr/fr/evenements/${event!.id}`)).toBe(true);
+  expect(googleHref.href).not.toContain('pages.dev');
+
   const downloadPromise = page.waitForEvent('download');
-  await button.click();
+  await page.getByRole('button', { name: 'Fichier .ics (Apple, Outlook)' }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toMatch(/^[a-z0-9-]+\.ics$/);
 

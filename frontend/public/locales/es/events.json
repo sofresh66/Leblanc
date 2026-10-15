@@ -18,7 +18,10 @@
   "details": {
     "directions": "Cómo llegar",
     "addToCalendar": "Añadir al calendario",
-    "addToCalendarLabel": "Añadir al calendario: {{title}} (archivo .ics)",
+    "addToCalendarLabel": "Añadir al calendario: {{title}}",
+    "calendarOptions": "Opciones de calendario",
+    "calendarGoogleLabel": "Google Agenda (se abre en una ventana nueva)",
+    "calendarIcs": "Archivo .ics (Apple, Outlook)",
     "share": "Compartir",
     "shareLabel": "Compartir: {{title}}",
     "shareOptions": "Opciones para compartir",

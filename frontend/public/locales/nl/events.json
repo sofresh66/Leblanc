@@ -18,7 +18,10 @@
   "details": {
     "directions": "Routebeschrijving",
     "addToCalendar": "Toevoegen aan agenda",
-    "addToCalendarLabel": "Toevoegen aan agenda: {{title}} (.ics-bestand)",
+    "addToCalendarLabel": "Toevoegen aan agenda: {{title}}",
+    "calendarOptions": "Agenda kiezen",
+    "calendarGoogleLabel": "Google Agenda (opent in een nieuw venster)",
+    "calendarIcs": ".ics-bestand (Apple, Outlook)",
     "share": "Delen",
     "shareLabel": "Delen: {{title}}",
     "shareOptions": "Deelopties",

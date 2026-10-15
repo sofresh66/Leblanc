@@ -18,7 +18,10 @@
   "details": {
     "directions": "Get Directions",
     "addToCalendar": "Add to Calendar",
-    "addToCalendarLabel": "Add to Calendar: {{title}} (.ics file)",
+    "addToCalendarLabel": "Add to Calendar: {{title}}",
+    "calendarOptions": "Calendar options",
+    "calendarGoogleLabel": "Google Agenda (opens in a new window)",
+    "calendarIcs": ".ics file (Apple, Outlook)",
     "share": "Share",
     "shareLabel": "Share: {{title}}",
     "shareOptions": "Sharing options",

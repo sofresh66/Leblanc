@@ -58,7 +58,7 @@ export const ShareEventButton: React.FC<{ content: ShareContent }> = ({ content 
       </button>
 
       {open && (
-        <div id={panelId} role="group" aria-label={t('details.shareOptions')} className="flex basis-full flex-wrap items-center gap-3">
+        <div id={panelId} role="group" aria-label={t('details.shareOptions')} className="order-last flex basis-full flex-wrap items-center gap-3">
           <a
             href={whatsappShareUrl(content)}
             target="_blank"
