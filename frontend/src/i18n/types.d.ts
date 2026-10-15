@@ -120,7 +120,17 @@ export interface EventsResource {
   details: {
     directions: string;
     addToCalendar: string;
+    addToCalendarLabel: string;
+    calendarOptions: string;
+    calendarGoogleLabel: string;
+    calendarIcs: string;
     share: string;
+    shareLabel: string;
+    shareOptions: string;
+    shareWhatsApp: string;
+    shareWhatsAppLabel: string;
+    shareSms: string;
+    copyLink: string;
     linkCopied: string;
     viewWebsite: string;
     source: string;

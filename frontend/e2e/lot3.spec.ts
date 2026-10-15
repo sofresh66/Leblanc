@@ -140,7 +140,7 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
 
     // Boutons d'actions principaux
     await expect(page.getByRole('link', { name: /Y aller/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Ajouter à mon agenda/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Ajouter à mon calendrier/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Partager/i })).toBeVisible();
 
     await page.screenshot({
@@ -149,11 +149,12 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
     });
   });
 
-  test('7. Page événement : bouton "Ajouter à mon agenda" génère bien le .ics', async ({ page }) => {
+  test('7. Page événement : bouton "Ajouter à mon calendrier" génère bien le .ics', async ({ page }) => {
     await page.goto(`/fr/evenements/${realEvent.id}`);
 
+    await page.getByRole('button', { name: /Ajouter à mon calendrier/i }).click();
     const downloadPromise = page.waitForEvent('download');
-    await page.getByRole('button', { name: /Ajouter à mon agenda/i }).click();
+    await page.getByRole('button', { name: 'Fichier .ics (Apple, Outlook)' }).click();
     const download = await downloadPromise;
 
     expect(download.suggestedFilename()).toContain('.ics');

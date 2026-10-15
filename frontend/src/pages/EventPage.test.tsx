@@ -154,3 +154,76 @@ describe('Historique des séances sur la fiche événement', () => {
     expect(screen.queryAllByRole('button', { name: /Dates/ })).toHaveLength(0);
   });
 });
+
+describe('Boutons « Ajouter à mon calendrier » et « Partager »', () => {
+  const calendarButton = () => screen.queryByRole('button', { name: 'details.addToCalendarLabel' });
+  const shareButton = () => screen.queryByRole('button', { name: 'details.shareLabel' });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it('ouvre un menu sans rien télécharger, puis Google Agenda ou le .ics de la prochaine séance', async () => {
+    const blobs: Blob[] = [];
+    URL.createObjectURL = vi.fn((blob: Blob) => { blobs.push(blob); return 'blob:event'; });
+    URL.revokeObjectURL = vi.fn();
+    const clicked: HTMLAnchorElement[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) { clicked.push(this); });
+    await renderWithOccurrences([occurrence('2020-01-01T10:00:00Z', '2020-01-01T12:00:00Z'), occurrence('2099-01-01T10:00:00Z', '2099-01-01T12:00:00Z')]);
+
+    const button = calendarButton()!;
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    expect(screen.queryByRole('group', { name: 'details.calendarOptions' })).toBeNull();
+    fireEvent.click(button);
+    // Un seul toucher : le menu s'ouvre, aucun téléchargement automatique.
+    expect(URL.createObjectURL).not.toHaveBeenCalled();
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    const menu = screen.getByRole('group', { name: 'details.calendarOptions' });
+    expect(button.getAttribute('aria-controls')).toBe(menu.id);
+
+    const google = screen.getByRole('link', { name: 'details.calendarGoogleLabel' });
+    expect(google.textContent).toContain('Google Agenda');
+    expect(google.getAttribute('target')).toBe('_blank');
+    expect(google.getAttribute('rel')).toBe('noopener noreferrer');
+    const query = new URL(google.getAttribute('href')!).searchParams;
+    expect(google.getAttribute('href')).toMatch(/^https:\/\/calendar\.google\.com\/calendar\/render\?action=TEMPLATE&text=/);
+    expect(query.get('dates')).toBe('20990101T100000Z/20990101T120000Z');
+    expect(query.get('details')).toMatch(/\nhttps:\/\/leblanc-et-moi\.fr\/fr\/evenements\/[0-9a-f-]{36}$/);
+
+    fireEvent.click(screen.getByRole('button', { name: 'details.calendarIcs' }));
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    expect(clicked[0]?.download).toMatch(/^[a-z0-9-]+\.ics$/);
+    const text = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.readAsText(blobs[0]!);
+    });
+    expect(text.startsWith('BEGIN:VCALENDAR\r\n')).toBe(true);
+    expect(text).toContain('DTSTART:20990101T100000Z\r\n');
+    expect(text.replace(/\r\n /g, '')).toMatch(/URL:https:\/\/leblanc-et-moi\.fr\/fr\/evenements\/[0-9a-f-]{36}\r\n/);
+  });
+
+  it('masque le calendrier quand toutes les séances sont passées, garde le partage', async () => {
+    await renderWithOccurrences([occurrence('2020-01-01T10:00:00Z', '2020-01-01T12:00:00Z'), occurrence('2020-01-08T10:00:00Z', '2020-01-08T12:00:00Z')]);
+    expect(calendarButton()).toBeNull();
+    expect(shareButton()).toBeTruthy();
+  });
+
+  it('masque le calendrier pour une séance de plus de 14 jours, garde le partage', async () => {
+    await renderWithOccurrences([occurrence('2026-01-01T07:00:00.000Z', '2099-12-31T12:00:00.000Z')]);
+    expect(calendarButton()).toBeNull();
+    expect(shareButton()).toBeTruthy();
+  });
+
+  it('partage l’URL canonique .fr, jamais une adresse pages.dev', async () => {
+    vi.stubEnv('VITE_SITE_URL', 'https://agenda-preview.leblanc-et-moi.pages.dev');
+    await renderWithOccurrences([occurrence('2099-01-01T10:00:00Z', '2099-01-01T12:00:00Z')]);
+    fireEvent.click(shareButton()!);
+    for (const name of ['details.shareWhatsAppLabel', 'details.shareSms']) {
+      const href = decodeURIComponent(screen.getByRole('link', { name }).getAttribute('href') ?? '');
+      expect(href).toMatch(/\nhttps:\/\/leblanc-et-moi\.fr\/fr\/evenements\/[0-9a-f-]{36}$/);
+      expect(href).not.toContain('pages.dev');
+    }
+  });
+});
