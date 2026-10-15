@@ -91,14 +91,15 @@ export function escapeIcsText(value: string): string {
 
 /**
  * Replie une ligne à 75 octets UTF-8 (RFC 5545 §3.1) : CRLF suivi d'une espace.
- * Un caractère multi-octets n'est jamais coupé.
+ * Ni un caractère multi-octets ni une séquence d'échappement (« \n », « \, »)
+ * ne sont coupés : certains lecteurs d'agenda gèrent mal ce cas.
  */
 export function foldIcsLine(line: string): string {
   const encoder = new TextEncoder();
   const parts: string[] = [];
   let current = '';
   let currentBytes = 0;
-  for (const char of line) {
+  for (const char of line.match(/\\.|[\s\S]/gu) ?? []) {
     const bytes = encoder.encode(char).length;
     // Les lignes de continuation commencent par une espace, qui compte dans les 75 octets.
     const limit = parts.length === 0 ? 75 : 74;

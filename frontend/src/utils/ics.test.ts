@@ -113,6 +113,16 @@ describe('generateIcsContent — structure', () => {
     expect(unfold(content)).toContain(`SUMMARY:${title}\r\n`);
   });
 
+  it('ne coupe jamais une séquence d’échappement au pliage', () => {
+    // Décale « \n » et « \, » sur toutes les positions possibles autour de la limite de 75 octets.
+    for (let pad = 0; pad < 80; pad++) {
+      const content = ics(concert, { ...mockEvent, title: `${'x'.repeat(pad)}a,b;c\\d`, description: `${'y'.repeat(pad)}\nz` });
+      for (const line of content.split('\r\n')) {
+        expect(line.replace(/\\\\/g, '')).not.toMatch(/\\$/);
+      }
+    }
+  });
+
   it('ajoute GEO avec des coordonnées valides, l’omet sinon', () => {
     expect(ics()).toContain('GEO:46.634;1.061\r\n');
     expect(ics(concert, { ...mockEvent, latitude: Number.NaN, longitude: Number.NaN })).not.toContain('GEO:');
