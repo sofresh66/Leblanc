@@ -7,6 +7,9 @@ import { buildLocalizedPath, type SupportedLanguage } from '@leblanc/shared';
  */
 export const CANONICAL_SITE_URL = 'https://leblanc-et-moi.fr';
 
+/** Adresse de contact publique, affichée dans les mentions légales et la confidentialité. */
+export const CONTACT_EMAIL = 'contact@leblanc-et-moi.fr';
+
 /** Page canonique d'un événement dans la langue donnée. */
 export function canonicalEventUrl(id: string, lang: SupportedLanguage): string {
   return `${CANONICAL_SITE_URL}${buildLocalizedPath('events', lang, id)}`;

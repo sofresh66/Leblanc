@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { CONTACT_EMAIL } from '../utils/canonicalUrl';
 
 export function LegalNotice() {
   const { t } = useTranslation('pages');
@@ -11,7 +12,7 @@ export function LegalNotice() {
       </div>
       <div>
         <dt className="font-semibold text-brenne-950">{t('legal.contact')}</dt>
-        <dd><a className="inline-flex min-h-11 items-center break-all text-creuse-800 underline underline-offset-4 hover:text-creuse-900" href="mailto:elharchdenis@gmail.com">elharchdenis@gmail.com</a></dd>
+        <dd><a className="inline-flex min-h-11 items-center break-all text-creuse-800 underline underline-offset-4 hover:text-creuse-900" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></dd>
       </div>
       <div>
         <dt className="font-semibold text-brenne-950">{t('legal.director')}</dt>

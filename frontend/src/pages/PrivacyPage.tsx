@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { PageSeo } from '../components/PageSeo';
 import { useLocalizedPath } from '../hooks/useLocalizedPath';
+import { CONTACT_EMAIL } from '../utils/canonicalUrl';
 
 const linkStyle = 'inline-flex min-h-11 items-center text-creuse-800 underline underline-offset-4 hover:text-creuse-900 break-words';
 const sectionStyle = 'rounded-2xl border border-brenne-900/5 bg-white p-6 sm:p-8 shadow-md space-y-5';
@@ -43,7 +44,7 @@ export function PrivacyPage() {
       <section className="rounded-2xl bg-sable-100 border border-sable-200 p-6 sm:p-8 space-y-5" aria-labelledby="privacy-contact-title">
         <h2 id="privacy-contact-title" className={titleStyle}>{t('privacy.contact.title')}</h2>
         <p className="text-gray-700 leading-relaxed">{t('privacy.contact.body')}</p>
-        <a className={`${linkStyle} break-all`} href="mailto:elharchdenis@gmail.com">elharchdenis@gmail.com</a>
+        <a className={`${linkStyle} break-all`} href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
         <div><Link className={linkStyle} to={`${getLocalizedPath('credits')}#legal-notice`}>{t('privacy.creditsLink')}</Link></div>
       </section>
     </article>
