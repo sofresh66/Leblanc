@@ -2,15 +2,18 @@ import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Event } from '@leblanc/shared';
-import { discoverEvents } from './fixtures';
+import { discoverEvents, shortUpcomingEvent } from './fixtures';
 import { upcomingWeekend } from '../src/utils/homeSelection';
 
 const SCREENSHOTS_DIR = path.resolve('screenshots');
 
 let realEvent: Event;
+let calendarEvent: Event | undefined;
 
 test.beforeAll(async ({ request }) => {
-  realEvent = (await discoverEvents(request))[0]!;
+  const events = await discoverEvents(request);
+  realEvent = events[0]!;
+  calendarEvent = shortUpcomingEvent(events);
   if (!fs.existsSync(SCREENSHOTS_DIR)) {
     fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
   }
@@ -133,9 +136,10 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
   });
 
   test('6. Page événement : affichage des détails et capture d’écran', async ({ page }) => {
-    await page.goto(`/fr/evenements/${realEvent.id}`);
+    expect(calendarEvent, 'Aucun événement court à venir dans les données').toBeDefined();
+    await page.goto(`/fr/evenements/${calendarEvent!.id}`);
 
-    await expect(page.locator('h1')).toContainText(realEvent.title);
+    await expect(page.locator('h1')).toContainText(calendarEvent!.title);
     await expect(page.getByTestId('event-occurrence').first()).toBeVisible();
 
     // Boutons d'actions principaux
@@ -150,7 +154,8 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
   });
 
   test('7. Page événement : bouton "Ajouter à mon calendrier" génère bien le .ics', async ({ page }) => {
-    await page.goto(`/fr/evenements/${realEvent.id}`);
+    expect(calendarEvent, 'Aucun événement court à venir dans les données').toBeDefined();
+    await page.goto(`/fr/evenements/${calendarEvent!.id}`);
 
     await page.getByRole('button', { name: /Ajouter à mon calendrier/i }).click();
     const downloadPromise = page.waitForEvent('download');
