@@ -89,8 +89,10 @@ test('7. Un identifiant UUID absent affiche le message localisé', async ({ page
 test('8. La carte affiche un marqueur et ouvre sa fiche dans une popup', async ({ page }) => {
   await page.route('**/tile.openstreetmap.org/**', (route) => route.abort());
   await page.goto('/fr/carte');
-  await expect(page.locator('.leaflet-marker-icon').first()).toBeVisible();
-  await page.locator('.leaflet-marker-icon').first().click();
+  // .leaflet-marker-icon désigne aussi les groupes, dont le clic zoome sans popup.
+  const marker = page.locator('.custom-event-marker').first();
+  await expect(marker).toBeVisible();
+  await marker.click();
   await expect(page.locator('.leaflet-popup-content a').first()).toBeVisible();
 });
 

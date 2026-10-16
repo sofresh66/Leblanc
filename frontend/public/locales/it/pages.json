@@ -127,9 +127,9 @@
     "title": "Informativa sulla privacy",
     "description": "Come Le Blanc & Moi utilizza la memoria del browser e i servizi necessari al funzionamento del sito.",
     "storage": {
-      "title": "La preferenza di lingua",
-      "body": "Questo sito utilizza esclusivamente la memoria locale (localStorage) del browser per ricordare la lingua scelta. Questa preferenza rimane nel browser e non viene utilizzata come identificatore di tracciamento.",
-      "delete": "Puoi cambiare lingua in qualsiasi momento o eliminare questa preferenza cancellando i dati del sito nelle impostazioni del browser. Rimane memorizzata finché non viene sostituita o eliminata."
+      "title": "La tua lingua e i tuoi preferiti",
+      "body": "Questo sito usa la memoria locale (localStorage) del browser solo per due cose: ricordare la lingua scelta e, se ne aggiungi, i tuoi eventi preferiti. La tua lista dei preferiti non viene salvata sui nostri server: solo gli identificativi degli eventi e la data di aggiunta sono conservati in questo browser, e non servono a tracciarti. Per mostrare la pagina «I miei preferiti», il sito richiede le schede di questi eventi, come quando li apri uno per uno. Puoi cancellare tutto con «Rimuovi tutti» o eliminando i dati del sito nel tuo browser.",
+      "delete": "Puoi cambiare lingua in qualsiasi momento. I preferiti si cancellano con il pulsante «Rimuovi tutti» della pagina I miei preferiti, oppure cancellando i dati del sito nelle impostazioni del browser."
     },
     "tracking": {
       "title": "Nessun tracciamento pubblicitario",
@@ -158,5 +158,27 @@
       "specialties": "Specialità del territorio"
     },
     "backHome": "Torna alla home"
+  },
+  "favorites": {
+    "title": "I miei preferiti",
+    "intro": "I tuoi eventi preferiti sono salvati solo in questo browser.",
+    "notPersistent": "La memoria del browser non è disponibile: i preferiti andranno persi quando lasci il sito.",
+    "emptyTitle": "Ancora nessun preferito",
+    "emptyBody": "Tocca il cuore di un evento per ritrovarlo qui.",
+    "browse": "Sfoglia gli eventi",
+    "home": "Torna alla home",
+    "upcoming": "In arrivo",
+    "past": "Passati",
+    "missingTitle": "Eventi non più disponibili",
+    "missingItem": "Questo evento non è più pubblicato.",
+    "errorItem": "Impossibile caricare questo evento al momento.",
+    "retry": "Riprova",
+    "remove": "Rimuovi",
+    "clearAll": "Rimuovi tutti",
+    "confirmClear_one": "Rimuovere il tuo preferito?",
+    "confirmClear_other": "Rimuovere i tuoi {{count}} preferiti?",
+    "confirm": "Sì, rimuovi tutti",
+    "cancel": "Annulla",
+    "cleared": "Tutti i preferiti sono stati rimossi."
   }
 }

@@ -5,6 +5,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLocalizedPath } from '../hooks/useLocalizedPath';
 import { prefetchPage } from '../routes/pageImports';
 import { useRouteFocus } from '../hooks/useRouteFocus';
+import { FavoritesNavLink, FavoritesNotice } from './favorites/FavoritesNav';
 
 function prefetchLink(event: FocusEvent<HTMLDivElement> | MouseEvent<HTMLDivElement>) {
   if (!(event.target instanceof Element)) return;
@@ -94,6 +95,7 @@ export function Layout() {
           </nav>
 
           <div className="flex items-center gap-3 max-[360px]:gap-1">
+            <FavoritesNavLink />
             <LanguageSwitcher />
             <button
               ref={menuButton}
@@ -141,6 +143,7 @@ export function Layout() {
                   <span aria-hidden="true" className="font-sans text-xl font-normal">↗</span>
                 </NavLink>
               ))}
+              <FavoritesNavLink variant="menu" onNavigate={() => setMenuOpen(false)} />
             </div>
           </nav>
         )}
@@ -189,6 +192,7 @@ export function Layout() {
           </div>
         </div>
       </footer>
+      <FavoritesNotice />
     </div>
   );
 }

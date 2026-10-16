@@ -57,5 +57,14 @@
   "dates": {
     "allDay": "Tutto il giorno",
     "until": "Fino al {{date}}"
+  },
+  "favorites": {
+    "add": "Aggiungi «{{title}}» ai preferiti",
+    "remove": "Rimuovi «{{title}}» dai preferiti",
+    "addShort": "Aggiungi ai preferiti",
+    "saved": "Nei miei preferiti",
+    "limit": "Hai raggiunto il limite di 100 preferiti: rimuovine uno per aggiungerne un altro.",
+    "error": "Impossibile salvare questo preferito nel browser.",
+    "dismiss": "Chiudi il messaggio"
   }
 }

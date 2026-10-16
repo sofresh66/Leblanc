@@ -57,5 +57,14 @@
   "dates": {
     "allDay": "Toute la journée",
     "until": "Jusqu’au {{date}}"
+  },
+  "favorites": {
+    "add": "Ajouter « {{title}} » aux favoris",
+    "remove": "Retirer « {{title}} » des favoris",
+    "addShort": "Ajouter aux favoris",
+    "saved": "Dans mes favoris",
+    "limit": "Limite de 100 favoris atteinte : retirez-en un pour en ajouter un autre.",
+    "error": "Impossible d’enregistrer ce favori dans votre navigateur.",
+    "dismiss": "Fermer le message"
   }
 }

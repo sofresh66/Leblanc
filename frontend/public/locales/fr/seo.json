@@ -41,5 +41,9 @@
     "description": "Randonnées, balades à vélo et circuits autour du Blanc et dans la Brenne : distance, durée, tracé et point de départ.",
     "detailDescriptionDistance": "{{title}} : parcours de {{distance}} km au départ de {{city}}, autour du Blanc et en Brenne.",
     "detailDescription": "{{title}} : parcours au départ de {{city}}, autour du Blanc et en Brenne."
+  },
+  "favorites": {
+    "title": "Mes favoris — Le Blanc & Moi",
+    "description": "Les événements que vous avez gardés, enregistrés dans votre navigateur."
   }
 }

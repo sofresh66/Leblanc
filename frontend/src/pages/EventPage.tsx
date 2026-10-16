@@ -15,6 +15,7 @@ import { formatVenueCity } from '../utils/eventLocation';
 import { canonicalEventUrl } from '../utils/canonicalUrl';
 import { AddToCalendarButton } from '../components/events/AddToCalendarButton';
 import { ShareEventButton } from '../components/events/ShareEventButton';
+import { FavoriteButton } from '../components/favorites/FavoriteButton';
 import type { EventOccurrence } from '@leblanc/shared';
 
 /** Dates à venir affichées avant le bouton « Voir les N autres dates ». */
@@ -256,6 +257,7 @@ export const EventPage: React.FC = () => {
           {t('details.directions', { ns: 'events' })}
         </a>
 
+        <FavoriteButton eventId={event.id} title={event.title} variant="action" />
         <AddToCalendarButton event={event} lang={currentLang} />
         <ShareEventButton
           content={{ title: event.title, date: formattedDate, place: venueCity, url: canonicalEventUrl(event.id, currentLang) }}

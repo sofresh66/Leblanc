@@ -176,6 +176,8 @@ export interface PageHeadInput {
   /** Image absolue ou chemin du site ; image d'accueil par défaut. */
   image?: string | null | undefined;
   noindex?: boolean;
+  /** Ni canonical ni og:url : page propre au visiteur (favoris), jamais une URL de référence. */
+  noCanonical?: boolean;
   /** Fil d'Ariane (noms traduits, chemins du site), hors page 404. */
   breadcrumb?: { name: string; path: string }[];
   /** Données structurées supplémentaires (Event, Restaurant…). */
@@ -205,7 +207,7 @@ export function buildPageHead(input: PageHeadInput): PageHead {
   const tags: string[] = [
     `<meta data-rh="true" name="description" content="${attr(input.description)}">`,
     `<meta data-rh="true" name="robots" content="${robots}">`,
-    `<link data-rh="true" rel="canonical" href="${attr(canonical)}">`,
+    ...(input.noCanonical ? [] : [`<link data-rh="true" rel="canonical" href="${attr(canonical)}">`]),
   ];
   if (!excluded) {
     for (const language of SupportedLanguageSchema.options) {
@@ -219,7 +221,7 @@ export function buildPageHead(input: PageHeadInput): PageHead {
     `<meta data-rh="true" property="og:image" content="${attr(image)}">`,
     '<meta data-rh="true" property="og:type" content="website">',
     `<meta data-rh="true" property="og:locale" content="${OG_LOCALES[input.lang]}">`,
-    `<meta data-rh="true" property="og:url" content="${attr(canonical)}">`,
+    ...(input.noCanonical ? [] : [`<meta data-rh="true" property="og:url" content="${attr(canonical)}">`]),
     '<meta data-rh="true" name="twitter:card" content="summary_large_image">',
     `<meta data-rh="true" name="twitter:title" content="${attr(input.title)}">`,
     `<meta data-rh="true" name="twitter:description" content="${attr(input.description)}">`,

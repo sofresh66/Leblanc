@@ -57,5 +57,14 @@
   "dates": {
     "allDay": "Hele dag",
     "until": "Tot {{date}}"
+  },
+  "favorites": {
+    "add": "“{{title}}” toevoegen aan favorieten",
+    "remove": "“{{title}}” verwijderen uit favorieten",
+    "addShort": "Toevoegen aan favorieten",
+    "saved": "In mijn favorieten",
+    "limit": "U hebt de limiet van 100 favorieten bereikt: verwijder er een om een andere toe te voegen.",
+    "error": "Deze favoriet kon niet in uw browser worden opgeslagen.",
+    "dismiss": "Melding sluiten"
   }
 }
