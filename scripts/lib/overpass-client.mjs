@@ -14,7 +14,7 @@ export const OVERPASS_SERVERS = [
   'https://overpass.private.coffee/api/interpreter',
 ];
 
-const USER_AGENT = 'LeblancEtMoi/1.0 (contact: elharchdenis@gmail.com)';
+const USER_AGENT = 'LeblancEtMoi/1.0 (contact: contact@leblanc-et-moi.fr)';
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export class OverpassError extends Error {

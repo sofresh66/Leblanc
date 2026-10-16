@@ -42,7 +42,7 @@ Le jeu data.gouv.fr « Sentiers inscrits au PDIPR » concerne le Doubs ; aucun �
 ### Ingestion de nuit
 
 - Durée mesurée sur `dev` : **≈ 100 s** au total (614 fiches DATAtourisme sur 13 pages, 300 ms entre les pages ; une requête Overpass ≈ 13 s, ≈ 9 Mo). Écriture en base : 11 à 16 s.
-- **Charge sur Overpass** : une requête par nuit. En cas d'échec, essai des serveurs de repli dans l'ordre (kumi.systems, overpass-api.de, osm.ch, private.coffee) : au plus deux tentatives par serveur, et seulement sur 429/504 (pause `Retry-After` plafonnée à 20 s, sinon 2 s), donc 8 requêtes au pire. User-Agent : `LeblancEtMoi/1.0 (contact: elharchdenis@gmail.com)` (existant, partagé avec l'import des lieux).
+- **Charge sur Overpass** : une requête par nuit. En cas d'échec, essai des serveurs de repli dans l'ordre (kumi.systems, overpass-api.de, osm.ch, private.coffee) : au plus deux tentatives par serveur, et seulement sur 429/504 (pause `Retry-After` plafonnée à 20 s, sinon 2 s), donc 8 requêtes au pire. User-Agent : `LeblancEtMoi/1.0 (contact: contact@leblanc-et-moi.fr)` (existant, partagé avec l'import des lieux).
 - **Overpass indisponible** : tracés et départs existants conservés, run en succès, avertissement avec le code de chaque serveur dans le résumé du run et dans `ingestion_runs.error_summary`.
 - **Panne DATAtourisme** : l'étape échoue sans bloquer la publication (`continue-on-error`) ; les parcours de la veille restent publiés.
 - **Masquage après 3 jours** : une fiche absente du flux pendant 3 jours passe en `hidden` (seulement après une collecte complète). Elle redevient `published` si elle réapparaît. Une fiche masquée à la main et toujours présente reste masquée.

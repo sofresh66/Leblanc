@@ -2,13 +2,14 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { HelmetProvider } from 'react-helmet-async';
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createInstance, type Resource } from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it } from 'vitest';
 import { SUPPORTED_LANGUAGES } from '../i18n/languages';
+import { CONTACT_EMAIL } from '../utils/canonicalUrl';
 import { AboutPage } from './AboutPage';
 import { CreditsPage } from './CreditsPage';
 import { PrivacyPage } from './PrivacyPage';
@@ -31,6 +32,17 @@ const resources: Resource = Object.fromEntries(SUPPORTED_LANGUAGES.map((lang) =>
 
 afterEach(cleanup);
 
+async function renderPage(Page: () => React.JSX.Element, lang: string) {
+  const i18n = createInstance();
+  await i18n.use(initReactI18next).init({ lng: lang, fallbackLng: false, resources, ns: NAMESPACES,
+    defaultNS: 'common', interpolation: { escapeValue: false } });
+  // La page Crédits interroge l'API des parcours : requêtes sans réseau, jamais exécutées ici.
+  const queryClient = new QueryClient({ defaultOptions: { queries: { enabled: false, retry: false } } });
+  return render(<HelmetProvider><QueryClientProvider client={queryClient}><I18nextProvider i18n={i18n}>
+    <MemoryRouter initialEntries={[`/${lang}`]}><Page /></MemoryRouter>
+  </I18nextProvider></QueryClientProvider></HelmetProvider>);
+}
+
 describe('pages légales', () => {
   it.each(SUPPORTED_LANGUAGES)('ne mentionnent ni OpenAgenda ni des événements fictifs (%s)', async (lang) => {
     const i18n = createInstance();
@@ -47,6 +59,16 @@ describe('pages légales', () => {
       expect(text).not.toMatch(/fictif|fictional|ficticio|fiktiv|fittizi|fictieve/i);
       expect(text).not.toMatch(/\b(?:about|pages)\.[a-z]+/);
       expect(container.innerHTML).not.toContain('openagenda.com');
+      unmount();
+    }
+  });
+
+  it.each(SUPPORTED_LANGUAGES)('affichent l’adresse de contact publique en lien mailto: (%s)', async (lang) => {
+    for (const Page of [PrivacyPage, CreditsPage]) {
+      const { container, unmount } = await renderPage(Page, lang);
+      const link = within(container).getByRole('link', { name: CONTACT_EMAIL });
+      expect(link.getAttribute('href')).toBe('mailto:contact@leblanc-et-moi.fr');
+      expect(container.innerHTML).not.toContain('gmail.com');
       unmount();
     }
   });
