@@ -128,7 +128,7 @@
     "description": "Comment Le Blanc & Moi utilise le stockage de votre navigateur et les services nécessaires à son fonctionnement.",
     "storage": {
       "title": "Votre langue et vos favoris",
-      "body": "Ce site utilise le stockage local (localStorage) de votre navigateur pour deux choses seulement : mémoriser votre choix de langue et, si vous en ajoutez, vos événements favoris. Pour les favoris, seuls les identifiants des événements et leur date d’ajout sont enregistrés, uniquement dans ce navigateur. Ils ne sont jamais envoyés à nos serveurs et ne servent pas à vous suivre.",
+      "body": "Ce site utilise le stockage local (localStorage) de votre navigateur pour deux choses seulement : mémoriser votre choix de langue et, si vous en ajoutez, vos événements favoris. Votre liste de favoris n’est pas enregistrée sur nos serveurs : seuls les identifiants des événements et leur date d’ajout sont conservés dans ce navigateur, et ne servent pas à vous suivre. Pour afficher la page « Mes favoris », le site demande les fiches de ces événements, comme lorsque vous les ouvrez une à une. Vous pouvez tout effacer avec « Tout retirer » ou en supprimant les données du site dans votre navigateur.",
       "delete": "Vous pouvez changer de langue à tout moment. Vos favoris s’effacent avec le bouton « Tout retirer » de la page Mes favoris, ou en supprimant les données du site dans les paramètres de votre navigateur."
     },
     "tracking": {

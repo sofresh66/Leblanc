@@ -128,7 +128,7 @@
     "description": "Hoe Le Blanc & Moi browseropslag gebruikt en welke diensten nodig zijn om de website te laten werken.",
     "storage": {
       "title": "Uw taal en uw favorieten",
-      "body": "Deze website gebruikt de lokale opslag (localStorage) van uw browser voor slechts twee dingen: uw taal onthouden en, als u die toevoegt, uw favoriete evenementen. Voor favorieten worden alleen de ID’s van de evenementen en de datum van toevoegen opgeslagen, uitsluitend in deze browser. Ze worden nooit naar onze servers gestuurd en niet gebruikt om u te volgen.",
+      "body": "Deze website gebruikt de lokale opslag (localStorage) van uw browser voor slechts twee dingen: uw taal onthouden en, als u die toevoegt, uw favoriete evenementen. Uw lijst met favorieten wordt niet op onze servers opgeslagen: alleen de ID’s van de evenementen en de datum van toevoegen worden in deze browser bewaard, en ze worden niet gebruikt om u te volgen. Om de pagina ‘Mijn favorieten’ te tonen, vraagt de site de pagina’s van deze evenementen op, net als wanneer u ze een voor een opent. U kunt alles wissen met ‘Alles verwijderen’ of door de sitegegevens in uw browser te verwijderen.",
       "delete": "U kunt de taal op elk moment wijzigen. Uw favorieten verwijdert u met de knop “Alles verwijderen” op de pagina Mijn favorieten, of door de websitegegevens in uw browserinstellingen te wissen."
     },
     "tracking": {

@@ -128,7 +128,7 @@
     "description": "Wie Le Blanc & Moi den Browserspeicher und die für den Betrieb erforderlichen Dienste nutzt.",
     "storage": {
       "title": "Ihre Sprache und Ihre Favoriten",
-      "body": "Diese Website nutzt den lokalen Speicher (localStorage) Ihres Browsers nur für zwei Dinge: um Ihre Sprache zu speichern und, falls Sie welche hinzufügen, Ihre Lieblingsveranstaltungen. Bei den Favoriten werden nur die Kennungen der Veranstaltungen und das Datum des Hinzufügens gespeichert, ausschließlich in diesem Browser. Sie werden nie an unsere Server gesendet und nicht zu Ihrer Verfolgung verwendet.",
+      "body": "Diese Website nutzt den lokalen Speicher (localStorage) Ihres Browsers nur für zwei Dinge: um Ihre Sprache zu speichern und, falls Sie welche hinzufügen, Ihre Lieblingsveranstaltungen. Ihre Favoritenliste wird nicht auf unseren Servern gespeichert: Nur die Kennungen der Veranstaltungen und das Datum des Hinzufügens werden in diesem Browser aufbewahrt und nicht zu Ihrer Verfolgung verwendet. Um die Seite „Meine Favoriten“ anzuzeigen, ruft die Website die Seiten dieser Veranstaltungen ab, so wie wenn Sie sie einzeln öffnen. Sie können alles mit „Alle entfernen“ löschen oder indem Sie die Daten der Website in Ihrem Browser entfernen.",
       "delete": "Sie können die Sprache jederzeit ändern. Ihre Favoriten löschen Sie mit der Schaltfläche „Alle entfernen“ auf der Seite Meine Favoriten oder durch Löschen der Websitedaten in Ihren Browsereinstellungen."
     },
     "tracking": {

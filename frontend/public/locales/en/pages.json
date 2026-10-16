@@ -128,7 +128,7 @@
     "description": "How Le Blanc & Moi uses browser storage and the services needed to operate the site.",
     "storage": {
       "title": "Your language and favourites",
-      "body": "This site uses your browser’s local storage (localStorage) for two things only: remembering your language and, if you add any, your favourite events. For favourites, only the event identifiers and the date they were added are saved, and only in this browser. They are never sent to our servers and are not used to track you.",
+      "body": "This site uses your browser’s local storage (localStorage) for two things only: remembering your language and, if you add any, your favourite events. Your list of favourites is not stored on our servers: only the event identifiers and the date they were added are kept in this browser, and they are not used to track you. To display the “My favourites” page, the site requests the pages of these events, just as when you open them one by one. You can erase everything with “Remove all” or by deleting the site’s data in your browser.",
       "delete": "You can change the language at any time. Your favourites are deleted with the “Remove all” button on the My favourites page, or by clearing the site’s data in your browser settings."
     },
     "tracking": {

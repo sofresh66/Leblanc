@@ -128,7 +128,7 @@
     "description": "Cómo utiliza Le Blanc & Moi el almacenamiento del navegador y los servicios necesarios para su funcionamiento.",
     "storage": {
       "title": "Su idioma y sus favoritos",
-      "body": "Este sitio utiliza el almacenamiento local (localStorage) de su navegador solo para dos cosas: recordar su idioma y, si los añade, sus eventos favoritos. De los favoritos solo se guardan los identificadores de los eventos y la fecha en que se añadieron, únicamente en este navegador. Nunca se envían a nuestros servidores ni se utilizan para seguirle.",
+      "body": "Este sitio utiliza el almacenamiento local (localStorage) de su navegador solo para dos cosas: recordar su idioma y, si los añade, sus eventos favoritos. Su lista de favoritos no se guarda en nuestros servidores: solo los identificadores de los eventos y la fecha en que se añadieron se conservan en este navegador, y no se utilizan para seguirle. Para mostrar la página «Mis favoritos», el sitio solicita las fichas de esos eventos, como cuando los abre uno a uno. Puede borrarlo todo con «Quitar todos» o eliminando los datos del sitio en su navegador.",
       "delete": "Puede cambiar el idioma en cualquier momento. Sus favoritos se borran con el botón «Quitar todos» de la página Mis favoritos o eliminando los datos del sitio en la configuración de su navegador."
     },
     "tracking": {

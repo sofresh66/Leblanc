@@ -128,7 +128,7 @@
     "description": "Come Le Blanc & Moi utilizza la memoria del browser e i servizi necessari al funzionamento del sito.",
     "storage": {
       "title": "La tua lingua e i tuoi preferiti",
-      "body": "Questo sito usa la memoria locale (localStorage) del browser solo per due cose: ricordare la lingua scelta e, se ne aggiungi, i tuoi eventi preferiti. Per i preferiti vengono salvati solo gli identificativi degli eventi e la data di aggiunta, unicamente in questo browser. Non vengono mai inviati ai nostri server né usati per tracciarti.",
+      "body": "Questo sito usa la memoria locale (localStorage) del browser solo per due cose: ricordare la lingua scelta e, se ne aggiungi, i tuoi eventi preferiti. La tua lista dei preferiti non viene salvata sui nostri server: solo gli identificativi degli eventi e la data di aggiunta sono conservati in questo browser, e non servono a tracciarti. Per mostrare la pagina «I miei preferiti», il sito richiede le schede di questi eventi, come quando li apri uno per uno. Puoi cancellare tutto con «Rimuovi tutti» o eliminando i dati del sito nel tuo browser.",
       "delete": "Puoi cambiare lingua in qualsiasi momento. I preferiti si cancellano con il pulsante «Rimuovi tutti» della pagina I miei preferiti, oppure cancellando i dati del sito nelle impostazioni del browser."
     },
     "tracking": {
