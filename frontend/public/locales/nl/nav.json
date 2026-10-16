@@ -8,5 +8,8 @@
   "credits": "Fotocredits",
   "privacy": "Privacybeleid",
   "eat": "Waar eten",
-  "walks": "Routes"
+  "walks": "Routes",
+  "favorites": "Mijn favorieten",
+  "favoritesCount_one": "Mijn favorieten: {{count}} evenement",
+  "favoritesCount_other": "Mijn favorieten: {{count}} evenementen"
 }

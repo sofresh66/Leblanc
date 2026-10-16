@@ -17,6 +17,8 @@ interface PageSeoProps {
   /** Fiche parcours : ajoute le JSON-LD TouristTrip. */
   trail?: TrailDetail;
   noindex?: boolean;
+  /** Ni canonical ni og:url (page des favoris). */
+  noCanonical?: boolean;
   titleOverride?: string;
   descriptionOverride?: string;
   canonicalPath?: string;
@@ -25,7 +27,7 @@ interface PageSeoProps {
   breadcrumbName?: string;
 }
 
-export function PageSeo({ section, event, trail, noindex = false, titleOverride, descriptionOverride, canonicalPath, imageOverride, breadcrumbName }: PageSeoProps) {
+export function PageSeo({ section, event, trail, noindex = false, noCanonical = false, titleOverride, descriptionOverride, canonicalPath, imageOverride, breadcrumbName }: PageSeoProps) {
   const { t, i18n } = useTranslation(['seo', 'nav']);
   const { id } = useParams<{ id: string }>();
   const { pathname } = useLocation();
@@ -88,7 +90,7 @@ export function PageSeo({ section, event, trail, noindex = false, titleOverride,
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="robots" content={excluded ? 'noindex, follow' : 'index, follow'} />
-      <link rel="canonical" href={canonical} />
+      {!noCanonical && <link rel="canonical" href={canonical} />}
       {!excluded &&
         SUPPORTED_LANGUAGES.map((language) => (
           <link
@@ -110,7 +112,7 @@ export function PageSeo({ section, event, trail, noindex = false, titleOverride,
       <meta property="og:image" content={image} />
       <meta property="og:type" content="website" />
       <meta property="og:locale" content={LOCALES[lang]} />
-      <meta property="og:url" content={canonical} />
+      {!noCanonical && <meta property="og:url" content={canonical} />}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />

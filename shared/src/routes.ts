@@ -3,7 +3,7 @@ import type { SupportedLanguage } from './types.js';
 
 // Table des routes localisées, partagée par le frontend (React Router) et le
 // middleware Pages Functions (balises <head> et statut HTTP côté serveur).
-export type RouteSection = 'home' | 'map' | 'list' | 'events' | 'about' | 'credits' | 'privacy' | 'eat' | 'places' | 'walks';
+export type RouteSection = 'home' | 'map' | 'list' | 'events' | 'about' | 'credits' | 'privacy' | 'eat' | 'places' | 'walks' | 'favorites';
 
 export const ROUTE_SECTIONS: readonly RouteSection[] = [
   'home',
@@ -16,15 +16,16 @@ export const ROUTE_SECTIONS: readonly RouteSection[] = [
   'eat',
   'places',
   'walks',
+  'favorites',
 ] as const;
 
 export const ROUTE_SEGMENTS: Record<SupportedLanguage, Record<RouteSection, string>> = {
-  fr: { walks: 'se-balader', places: 'lieux', eat: 'ou-manger', home: '', map: 'carte', list: 'liste', events: 'evenements', about: 'a-propos', credits: 'credits', privacy: 'confidentialite' },
-  en: { walks: 'trails', places: 'places', eat: 'where-to-eat', home: '', map: 'map', list: 'list', events: 'events', about: 'about', credits: 'credits', privacy: 'privacy' },
-  es: { walks: 'rutas', places: 'lugares', eat: 'donde-comer', home: '', map: 'mapa', list: 'lista', events: 'eventos', about: 'acerca-de', credits: 'creditos', privacy: 'privacidad' },
-  de: { walks: 'touren', places: 'orte', eat: 'wo-essen', home: '', map: 'karte', list: 'liste', events: 'veranstaltungen', about: 'ueber-uns', credits: 'bildnachweise', privacy: 'datenschutz' },
-  it: { walks: 'percorsi', places: 'luoghi', eat: 'dove-mangiare', home: '', map: 'mappa', list: 'lista', events: 'eventi', about: 'chi-siamo', credits: 'crediti', privacy: 'privacy' },
-  nl: { walks: 'routes', places: 'plekken', eat: 'waar-eten', home: '', map: 'kaart', list: 'lijst', events: 'evenementen', about: 'over-ons', credits: 'credits', privacy: 'privacy' },
+  fr: { walks: 'se-balader', places: 'lieux', eat: 'ou-manger', home: '', map: 'carte', list: 'liste', events: 'evenements', about: 'a-propos', credits: 'credits', privacy: 'confidentialite', favorites: 'favoris' },
+  en: { walks: 'trails', places: 'places', eat: 'where-to-eat', home: '', map: 'map', list: 'list', events: 'events', about: 'about', credits: 'credits', privacy: 'privacy', favorites: 'favorites' },
+  es: { walks: 'rutas', places: 'lugares', eat: 'donde-comer', home: '', map: 'mapa', list: 'lista', events: 'eventos', about: 'acerca-de', credits: 'creditos', privacy: 'privacidad', favorites: 'favoritos' },
+  de: { walks: 'touren', places: 'orte', eat: 'wo-essen', home: '', map: 'karte', list: 'liste', events: 'veranstaltungen', about: 'ueber-uns', credits: 'bildnachweise', privacy: 'datenschutz', favorites: 'favoriten' },
+  it: { walks: 'percorsi', places: 'luoghi', eat: 'dove-mangiare', home: '', map: 'mappa', list: 'lista', events: 'eventi', about: 'chi-siamo', credits: 'crediti', privacy: 'privacy', favorites: 'preferiti' },
+  nl: { walks: 'routes', places: 'plekken', eat: 'waar-eten', home: '', map: 'kaart', list: 'lijst', events: 'evenementen', about: 'over-ons', credits: 'credits', privacy: 'privacy', favorites: 'favorieten' },
 };
 
 export interface ResolvedRoute {
@@ -97,6 +98,10 @@ export function resolveRoute(pathname: string): ResolvedRoute {
 
   if (sectionSegment === langSegments.credits && segments.length === 2) {
     return { lang, section: 'credits' };
+  }
+
+  if (sectionSegment === langSegments.favorites && segments.length === 2) {
+    return { lang, section: 'favorites' };
   }
 
   return { lang, section: 'notFound' };

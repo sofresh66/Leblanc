@@ -57,5 +57,14 @@
   "dates": {
     "allDay": "All day",
     "until": "Until {{date}}"
+  },
+  "favorites": {
+    "add": "Add “{{title}}” to favourites",
+    "remove": "Remove “{{title}}” from favourites",
+    "addShort": "Add to favourites",
+    "saved": "In my favourites",
+    "limit": "You have reached the limit of 100 favourites: remove one to add another.",
+    "error": "This favourite could not be saved in your browser.",
+    "dismiss": "Close message"
   }
 }

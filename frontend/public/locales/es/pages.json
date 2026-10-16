@@ -127,9 +127,9 @@
     "title": "Política de privacidad",
     "description": "Cómo utiliza Le Blanc & Moi el almacenamiento del navegador y los servicios necesarios para su funcionamiento.",
     "storage": {
-      "title": "Su preferencia de idioma",
-      "body": "Este sitio utiliza únicamente el almacenamiento local (localStorage) de su navegador para recordar su preferencia de idioma. Esta preferencia permanece en su navegador y no se utiliza como identificador de seguimiento.",
-      "delete": "Puede cambiar el idioma en cualquier momento o eliminar esta preferencia borrando los datos del sitio en la configuración de su navegador. Permanece guardada hasta que se sustituya o elimine."
+      "title": "Su idioma y sus favoritos",
+      "body": "Este sitio utiliza el almacenamiento local (localStorage) de su navegador solo para dos cosas: recordar su idioma y, si los añade, sus eventos favoritos. Su lista de favoritos no se guarda en nuestros servidores: solo los identificadores de los eventos y la fecha en que se añadieron se conservan en este navegador, y no se utilizan para seguirle. Para mostrar la página «Mis favoritos», el sitio solicita las fichas de esos eventos, como cuando los abre uno a uno. Puede borrarlo todo con «Quitar todos» o eliminando los datos del sitio en su navegador.",
+      "delete": "Puede cambiar el idioma en cualquier momento. Sus favoritos se borran con el botón «Quitar todos» de la página Mis favoritos o eliminando los datos del sitio en la configuración de su navegador."
     },
     "tracking": {
       "title": "Sin seguimiento publicitario",
@@ -158,5 +158,27 @@
       "specialties": "Especialidades de la región"
     },
     "backHome": "Volver al inicio"
+  },
+  "favorites": {
+    "title": "Mis favoritos",
+    "intro": "Sus eventos favoritos se guardan únicamente en este navegador.",
+    "notPersistent": "El almacenamiento de su navegador no está disponible: sus favoritos se perderán al salir del sitio.",
+    "emptyTitle": "Todavía no hay favoritos",
+    "emptyBody": "Toque el corazón de un evento para encontrarlo aquí.",
+    "browse": "Ver los eventos",
+    "home": "Volver al inicio",
+    "upcoming": "Próximos",
+    "past": "Pasados",
+    "missingTitle": "Eventos no disponibles",
+    "missingItem": "Este evento ya no está publicado.",
+    "errorItem": "No se puede cargar este evento en este momento.",
+    "retry": "Reintentar",
+    "remove": "Quitar",
+    "clearAll": "Quitar todos",
+    "confirmClear_one": "¿Quitar su favorito?",
+    "confirmClear_other": "¿Quitar sus {{count}} favoritos?",
+    "confirm": "Sí, quitar todos",
+    "cancel": "Cancelar",
+    "cleared": "Se han quitado todos los favoritos."
   }
 }

@@ -21,3 +21,17 @@ export async function discoverEvents(request: APIRequestContext): Promise<Event[
   }
   throw new Error('Neon ne répond toujours pas après huit essais de lecture');
 }
+
+const DAY_MS = 24 * 3600 * 1000;
+
+/**
+ * Une séance courte à venir : le bouton calendrier est absent au-delà de 14 jours,
+ * et le premier événement réel peut être un marché de plusieurs mois.
+ */
+export function shortUpcomingEvent(events: Event[]): Event | undefined {
+  return events.find((candidate) => {
+    const start = Date.parse(candidate.startDate);
+    const end = Date.parse(candidate.endDate ?? candidate.startDate);
+    return start > Date.now() && end - start < 7 * DAY_MS;
+  });
+}

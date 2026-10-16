@@ -11,6 +11,7 @@ export const pageImports = {
   about: () => import('../pages/AboutPage').then((module) => ({ default: module.AboutPage })),
   credits: () => import('../pages/CreditsPage').then((module) => ({ default: module.CreditsPage })),
   privacy: () => import('../pages/PrivacyPage').then((module) => ({ default: module.PrivacyPage })),
+  favorites: () => import('../pages/FavoritesPage').then((module) => ({ default: module.FavoritesPage })),
   notFound: () =>
     import('../pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })),
 };

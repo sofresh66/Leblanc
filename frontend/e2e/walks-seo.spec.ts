@@ -81,6 +81,8 @@ test('liste filtrée : canonical sur la liste sans paramètres', async ({ page }
 async function expectMenu(page: Page, lang: SupportedLanguage, mobile: boolean) {
   const nav = readNav(lang);
   const expected = [nav.home, nav.map, nav.eat, nav.walks, nav.list, nav.about];
+  // Sur mobile, « Mes favoris » et son compteur (0 favori ici) ferment le menu.
+  if (mobile) expected.push(`${nav.favorites}0`);
   if (mobile) await page.getByRole('button', { name: nav.menu }).click();
   const menu = mobile ? page.locator('#mobile-navigation') : page.getByRole('navigation', { name: nav.menu }).first();
   const labels = (await menu.getByRole('link').allTextContents()).map((text) => text.replace('↗', '').trim());
