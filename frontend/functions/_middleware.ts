@@ -1,8 +1,11 @@
 import { securityHeaders, type SupportedLanguage } from '@leblanc/shared';
 import { planPage, type PlanDeps } from './lib/page-plan';
+import { canonicalRedirect } from './lib/canonical-redirect';
 
-// Middleware Cloudflare Pages : pour chaque page HTML (les fichiers statiques
-// sont exclus par _routes.json), pose le bon statut HTTP (vraies 404), les
+// Middleware Cloudflare Pages : redirige d'abord www et l'hôte pages.dev de
+// production vers le domaine canonique. Puis, pour chaque page HTML (les fichiers
+// statiques sont exclus par _routes.json, sauf robots.txt et sitemap.xml qui
+// ressortent inchangés), pose le bon statut HTTP (vraies 404), les
 // balises <head> de la page et les en-têtes de sécurité. Panne de l'API :
 // HTML générique en 200, sans désindexer la fiche.
 
@@ -49,13 +52,17 @@ async function fetchApi(apiUrl: string, path: string, waitUntil: (promise: Promi
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
+  const apiUrl = env.API_URL || DEFAULT_API_URL;
+  // Toujours en premier : www et l'hôte pages.dev de production vont au domaine canonique.
+  const redirect = canonicalRedirect(request, new URL(apiUrl).origin);
+  if (redirect) return redirect;
+
   const response = await context.next();
   const isPage = (request.method === 'GET' || request.method === 'HEAD')
     && (response.headers.get('Content-Type') ?? '').includes('text/html');
   if (!isPage) return response;
 
   const url = new URL(request.url);
-  const apiUrl = env.API_URL || DEFAULT_API_URL;
   const headers = new Headers(response.headers);
   for (const [name, value] of Object.entries(securityHeaders(new URL(apiUrl).origin))) headers.set(name, value);
 
