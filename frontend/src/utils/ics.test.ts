@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import {
-  calendarOccurrence, downloadIcsFile, generateIcsContent, icsFileName, MAX_CALENDAR_DAYS,
+  calendarOccurrence, downloadIcsFile, escapeIcsText, generateIcsContent, icsFileName, MAX_CALENDAR_DAYS,
   type CalendarOccurrence,
 } from './ics';
 import type { Event } from '@leblanc/shared';
@@ -121,6 +121,45 @@ describe('generateIcsContent — structure', () => {
         expect(line.replace(/\\\\/g, '')).not.toMatch(/\\$/);
       }
     }
+  });
+
+  it('échappe CRLF, CR seul et LF de la même façon', () => {
+    const cases: Array<[string, string]> = [
+      ['a\r\nb', 'a\\nb'],
+      ['a\rb', 'a\\nb'],
+      ['a\nb', 'a\\nb'],
+      ['a\r\n\r\nb', 'a\\n\\nb'],
+      ['\r\r\n', '\\n\\n'],
+      ['a\r', 'a\\n'],
+    ];
+    for (const [input, expected] of cases) expect(escapeIcsText(input), JSON.stringify(input)).toBe(expected);
+  });
+
+  it('un CR seul dans le titre devient une espace, comme LF et CRLF', () => {
+    for (const title of ['Concert\rau bord', 'Concert\nau bord', 'Concert\r\nau bord', 'Concert \r\r au bord']) {
+      expect(ics(concert, { ...mockEvent, title }), JSON.stringify(title)).toContain('SUMMARY:Concert au bord\r\n');
+    }
+  });
+
+  it('un CR seul dans le lieu devient « \\n » échappé, sans fin de ligne brute', () => {
+    const content = ics(concert, { ...mockEvent, title: 'Concert\rau bord', venueName: 'Salle\rdes fêtes' });
+    expect(content).toContain('LOCATION:Salle\\ndes fêtes\\,');
+    // Hors des CRLF qui séparent les lignes, aucun CR ni LF ne reste.
+    expect(content.replace(/\r\n/g, '')).not.toMatch(/[\r\n]/);
+  });
+
+  it('un CR dans le titre ou le lieu n’injecte aucune propriété', () => {
+    const content = ics(concert, {
+      ...mockEvent,
+      title: 'Concert\rATTENDEE:mailto:x@example.com',
+      venueName: 'Salle\rORGANIZER:mailto:x@example.com',
+    });
+    const lines = content.split('\r\n');
+    expect(lines.some((line) => line.startsWith('ATTENDEE'))).toBe(false);
+    expect(lines.some((line) => line.startsWith('ORGANIZER'))).toBe(false);
+    expect(unfold(content)).toContain('SUMMARY:Concert ATTENDEE:mailto:x@example.com\r\n');
+    expect(unfold(content)).toContain('LOCATION:Salle\\nORGANIZER:mailto:x@example.com\\,');
+    expect(content.replace(/\r\n/g, '')).not.toMatch(/[\r\n]/);
   });
 
   it('ajoute GEO avec des coordonnées valides, l’omet sinon', () => {
