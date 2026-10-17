@@ -86,7 +86,7 @@ export function escapeIcsText(value: string): string {
     .replace(/\\/g, '\\\\')
     .replace(/;/g, '\\;')
     .replace(/,/g, '\\,')
-    .replace(/\r?\n/g, '\\n');
+    .replace(/\r\n|\r|\n/g, '\\n');
 }
 
 /**
@@ -188,7 +188,7 @@ export function generateIcsContent(
     `UID:${event.id}-${formatIcsDate(occurrence.startDate, timeZone)}@${uidDomain}`,
     `DTSTAMP:${formatDateToIcsUtc(now)}`,
     ...dates,
-    `SUMMARY:${escapeIcsText(event.title.replace(/\s*\n\s*/g, ' ').trim())}`,
+    `SUMMARY:${escapeIcsText(event.title.replace(/\s*[\r\n]\s*/g, ' ').trim())}`,
     `DESCRIPTION:${escapeIcsText(summary ? `${summary}\n\n${url}` : url)}`,
     ...(location ? [`LOCATION:${escapeIcsText(location)}`] : []),
     ...(hasCoordinates(event) ? [`GEO:${event.latitude};${event.longitude}`] : []),

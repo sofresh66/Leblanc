@@ -127,8 +127,8 @@ test.describe('Lot 3 - Composants UI et fonctionnalités', () => {
     await page.goto('/fr/liste?category=sport&isFree=true');
     await expect(page).toHaveURL(/category=sport/);
 
-    // Cliquer sur le bouton Réinitialiser
-    await page.getByRole('button', { name: 'Réinitialiser' }).click();
+    // Le bouton du panneau de filtres : sans résultat, l'état vide affiche aussi « Réinitialiser les filtres ».
+    await page.getByRole('button', { name: 'Réinitialiser', exact: true }).click();
 
     // L'URL ne contient plus les filtres
     await expect(page).not.toHaveURL(/category=/);
