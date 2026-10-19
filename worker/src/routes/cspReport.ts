@@ -60,6 +60,34 @@ export function parseViolations(payload: unknown): Violation[] {
   }));
 }
 
+/**
+ * Lit le corps en flux et s'arrête dès que la limite est dépassée (flux annulé, null renvoyé),
+ * sans dépendre de Content-Length. Corps absent : chaîne vide, comme request.text().
+ */
+export async function readBodyWithin(body: ReadableStream<Uint8Array> | null, maxBytes: number): Promise<string | null> {
+  if (!body) return '';
+  const reader = body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      reader.cancel().catch(() => {});
+      return null;
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
+
 export async function handleCspReport(request: Request, env: Env | undefined, requestId?: string): Promise<Response> {
   const contentType = (request.headers.get('Content-Type') ?? '').split(';')[0]?.trim().toLowerCase() ?? '';
   if (!ACCEPTED_TYPES.includes(contentType)) {
@@ -69,8 +97,8 @@ export async function handleCspReport(request: Request, env: Env | undefined, re
   if (declared > CSP_REPORT_MAX_BYTES) {
     return errorResponse(request, env, { status: 413, code: 'PAYLOAD_TOO_LARGE', message: 'Rapport trop volumineux', requestId });
   }
-  const text = await request.text();
-  if (new TextEncoder().encode(text).length > CSP_REPORT_MAX_BYTES) {
+  const text = await readBodyWithin(request.body, CSP_REPORT_MAX_BYTES);
+  if (text === null) {
     return errorResponse(request, env, { status: 413, code: 'PAYLOAD_TOO_LARGE', message: 'Rapport trop volumineux', requestId });
   }
   const ip = request.headers.get('CF-Connecting-IP') ?? 'inconnue';
