@@ -15,6 +15,7 @@ describe('client DATAtourisme', () => {
     expect(url.searchParams.get('lang')).toBe('fr,en,es,de,it,nl');
     expect(url.searchParams.get('fields')).toContain('takesPlaceAt');
     expect(url.searchParams.get('fields')).toContain('offers');
+    expect(url.searchParams.get('fields')).toContain('hasRepresentation');
     expect(url.toString()).not.toContain('secret');
     expect(options.headers['X-API-Key']).toBe('secret');
     const nextUrl = `${url.toString()}&crs=opaque-cursor`;

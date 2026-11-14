@@ -66,6 +66,27 @@ function httpUrl(value) {
   }
 }
 
+const IMAGE_EXTENSION = /\.(jpe?g|png|gif|webp|avif)$/i;
+const list = (value) => (Array.isArray(value) ? value : []);
+
+// Image principale, sinon première image des autres représentations : DATAtourisme
+// ne remplit plus toujours hasMainRepresentation. Un type MIME autre qu'image est
+// écarté ; sans type MIME, l'extension du fichier décide.
+function representationImage(raw) {
+  const representations = [...list(raw.hasMainRepresentation), ...list(raw.hasRepresentation)];
+  for (const resource of representations.flatMap((item) => list(item?.hasRelatedResource))) {
+    const mime = list(resource?.hasMimeType)
+      .flatMap((type) => Object.values(type?.label ?? {}))
+      .find((label) => typeof label === 'string');
+    for (const locator of list(resource?.locator)) {
+      const url = httpUrl(locator);
+      if (!url) continue;
+      if (mime ? /^image\//i.test(mime) : IMAGE_EXTENSION.test(new URL(url).pathname)) return url;
+    }
+  }
+  return null;
+}
+
 function isDatatourismeUri(url) {
   return new URL(url).hostname === 'data.datatourisme.fr';
 }
@@ -198,7 +219,7 @@ export function normalizeDatatourismeEvent(raw) {
   const types = Array.isArray(raw.type)
     ? raw.type.filter((value) => typeof value === 'string')
     : [];
-  const imageUrl = httpUrl(raw.hasMainRepresentation?.[0]?.hasRelatedResource?.[0]?.locator?.[0]);
+  const imageUrl = representationImage(raw);
   // Page web du contact seulement : l'URI data.datatourisme.fr est technique
   // (elle reste disponible dans sourceUrl) et ne doit pas servir de site officiel.
   const publicUrl =

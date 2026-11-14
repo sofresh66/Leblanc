@@ -10,6 +10,7 @@ const FIELDS = [
   'takesPlaceAt',
   'offers',
   'hasMainRepresentation',
+  'hasRepresentation',
   'hasContact',
   'hasBeenCreatedBy',
 ].join(',');
