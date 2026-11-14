@@ -88,6 +88,50 @@ describe('normaliseur DATAtourisme', () => {
     expect(result.event.priceMin).toBeNull();
   });
 
+  it('prend la première image de hasRepresentation sans image principale', () => {
+    const raw = fixture();
+    delete raw.hasMainRepresentation;
+    raw.hasRepresentation = [
+      {
+        hasAnnotation: [{ credits: ['© A2I'] }],
+        hasRelatedResource: [
+          {
+            hasMimeType: [{ label: { '@fr': 'image/png' } }],
+            locator: ['https://centre.media.tourinsoft.eu/upload/Marche-hebdomadaire-7.png'],
+          },
+        ],
+      },
+      { hasRelatedResource: [{ locator: ['https://example.com/seconde.jpg'] }] },
+    ];
+    expect(normalizeDatatourismeEvent(raw).event.imageUrl).toBe(
+      'https://centre.media.tourinsoft.eu/upload/Marche-hebdomadaire-7.png',
+    );
+  });
+
+  it('préfère l’image principale à hasRepresentation', () => {
+    const raw = fixture();
+    raw.hasRepresentation = [{ hasRelatedResource: [{ locator: ['https://example.com/autre.jpg'] }] }];
+    expect(normalizeDatatourismeEvent(raw).event.imageUrl).toBe('https://example.com/image.jpg');
+  });
+
+  it('écarte les ressources qui ne sont pas des images', () => {
+    const raw = fixture();
+    delete raw.hasMainRepresentation;
+    raw.hasRepresentation = [
+      {
+        hasRelatedResource: [
+          { hasMimeType: [{ label: { '@fr': 'application/pdf' } }], locator: ['https://example.com/programme.jpg'] },
+          { locator: ['https://example.com/brochure.pdf'] },
+          { locator: ['javascript:alert(1)'] },
+        ],
+      },
+      { hasRelatedResource: [{ locator: ['https://example.com/affiche.webp'] }] },
+    ];
+    expect(normalizeDatatourismeEvent(raw).event.imageUrl).toBe('https://example.com/affiche.webp');
+    raw.hasRepresentation = [{ hasRelatedResource: [{ locator: ['https://example.com/brochure.pdf'] }] }];
+    expect(normalizeDatatourismeEvent(raw).event.imageUrl).toBeNull();
+  });
+
   it('traite offers null comme tarif non précisé', () => {
     const raw = fixture();
     raw.offers = null;
